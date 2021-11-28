@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Web of Things platform - technical report</title>
+    <link rel="stylesheet" href="css/scholarly.min.css">
+    <script src="js/scholarly.min.js"></script>
+  </head>
+  <body prefix="schema: http://schema.org, sa: https://ns.science.ai">
+    <header>
+      <h1>Web of Things platform - Technical report</h1>
+    </header>
+    <div role="contentinfo">
+      <section typeof="sa:AuthorsList">
+        <h2>Authors</h2>
+        <ul>
+          <li typeof="sa:ContributorRole" property="schema:author">
+            <span typeof="schema:Person" resource="https://github.com/VladAfrasinei">
+              <meta property="schema:givenName" content="Vlad">
+              <meta property="schema:familyName" content="Afrasinei">
+              <a href="https://github.com/VladAfrasinei">
+                <span property="schema:name">Afrasinei Vlad</span>
+              </a>
+            </span>
+          </li>
+          <li typeof="sa:ContributorRole" property="schema:author">
+            <span typeof="schema:Person" resource="https://github.com/Stefanxdan">
+              <meta property="schema:givenName" content="Stefan">
+              <meta property="schema:familyName" content="Danila">
+              <a href="https://github.com/Stefanxdan">
+                <span property="schema:name">Danila Stefan</span>
+              </a>
+            </span>
+          </li>
+          <li typeof="sa:ContributorRole" property="schema:author">
+            <span typeof="schema:Person" resource="https://github.com/anav238">
+              <meta property="schema:givenName" content="Ana">
+              <meta property="schema:familyName" content="Vasiliu">
+              <a href="https://github.com/anav238">
+                <span property="schema:name">Vasiliu Ana</span>
+              </a>
+            </span>
+          </li>
+        </ul>
+      </section>
+    </div>
+    <section typeof="sa:Abstract" id="abstract" role="doc-abstract">
+      <h2>Abstract</h2>
+      <p>
+        This technical report presents the preliminary considerations about the implementation of the <a
+          href="https://www.w3.org/WoT/">Web of Things</a> platform
+        project done for the <span typeof="schema:Course" resource="https://profs.info.uaic.ro/~busaco/teach/courses/wade/"><a href="https://profs.info.uaic.ro/~busaco/teach/courses/wade/"> 
+          <span property="schema:name">Web Application Development</span>
+          course</a></span>. The project will consist of a Web application that will allow
+        its users to manage their own smart homes by adding smart devices to the homes, interacting with the smart devices,
+        adding other users
+        to the home or allowing guests to temporarily access a category of their smart devices.
+      </p>
+    </section>
+    <section id="introduction" role="doc-introduction">
+      <h2>Introduction</h2>
+      <p>
+        We will develop the application using the REST paradigm, and the communication between the client (the front-end of the
+        application) and the server (the back-end application) will be done through a REST API. We made this design choice
+        because the REST paradigm "enforces the separation of concerns and helps the client and the server components evolve
+        independently" (<span typeof="schema:WebSite" resource="https://restfulapi.net/"><a role="doc-biblioref" href="https://restfulapi.net/"><span property="schema:name">Restful API website</span></a></span>), which is a general
+        development good practice that will also help us better organize inside the team.
+      </p>
+    </section>
+    <section id="internal-data-structures">
+      <h2>Internal data structures/models</h2>
+      <p>
+        The resources that will be used inside our Web application are: 
+      </p>
+      <ol>
+        <li>
+          Users - at the root of the application, we have the application users. Besides credentials and other user information,
+          an application user will have associated a number of homes, inside which he will have a specific role: either Owner,
+          Member, Child or Guest.
+        </li>
+       <li>
+        Homes - a home will contain a list of smart objects with associated categories and a list of members (application users) with associated roles. 
+       </li>
+       <li>
+        Smart devices - each smart object will be stored with all data obtained from its WoT specification. This is useful since
+        we have easy access to the object’s properties and actions, and URIs that we can use to get values from the properties
+        or interact with the object.
+       </li>
+      </ol>
+      <p>The Owner of a home will be able to group the smart devices inside the home in the following categories:</p>
+      <ol>
+        <li>
+          Entertainment - for objects like televisions or smart speakers. Entertainment objects will be accessible for all roles inside a home, including guests.
+        </li>
+        <li>
+          Environment - objects like smart bulbs, blinds, humidifiers, fans, air conditioners or different sensors related to the
+          environment. These will be accessible for all roles except guests, so only permanent members of a household can control
+          the environment
+        </li>
+        <li>
+          Security - objects like security cameras, lockers, wall plugs. Only the Owner of the home and the Members of the home
+          (excluding children) will be able to access these types of objects.
+        </li>
+      </ol>
+      <p>
+        Other permissions related to each role inside the smart home are:
+      </p>
+      <ol>
+        <li>
+          Owner - can manage the home and its linked smart objects. Can add new smart objects or remove existing ones and do any
+          supported operation. Can invite new members, children or guests inside the home.
+        </li>
+        <li>
+          Member - can interact with all objects inside the home. Can invite new guests inside the home
+        </li>
+        <li>
+          Child - can only interact with specific categories of objects inside the home
+        </li>
+        <li>
+          Guest - same as child, but access to objects is only granted for a limited period of time, set by the owner
+        </li>
+      </ol>
+    </section>
+    <p>
+      The resources presented previously will be accessible through the REST API, by making a GET request to the website’s
+      endpoint /{resourceName}/{resourceIdentifier}. Before fetching the resource, the server first checks if the user has the
+      necessary permissions to access that request. The responses of the REST API will always be JSON-LD objects, so that we
+      can query the data using SPARQL queries. Each API Call made by the front-end application will be authenticated using an
+      authorization token that will also be used to determine if the requester has the necessary rights to perform that
+      operation.
+    </p>
+    <p>
+      For the architecture of the application, we will use a layered approach. The presentation layer, which will be the
+      front-end of the application, will communicate with the business layer, which will be the API of the application. The
+      business layer will handle checking the permissions of the user for which the API Calls are made, communicating with the
+      persistence layer to fetch application data from the database, and making API Calls to the smart devices, in order to
+      interact with them. The persistence layer will contain the SPARQL query logic, and the database layer will consist of
+      the NoSQL database.
+    </p>
+  <section id="mozilla-web-things-framework">
+      <h2>Mozilla WebThings Framework</h2>
+      <p>
+        For this project, in order to simulate the IoTs adopting the <a href="https://www.w3.org/TR/wot-thing-description">WoT
+          Thing Description specification</a>, we will be using
+          <span typeof="schema:SoftwareApplication" resource="https://webthings.io/framework/"><a href="https://webthings.io/framework/">
+            <span property="schema:name">Mozilla WebThings Framework</span></a></span>. According to the project’s official webpage:
+      </p>
+      <blockquote cite="https://webthings.io/framework/">
+        The WebThings Framework is a collection of
+        reusable software components to help you build your own web things, which directly expose the <span typeof="schema:SoftwareApplication" resource="https://webthings.io/api/"><a
+          href="https://webthings.io/api/"><span property="schema:name">Web Thing API</span></a></span>. This means
+        they can be discovered by a Web of Things gateway or client, which can then automatically detect the device's
+        capabilities and monitor and control it over the web.
+      </blockquote>
+      <p>
+        These IoTs will be built in a server separate from the main Web Application. This server will expose different endpoints
+        for each object, respecting the Web Thing API specification for that specific object. As a starting point for the
+        WebThings server, we will use the <span typeof="schema:SoftwareSourceCode" resource="https://github.com/WebThingsIO/webthing-python">
+        <a href="https://github.com/WebThingsIO/webthing-python"><span property="schema:name">official code example for the framework</span></a></span>
+        containing a lamp and a humidity sensor, and we will create more
+        objects that the user can interact with there.
+      </p>
+      <p>
+        By configuring a GET operation on the root of this server, we will obtain the Web Thing descriptions of all the
+        objects deployed to this server. This will be part of the user flow with the user “discovering” new smart objects.
+        During this part, he will have the option to store the discovered smart objects in his home, which will offer him the
+        possibility to see the object’s properties and perform the supported actions on them.
+      </p>
+      <p>
+        The WoT descriptions of the objects will be stored in the application database, so that the user can easily control
+        his linked smart devices. The back-end server will then make API calls to interact with the smart objects by using the
+        base URL and the endpoints provided inside the descriptions.
+      </p>
+  </section>
+  <section id="linked-data-principles">
+    <h2>Linked Data Principles</h2>
+    <p>
+      This application adheres to the linked data principles as each resource has a unique HTTP URI (represented by the REST
+      API endpoint /{resourceType}/{resourceIdentifier}, which returns relevant information about that resource in the JSON-LD
+      format, containing data for discovering other linked resources. The WoT specifications of the objects will be stored as
+      they are, and we will use them as inspiration for representing the other resources. The front-end of the application
+      will also use the information inside the JSON-LD objects obtained from the API to associate HTML5 micro-data to the
+      content displayed in the web pages.
+    </p>
+  </section>
+  <section id="data-storage">
+    <h2>Data Storage</h2>
+    <p>
+      The data will be stored using <span typeof="schema:SoftwareApplication" resource="https://brightstardb.com/">
+      <a href="https://brightstardb.com/"><span property="schema:name">BrightstarDB</span></a></span>, since it is a RDF triplestore with support for the 
+      <a href="https://en.wikipedia.org/wiki/.NET_Framework">.NET framework</a>, which we
+      will be using for developing the back-end server. It has an Entity Framework which enables us to define the data model
+      in the code and also use LINQ to create, update and delete objects, a Data Object layer for retrieving an object and all
+      its properties and also a RDF Client API for executing <a href="https://www.w3.org/TR/rdf-sparql-query/">SPARQL</a> queries.
+    </p>
+    <p>
+      Each user will be linked to the smart homes where he has access to, and each home will be linked to the smart devices it
+      contains. In order to depict these relationships, we will use the FOAF vocabulary, and each user will be a <a href="http://xmlns.com/foaf/spec/#term_member">member</a>
+      of a home, and each smart device will be a member of a home.
+    </p>
+    <p>
+      The most important interrogations that will be used inside the applications will be to find all homes linked to a user,
+      all users that have a role inside a home, all smart devices inside a home and all properties and actions applicable to a
+      smart device. The SPARQL queries will be done in the back-end, so that the front-end will not need to handle the logic
+      of building and executing these queries. The results of the SPARQL queries will also be parsed in the back-end so the
+      REST API will return the responses structured in a way that will require less processing on the front-end side.
+    </p>
+  </section>
+  <section id="bibliography" role="doc-bibliography">
+    <h2>Bibliography</h2>
+    <ol>
+      <li typeof="schema:WebPage" role="doc-biblioentry"
+          resource="https://profs.info.uaic.ro/~busaco/teach/courses/wade/web-film.html"
+          property="schema:citation" id="wade-course">
+        <cite property="schema:name">
+          <a href="https://profs.info.uaic.ro/~busaco/teach/courses/wade/web-film.html">WADe course</a>
+        </cite>, by 
+        <span property="schema:author" typeof="schema:Person"> Dr.
+          <a href="https://profs.info.uaic.ro/~busaco/">
+            <span property="schema:givenName">Sabin-Corneliu</span>
+            <span property="schema:familyName">Buraga</span>
+          </a>
+        </span>
+        <span property="schema:potentialAction" typeof="schema:ReadAction">
+          <meta property="schema:actionStatus" content="CompletedActionStatus">
+          (last accessed on
+          <time property="schema:endTime" datatype="xsd:date"
+                datetime="2021-11-27">27 November 2021</time>)
+        </span>
+      </li>
+      <li typeof="schema:WebPage" role="doc-biblioentry"
+          resource="https://restfulapi.net/"
+          property="schema:citation" id="restful-api-website">
+        <cite property="schema:name">
+          <a href="https://restfulapi.net/">Restful API website</a>
+        </cite> 
+        <span property="schema:potentialAction" typeof="schema:ReadAction">
+          <meta property="schema:actionStatus" content="CompletedActionStatus">
+          (last accessed on
+          <time property="schema:endTime" datatype="xsd:date"
+                datetime="2021-11-22">22 November 2021</time>)
+        </span>
+      </li>
+      <li typeof="schema:WebPage" role="doc-biblioentry"
+          resource="https://webthings.io/api/"
+          property="schema:citation" id="web-things-api">
+        <cite property="schema:name">
+          <a href="https://webthings.io/api/">WebThings API</a>
+        </cite> 
+        <span property="schema:potentialAction" typeof="schema:ReadAction">
+          <meta property="schema:actionStatus" content="CompletedActionStatus">
+          (last accessed on
+          <time property="schema:endTime" datatype="xsd:date"
+                datetime="2021-11-25">25 November 2021</time>)
+        </span>
+      </li>
+      <li typeof="schema:WebPage" role="doc-biblioentry"
+          resource="https://webthings.io/framework"
+          property="schema:citation" id="web-things-framework">
+        <cite property="schema:name">
+          <a href="https://webthings.io/framework">WebThings Framework</a>
+        </cite> 
+        <span property="schema:potentialAction" typeof="schema:ReadAction">
+          <meta property="schema:actionStatus" content="CompletedActionStatus">
+          (last accessed on
+          <time property="schema:endTime" datatype="xsd:date"
+                datetime="2021-11-25">25 November 2021</time>)
+        </span>
+      </li>
+      <li typeof="schema:WebPage" role="doc-biblioentry"
+          resource="https://github.com/WebThingsIO/webthing-python"
+          property="schema:citation" id="web-things-framework-example">
+        <cite property="schema:name">
+          <a href="https://github.com/WebThingsIO/webthing-python">WebThing Simulation</a>
+        </cite> 
+        <span property="schema:potentialAction" typeof="schema:ReadAction">
+          <meta property="schema:actionStatus" content="CompletedActionStatus">
+          (last accessed on
+          <time property="schema:endTime" datatype="xsd:date"
+                datetime="2021-11-20">20 November 2021</time>)
+        </span>
+      </li>
+      <li typeof="schema:WebPage" role="doc-biblioentry"
+          resource="https://brightstardb.readthedocs.io"
+          property="schema:citation" id="brightstar-db">
+        <cite property="schema:name">
+          <a href="https://brightstardb.readthedocs.io">BrightStar DB documentation</a>
+        </cite>
+        <span property="schema:potentialAction" typeof="schema:ReadAction">
+          <meta property="schema:actionStatus" content="CompletedActionStatus">
+          (last accessed on
+          <time property="schema:endTime" datatype="xsd:date"
+                datetime="2021-11-20">20 November 2021</time>)
+        </span>
+      </li>
+    </ol>
+  </section>
+  </body>
+</html>
