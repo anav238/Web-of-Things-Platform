@@ -25,6 +25,8 @@
     ".NETCoreApp,Version=v5.0": {
       "WebOfThingsPlatform/1.0.0": {
         "dependencies": {
+          "BrightstarDB": "1.13.3",
+          "BrightstarDB.CodeGeneration.T4": "1.13.3",
           "Microsoft.AspNetCore.Authentication.JwtBearer": "5.0.0",
           "Microsoft.AspNetCore.Authentication.OpenIdConnect": "5.0.0",
           "Swashbuckle.AspNetCore": "5.6.3",
@@ -319,6 +321,52 @@
           "WebOfThingsPlatform.dll": {}
         }
       },
+      "BrightstarDB/1.13.3": {
+        "dependencies": {
+          "BrightstarDBLibs": "1.13.3"
+        }
+      },
+      "BrightstarDB.CodeGeneration/1.13.3": {
+        "dependencies": {
+          "BrightstarDBLibs": "1.13.3"
+        }
+      },
+      "BrightstarDB.CodeGeneration.T4/1.13.3": {
+        "dependencies": {
+          "BrightstarDB.CodeGeneration": "1.13.3"
+        }
+      },
+      "BrightstarDBLibs/1.13.3": {
+        "dependencies": {
+          "Newtonsoft.Json": "7.0.1",
+          "dotNetRDF": "1.0.9.3683"
+        },
+        "runtime": {
+          "lib/net45/BrightstarDB.dll": {
+            "assemblyVersion": "1.13.3.0",
+            "fileVersion": "1.13.3.0"
+          },
+          "lib/net45/Remotion.Linq.dll": {
+            "assemblyVersion": "1.13.122.1",
+            "fileVersion": "1.13.122.1"
+          }
+        },
+        "compile": {
+          "lib/net45/BrightstarDB.dll": {},
+          "lib/net45/Remotion.Linq.dll": {}
+        }
+      },
+      "dotNetRDF/1.0.9.3683": {
+        "runtime": {
+          "lib/net40/dotNetRDF.dll": {
+            "assemblyVersion": "1.0.9.3683",
+            "fileVersion": "1.0.9.3683"
+          }
+        },
+        "compile": {
+          "lib/net40/dotNetRDF.dll": {}
+        }
+      },
       "Microsoft.AspNetCore.Authentication.JwtBearer/5.0.0": {
         "dependencies": {
           "Microsoft.IdentityModel.Protocols.OpenIdConnect": "6.7.1"
@@ -429,6 +477,17 @@
         },
         "compile": {
           "lib/netstandard2.0/Microsoft.OpenApi.dll": {}
+        }
+      },
+      "Newtonsoft.Json/7.0.1": {
+        "runtime": {
+          "lib/net45/Newtonsoft.Json.dll": {
+            "assemblyVersion": "7.0.0.0",
+            "fileVersion": "7.0.1.18622"
+          }
+        },
+        "compile": {
+          "lib/net45/Newtonsoft.Json.dll": {}
         }
       },
       "Swashbuckle.AspNetCore/5.6.3": {
@@ -2200,6 +2259,41 @@
       "serviceable": false,
       "sha512": ""
     },
+    "BrightstarDB/1.13.3": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-Ghoekjy0v+RRcdH4KtusJSEmxT0P+GkPpeU+AlOgmOi94XHJ3oqO9obQcPAiRFWUPgRgphgowk92kuexXccM4A==",
+      "path": "brightstardb/1.13.3",
+      "hashPath": "brightstardb.1.13.3.nupkg.sha512"
+    },
+    "BrightstarDB.CodeGeneration/1.13.3": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-YrBCK1Vj975RO8B6sZGSqUqBaMeS1fnSnj8baM4x+y7fsaVQgvGY2k9YuDhO5/6RYuMRitScmM25MNIia8UTJg==",
+      "path": "brightstardb.codegeneration/1.13.3",
+      "hashPath": "brightstardb.codegeneration.1.13.3.nupkg.sha512"
+    },
+    "BrightstarDB.CodeGeneration.T4/1.13.3": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-jioOMkkXeJ2Qb95VfootxTc35MkAMCsbBRB/Yy3jrk4H30S9R9T1dHCqR3vA9Qo4w3pKNHzvX8JEB2Xns8XpwA==",
+      "path": "brightstardb.codegeneration.t4/1.13.3",
+      "hashPath": "brightstardb.codegeneration.t4.1.13.3.nupkg.sha512"
+    },
+    "BrightstarDBLibs/1.13.3": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-q07LqNXNDGfuhB1EGQA58QJPBsnk0xznKjW+v0tAtCQyJotLYO4Y8oAjO+TeI7/xAQvTCbyzuEAVK5WiObWMZw==",
+      "path": "brightstardblibs/1.13.3",
+      "hashPath": "brightstardblibs.1.13.3.nupkg.sha512"
+    },
+    "dotNetRDF/1.0.9.3683": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-JfLOrxwkIrwj/49p7nAIfdw5RxXdWuqjteueu3h3ON4mIp2Dbp404e5mI7mK2nCaouDsTqrsZC9KZ96lk0+xbw==",
+      "path": "dotnetrdf/1.0.9.3683",
+      "hashPath": "dotnetrdf.1.0.9.3683.nupkg.sha512"
+    },
     "Microsoft.AspNetCore.Authentication.JwtBearer/5.0.0": {
       "type": "package",
       "serviceable": true,
@@ -2269,6 +2363,13 @@
       "sha512": "sha512-Nug3rO+7Kl5/SBAadzSMAVgqDlfGjJZ0GenQrLywJ84XGKO0uRqkunz5Wyl0SDwcR71bAATXvSdbdzPrYRYKGw==",
       "path": "microsoft.openapi/1.2.3",
       "hashPath": "microsoft.openapi.1.2.3.nupkg.sha512"
+    },
+    "Newtonsoft.Json/7.0.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-q3V4KLetMLnt1gpAVWgtXnHjKs0UG/RalBc29u2ZKxd5t5Ze4JBL5WiiYIklJyK/5CRiIiNwigVQUo0FgbsuWA==",
+      "path": "newtonsoft.json/7.0.1",
+      "hashPath": "newtonsoft.json.7.0.1.nupkg.sha512"
     },
     "Swashbuckle.AspNetCore/5.6.3": {
       "type": "package",

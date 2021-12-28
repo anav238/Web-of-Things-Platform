@@ -27,7 +27,7 @@ namespace WebOfThingsPlatform.Controllers
                 Id = Guid.NewGuid(),
                 Title = "title",
                 Description = "description",
-                Category = CategoryEnum.category1,
+                //Category = CategoryEnum.Security,
                 BaseLink = "www.url.ro",
                 Properties = new List<string> { "properties" },
                 Actions = new List<string> { "actions" },

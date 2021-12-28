@@ -2,6 +2,48 @@
   "version": 3,
   "targets": {
     "net5.0": {
+      "BrightstarDB/1.13.3": {
+        "type": "package",
+        "dependencies": {
+          "BrightstarDBLibs": "1.13.3"
+        }
+      },
+      "BrightstarDB.CodeGeneration/1.13.3": {
+        "type": "package",
+        "dependencies": {
+          "BrightstarDBLibs": "1.13.3"
+        }
+      },
+      "BrightstarDB.CodeGeneration.T4/1.13.3": {
+        "type": "package",
+        "dependencies": {
+          "BrightstarDB.CodeGeneration": "1.13.3"
+        }
+      },
+      "BrightstarDBLibs/1.13.3": {
+        "type": "package",
+        "dependencies": {
+          "Newtonsoft.Json": "7.0.1",
+          "dotNetRDF": "1.0.9"
+        },
+        "compile": {
+          "lib/net45/BrightstarDB.dll": {},
+          "lib/net45/Remotion.Linq.dll": {}
+        },
+        "runtime": {
+          "lib/net45/BrightstarDB.dll": {},
+          "lib/net45/Remotion.Linq.dll": {}
+        }
+      },
+      "dotNetRDF/1.0.9.3683": {
+        "type": "package",
+        "compile": {
+          "lib/net40/dotNetRDF.dll": {}
+        },
+        "runtime": {
+          "lib/net40/dotNetRDF.dll": {}
+        }
+      },
       "Microsoft.AspNetCore.Authentication.JwtBearer/5.0.0": {
         "type": "package",
         "dependencies": {
@@ -122,6 +164,15 @@
           "lib/netstandard2.0/Microsoft.OpenApi.dll": {}
         }
       },
+      "Newtonsoft.Json/7.0.1": {
+        "type": "package",
+        "compile": {
+          "lib/net45/Newtonsoft.Json.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Newtonsoft.Json.dll": {}
+        }
+      },
       "Swashbuckle.AspNetCore/5.6.3": {
         "type": "package",
         "dependencies": {
@@ -207,6 +258,114 @@
     }
   },
   "libraries": {
+    "BrightstarDB/1.13.3": {
+      "sha512": "Ghoekjy0v+RRcdH4KtusJSEmxT0P+GkPpeU+AlOgmOi94XHJ3oqO9obQcPAiRFWUPgRgphgowk92kuexXccM4A==",
+      "type": "package",
+      "path": "brightstardb/1.13.3",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "README.txt",
+        "brightstardb.1.13.3.nupkg.sha512",
+        "brightstardb.nuspec",
+        "content/MyEntityContext.tt"
+      ]
+    },
+    "BrightstarDB.CodeGeneration/1.13.3": {
+      "sha512": "YrBCK1Vj975RO8B6sZGSqUqBaMeS1fnSnj8baM4x+y7fsaVQgvGY2k9YuDhO5/6RYuMRitScmM25MNIia8UTJg==",
+      "type": "package",
+      "path": "brightstardb.codegeneration/1.13.3",
+      "hasTools": true,
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "brightstardb.codegeneration.1.13.3.nupkg.sha512",
+        "brightstardb.codegeneration.nuspec",
+        "tools/BrightstarDB.CodeGeneration.dll",
+        "tools/Humanizer.dll",
+        "tools/Microsoft.Build.Engine.dll",
+        "tools/Microsoft.Build.Framework.dll",
+        "tools/Microsoft.Build.Tasks.Core.dll",
+        "tools/Microsoft.Build.Utilities.Core.dll",
+        "tools/Microsoft.Build.dll",
+        "tools/Microsoft.CodeAnalysis.CSharp.Workspaces.dll",
+        "tools/Microsoft.CodeAnalysis.CSharp.dll",
+        "tools/Microsoft.CodeAnalysis.VisualBasic.Workspaces.dll",
+        "tools/Microsoft.CodeAnalysis.VisualBasic.dll",
+        "tools/Microsoft.CodeAnalysis.Workspaces.Desktop.dll",
+        "tools/Microsoft.CodeAnalysis.Workspaces.dll",
+        "tools/Microsoft.CodeAnalysis.dll",
+        "tools/System.Collections.Immutable.dll",
+        "tools/System.Composition.AttributedModel.dll",
+        "tools/System.Composition.Convention.dll",
+        "tools/System.Composition.Hosting.dll",
+        "tools/System.Composition.Runtime.dll",
+        "tools/System.Composition.TypedParts.dll",
+        "tools/System.Reflection.Metadata.dll"
+      ]
+    },
+    "BrightstarDB.CodeGeneration.T4/1.13.3": {
+      "sha512": "jioOMkkXeJ2Qb95VfootxTc35MkAMCsbBRB/Yy3jrk4H30S9R9T1dHCqR3vA9Qo4w3pKNHzvX8JEB2Xns8XpwA==",
+      "type": "package",
+      "path": "brightstardb.codegeneration.t4/1.13.3",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "brightstardb.codegeneration.t4.1.13.3.nupkg.sha512",
+        "brightstardb.codegeneration.t4.nuspec",
+        "content/EntityContext.tt"
+      ]
+    },
+    "BrightstarDBLibs/1.13.3": {
+      "sha512": "q07LqNXNDGfuhB1EGQA58QJPBsnk0xznKjW+v0tAtCQyJotLYO4Y8oAjO+TeI7/xAQvTCbyzuEAVK5WiObWMZw==",
+      "type": "package",
+      "path": "brightstardblibs/1.13.3",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "README.txt",
+        "brightstardblibs.1.13.3.nupkg.sha512",
+        "brightstardblibs.nuspec",
+        "lib/net40/BrightstarDB.dll",
+        "lib/net40/Remotion.Linq.dll",
+        "lib/net45/BrightstarDB.dll",
+        "lib/net45/Remotion.Linq.dll",
+        "lib/portable-net45+sl5+netcore45+wpa81+wp8/BrightstarDB.Portable.dll",
+        "lib/portable-net45+sl50+win+wp80+Xamarin.iOS10+MonoAndroid10+MonoTouch10/BrightstarDB.Portable.dll"
+      ]
+    },
+    "dotNetRDF/1.0.9.3683": {
+      "sha512": "JfLOrxwkIrwj/49p7nAIfdw5RxXdWuqjteueu3h3ON4mIp2Dbp404e5mI7mK2nCaouDsTqrsZC9KZ96lk0+xbw==",
+      "type": "package",
+      "path": "dotnetrdf/1.0.9.3683",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "dotnetrdf.1.0.9.3683.nupkg.sha512",
+        "dotnetrdf.nuspec",
+        "lib/net35-client/dotNetRDF.dll",
+        "lib/net35-client/dotNetRDF.pdb",
+        "lib/net35-client/dotNetRDF.xml",
+        "lib/net35/dotNetRDF.dll",
+        "lib/net35/dotNetRDF.pdb",
+        "lib/net35/dotNetRDF.xml",
+        "lib/net40-client/dotNetRDF.dll",
+        "lib/net40-client/dotNetRDF.pdb",
+        "lib/net40-client/dotNetRDF.xml",
+        "lib/net40/dotNetRDF.dll",
+        "lib/net40/dotNetRDF.pdb",
+        "lib/net40/dotNetRDF.xml",
+        "lib/portable-net4+sl5+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1/Portable.Runtime.dll",
+        "lib/portable-net4+sl5+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1/dotNetRDF.dll",
+        "lib/portable-net4+sl5+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1/dotNetRDF.pdb",
+        "lib/portable-net4+sl5+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1/dotNetRDF.xml",
+        "lib/sl4-wp/dotNetRDF.dll",
+        "lib/sl4-wp/dotNetRDF.xml",
+        "lib/sl4/dotNetRDF.dll",
+        "lib/sl4/dotNetRDF.xml",
+        "readme.txt"
+      ]
+    },
     "Microsoft.AspNetCore.Authentication.JwtBearer/5.0.0": {
       "sha512": "26WlfJsOB4QP3VsEVu5GGDSGm5wu6ikQqRUOaZ3BUmyGcMWsD28xFxPxFw4OszYgKpj54QYlyec19KcrEGkqDw==",
       "type": "package",
@@ -434,6 +593,31 @@
         "microsoft.openapi.nuspec"
       ]
     },
+    "Newtonsoft.Json/7.0.1": {
+      "sha512": "q3V4KLetMLnt1gpAVWgtXnHjKs0UG/RalBc29u2ZKxd5t5Ze4JBL5WiiYIklJyK/5CRiIiNwigVQUo0FgbsuWA==",
+      "type": "package",
+      "path": "newtonsoft.json/7.0.1",
+      "hasTools": true,
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net20/Newtonsoft.Json.dll",
+        "lib/net20/Newtonsoft.Json.xml",
+        "lib/net35/Newtonsoft.Json.dll",
+        "lib/net35/Newtonsoft.Json.xml",
+        "lib/net40/Newtonsoft.Json.dll",
+        "lib/net40/Newtonsoft.Json.xml",
+        "lib/net45/Newtonsoft.Json.dll",
+        "lib/net45/Newtonsoft.Json.xml",
+        "lib/portable-net40+sl5+wp80+win8+wpa81/Newtonsoft.Json.dll",
+        "lib/portable-net40+sl5+wp80+win8+wpa81/Newtonsoft.Json.xml",
+        "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.dll",
+        "lib/portable-net45+wp80+win8+wpa81+dnxcore50/Newtonsoft.Json.xml",
+        "newtonsoft.json.7.0.1.nupkg.sha512",
+        "newtonsoft.json.nuspec",
+        "tools/install.ps1"
+      ]
+    },
     "Swashbuckle.AspNetCore/5.6.3": {
       "sha512": "UkL9GU0mfaA+7RwYjEaBFvAzL8qNQhNqAeV5uaWUu/Z+fVgvK9FHkGCpTXBqSQeIHuZaIElzxnLDdIqGzuCnVg==",
       "type": "package",
@@ -580,31 +764,28 @@
   },
   "projectFileDependencyGroups": {
     "net5.0": [
+      "BrightstarDB >= 1.13.3",
+      "BrightstarDB.CodeGeneration.T4 >= 1.13.3",
       "Microsoft.AspNetCore.Authentication.JwtBearer >= 5.0.0",
       "Microsoft.AspNetCore.Authentication.OpenIdConnect >= 5.0.0",
       "Swashbuckle.AspNetCore >= 5.6.3"
     ]
   },
   "packageFolders": {
-    "C:\\Users\\vlada\\.nuget\\packages\\": {},
-    "C:\\Microsoft\\Xamarin\\NuGet\\": {}
+    "C:\\Users\\ana\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\githubdesktop\\WebMaster1\\web\\Web-of-Things-Platform\\WebOfThingsPlatform\\WebOfThingsPlatform\\WebOfThingsPlatform.csproj",
+      "projectUniqueName": "C:\\Users\\ana\\Desktop\\Web-of-Things-Platform\\WebOfThingsPlatform\\WebOfThingsPlatform\\WebOfThingsPlatform.csproj",
       "projectName": "WebOfThingsPlatform",
-      "projectPath": "D:\\githubdesktop\\WebMaster1\\web\\Web-of-Things-Platform\\WebOfThingsPlatform\\WebOfThingsPlatform\\WebOfThingsPlatform.csproj",
-      "packagesPath": "C:\\Users\\vlada\\.nuget\\packages\\",
-      "outputPath": "D:\\githubdesktop\\WebMaster1\\web\\Web-of-Things-Platform\\WebOfThingsPlatform\\WebOfThingsPlatform\\obj\\",
+      "projectPath": "C:\\Users\\ana\\Desktop\\Web-of-Things-Platform\\WebOfThingsPlatform\\WebOfThingsPlatform\\WebOfThingsPlatform.csproj",
+      "packagesPath": "C:\\Users\\ana\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\ana\\Desktop\\Web-of-Things-Platform\\WebOfThingsPlatform\\WebOfThingsPlatform\\obj\\",
       "projectStyle": "PackageReference",
-      "fallbackFolders": [
-        "C:\\Microsoft\\Xamarin\\NuGet\\"
-      ],
       "configFilePaths": [
-        "C:\\Users\\vlada\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+        "C:\\Users\\ana\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
         "net5.0"
@@ -629,6 +810,14 @@
       "net5.0": {
         "targetAlias": "net5.0",
         "dependencies": {
+          "BrightstarDB": {
+            "target": "Package",
+            "version": "[1.13.3, )"
+          },
+          "BrightstarDB.CodeGeneration.T4": {
+            "target": "Package",
+            "version": "[1.13.3, )"
+          },
           "Microsoft.AspNetCore.Authentication.JwtBearer": {
             "target": "Package",
             "version": "[5.0.0, )",
@@ -666,8 +855,50 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.100\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.103\\RuntimeIdentifierGraph.json"
       }
     }
-  }
+  },
+  "logs": [
+    {
+      "code": "NU1603",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "BrightstarDBLibs 1.13.3 depends on dotNetRDF (>= 1.0.9) but dotNetRDF 1.0.9 was not found. An approximate best match of dotNetRDF 1.0.9.3683 was resolved.",
+      "libraryId": "dotNetRDF",
+      "targetGraphs": [
+        "net5.0"
+      ]
+    },
+    {
+      "code": "NU1701",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Package 'BrightstarDBLibs 1.13.3' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8' instead of the project target framework 'net5.0'. This package may not be fully compatible with your project.",
+      "libraryId": "BrightstarDBLibs",
+      "targetGraphs": [
+        "net5.0"
+      ]
+    },
+    {
+      "code": "NU1701",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Package 'dotNetRDF 1.0.9.3683' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8' instead of the project target framework 'net5.0'. This package may not be fully compatible with your project.",
+      "libraryId": "dotNetRDF",
+      "targetGraphs": [
+        "net5.0"
+      ]
+    },
+    {
+      "code": "NU1701",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Package 'Newtonsoft.Json 7.0.1' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8' instead of the project target framework 'net5.0'. This package may not be fully compatible with your project.",
+      "libraryId": "Newtonsoft.Json",
+      "targetGraphs": [
+        "net5.0"
+      ]
+    }
+  ]
 }
