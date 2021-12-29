@@ -11,4 +11,12 @@ public class Home {
     private String name;
     private List<UserHomeIdentifier> users;
     private List<String> deviceIds;
+
+    public Home() {
+    }
+
+    public Home(String id, String name) {
+        this.id = id;
+        this.name = name;
+    }
 }
