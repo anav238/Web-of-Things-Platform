@@ -1,88 +1,46 @@
 package com.wade.webofthings.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.fge.jsonpatch.JsonPatch;
+import com.github.fge.jsonpatch.JsonPatchException;
 import com.wade.webofthings.ApplicationData;
 import com.wade.webofthings.models.Home;
-import com.wade.webofthings.models.User;
 import com.wade.webofthings.models.enums.ResourceType;
-import org.apache.jena.query.*;
-import org.apache.jena.rdf.model.Literal;
+import com.wade.webofthings.utils.DatasetUtils;
+import com.wade.webofthings.utils.dataset.parsers.HomeResourceParser;
+import org.apache.jena.query.Dataset;
+import org.apache.jena.query.ReadWrite;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.system.Txn;
 import org.apache.jena.vocabulary.VCARD;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 @RestController
 public class HomeController {
-    private ApplicationData applicationData = ApplicationData.getInstance();
+    private final ApplicationData applicationData = ApplicationData.getInstance();
+    private final Dataset dataset = applicationData.dataset;
+    private final Model model = applicationData.model;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @GetMapping("/homes")
-    List<Home> all() {
-        Dataset dataset = applicationData.dataset;
-        Model model = applicationData.model;
-
-        String queryString = "SELECT ?id ?name " +
-                "WHERE { ?home  <http://www.w3.org/2001/vcard-rdf/3.0#CLASS> \"HOME\" . " +
-                "?home <http://www.w3.org/2001/vcard-rdf/3.0#UID> ?id . " +
-                "?home <http://www.w3.org/2001/vcard-rdf/3.0#NICKNAME> ?name " +
-                "}";
-
-        Query query = QueryFactory.create(queryString) ;
-        List<Home> homes = new ArrayList<>();
-        Txn.executeRead(dataset, () -> {
-            try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
-                ResultSet results = qexec.execSelect();
-                while (results.hasNext()) {
-                    QuerySolution soln = results.nextSolution();
-
-                    Literal id = soln.getLiteral("id");
-                    Literal name = soln.getLiteral("name");
-
-                    System.out.println(soln);
-                    homes.add(new Home(id.toString(), name.toString()));
-                }
-            }
-        });
-        return homes;
+    ResponseEntity<List<Home>> all() {
+        return ResponseEntity.ok(HomeResourceParser.getAllHomes(dataset, model));
     }
 
     @GetMapping("/homes/{id}")
-    Home one(@PathVariable String id) {
-        Dataset dataset = applicationData.dataset;
-        Model model = applicationData.model;
-
-        String queryString = "SELECT ?id ?name " +
-                "WHERE { ?home <http://www.w3.org/2001/vcard-rdf/3.0#UID> \"" + id + "\" . " +
-                "?home <http://www.w3.org/2001/vcard-rdf/3.0#NICKNAME> ?name " +
-                "}";
-
-        Query query = QueryFactory.create(queryString);
-        Home home = new Home();
-        Txn.executeRead(dataset, () -> {
-            try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
-                ResultSet results = qexec.execSelect();
-                QuerySolution soln = results.nextSolution();
-
-                Literal name = soln.getLiteral("name");
-
-                System.out.println(soln);
-                home.setId(id);
-                home.setName(name.toString());
-            }
-        });
-
-        return home;
+    ResponseEntity<Home> one(@PathVariable String id) {
+        return ResponseEntity.ok(HomeResourceParser.getHomeById(dataset, model, id));
     }
 
     @PostMapping("/homes")
-    Home newHome(@RequestBody Home newHome) {
-        Dataset dataset = applicationData.dataset;
-        Model model = applicationData.model;
-
+    ResponseEntity<Home> newHome(@RequestBody Home newHome) {
         dataset.begin(ReadWrite.WRITE) ;
 
         newHome.setId(String.valueOf(UUID.randomUUID()));
@@ -95,6 +53,32 @@ public class HomeController {
 
         dataset.commit();
 
-        return newHome;
+        return ResponseEntity.ok(newHome);
+    }
+
+    @PatchMapping(path = "/homes/{id}", consumes = "application/json-patch+json")
+    public ResponseEntity<Home> patchHome(@PathVariable String id, @RequestBody JsonPatch patch) {
+        try {
+            Home home = HomeResourceParser.getHomeById(dataset, model, id);
+            Home homePatched = applyPatchToHome(patch, home);
+            //TODO: Figure out how to update home resource
+            dataset.commit();
+            return ResponseEntity.ok(homePatched);
+        }
+        catch (JsonPatchException | JsonProcessingException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    private Home applyPatchToHome(JsonPatch patch, Home targetHome) throws JsonPatchException, JsonProcessingException {
+        JsonNode patched = patch.apply(objectMapper.convertValue(targetHome, JsonNode.class));
+        return objectMapper.treeToValue(patched, Home.class);
+    }
+
+    @DeleteMapping("/homes/{id}")
+    public void deleteHome(@PathVariable String id) {
+        //remove all statements mentioning the home
+        Resource home = model.getResource("/homes/" + id);
+        DatasetUtils.deleteResource(dataset, model, home);
     }
 }
