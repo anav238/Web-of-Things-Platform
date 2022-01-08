@@ -14,10 +14,14 @@ public class DatasetUtils {
         dataset.commit();
     }
 
-    public static void deleteResource(Model model, Resource resource) {
+    public static void deleteResource(Dataset dataset, Model model, Resource resource) {
+        dataset.begin(ReadWrite.WRITE);
+
         // remove statements where resource is subject
         model.removeAll(resource, null, (RDFNode) null);
         // remove statements where resource is object
         model.removeAll(null, null, resource);
+
+        dataset.commit();
     }
 }

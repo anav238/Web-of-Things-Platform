@@ -1,6 +1,5 @@
 package com.wade.webofthings.models;
 
-import com.wade.webofthings.models.enums.UserRole;
 import lombok.Data;
 
 import java.util.List;

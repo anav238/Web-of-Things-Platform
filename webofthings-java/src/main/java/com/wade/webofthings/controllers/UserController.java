@@ -3,92 +3,37 @@ package com.wade.webofthings.controllers;
 import com.wade.webofthings.ApplicationData;
 import com.wade.webofthings.models.User;
 import com.wade.webofthings.models.enums.ResourceType;
-import org.apache.jena.query.*;
-import org.apache.jena.rdf.model.Literal;
+import com.wade.webofthings.utils.DatasetUtils;
+import com.wade.webofthings.utils.dataset.parsers.UserResourceParser;
+import org.apache.jena.query.Dataset;
+import org.apache.jena.query.ReadWrite;
 import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.system.Txn;
-import org.apache.jena.vocabulary.OWL;
 import org.apache.jena.vocabulary.VCARD;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 @RestController
 public class UserController {
     private final ApplicationData applicationData = ApplicationData.getInstance();
+    private final Dataset dataset = applicationData.dataset;
+    private final Model model = applicationData.model;
 
     @GetMapping("/users")
-    List<User> all() {
-        Dataset dataset = applicationData.dataset;
-        Model model = applicationData.model;
-
-        String queryString = "SELECT ?id ?username ?password " +
-                "WHERE { ?user  <http://www.w3.org/2001/vcard-rdf/3.0#CLASS> \"USER\" . " +
-                "?user <http://www.w3.org/2001/vcard-rdf/3.0#UID> ?id . " +
-                "?user <http://www.w3.org/2001/vcard-rdf/3.0#NICKNAME> ?username . " +
-                "?user <http://www.w3.org/2001/vcard-rdf/3.0#KEY> ?password " +
-                "}";
-
-        Query query = QueryFactory.create(queryString) ;
-        List<User> users = new ArrayList<>();
-        Txn.executeRead(dataset, () -> {
-            try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
-                ResultSet results = qexec.execSelect();
-                while (results.hasNext()) {
-                    QuerySolution soln = results.nextSolution();
-
-                    Literal id = soln.getLiteral("id");
-                    Literal username = soln.getLiteral("username");
-                    Literal password = soln.getLiteral("password");
-
-                    System.out.println(soln);
-                    users.add(new User(id.toString(), username.toString(), password.toString()));
-                }
-            }
-        });
-        return users;
+    ResponseEntity<List<User>> all() {
+        return ResponseEntity.ok(UserResourceParser.getAllUsers(dataset, model));
     }
 
     @GetMapping("/users/{id}")
-    User one(@PathVariable String id) {
-        Dataset dataset = applicationData.dataset;
-        Model model = applicationData.model;
-
-        String queryString = "SELECT ?id ?username ?password " +
-                "WHERE { ?user <http://www.w3.org/2001/vcard-rdf/3.0#UID> \"" + id + "\" . " +
-                "?user <http://www.w3.org/2001/vcard-rdf/3.0#NICKNAME> ?username . " +
-                "?user <http://www.w3.org/2001/vcard-rdf/3.0#KEY> ?password " +
-                "}";
-
-        Query query = QueryFactory.create(queryString);
-        User user = new User();
-        Txn.executeRead(dataset, () -> {
-            try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
-                ResultSet results = qexec.execSelect();
-                QuerySolution soln = results.nextSolution();
-
-                Literal username = soln.getLiteral("username");
-                Literal password = soln.getLiteral("password");
-
-                System.out.println(soln);
-                user.setId(id);
-                user.setUsername(username.toString());
-                user.setPassword(password.toString());
-            }
-        });
-
-        return user;
+    ResponseEntity<User> one(@PathVariable String id) {
+        return ResponseEntity.ok(UserResourceParser.getUserById(dataset, model, id));
     }
 
     @PostMapping("/users")
-    User newUser(@RequestBody User newUser) {
-        Dataset dataset = applicationData.dataset;
-        Model model = applicationData.model;
-
+    ResponseEntity<User> newUser(@RequestBody User newUser) {
         dataset.begin(ReadWrite.WRITE) ;
 
         newUser.setId(String.valueOf(UUID.randomUUID()));
@@ -102,6 +47,14 @@ public class UserController {
 
         dataset.commit();
 
-        return newUser;
+        return ResponseEntity.ok(newUser);
     }
+
+    @DeleteMapping("/users/{id}")
+    public void deleteUser(@PathVariable String id) {
+        //remove all statements mentioning the home
+        Resource user = model.getResource("/users/" + id);
+        DatasetUtils.deleteResource(dataset, model, user);
+    }
+
 }

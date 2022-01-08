@@ -1,12 +1,8 @@
 package com.wade.webofthings;
 
-import org.apache.jena.query.*;
-import org.apache.jena.rdf.model.Literal;
+import org.apache.jena.query.Dataset;
 import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.RDFNode;
-import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.tdb.TDBFactory;
-import org.apache.jena.vocabulary.VCARD;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PreDestroy;

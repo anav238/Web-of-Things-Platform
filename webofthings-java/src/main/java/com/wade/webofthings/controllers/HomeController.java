@@ -7,21 +7,18 @@ import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
 import com.wade.webofthings.ApplicationData;
 import com.wade.webofthings.models.Home;
-import com.wade.webofthings.models.User;
 import com.wade.webofthings.models.enums.ResourceType;
 import com.wade.webofthings.utils.DatasetUtils;
 import com.wade.webofthings.utils.dataset.parsers.HomeResourceParser;
-import org.apache.jena.query.*;
-import org.apache.jena.rdf.model.Literal;
+import org.apache.jena.query.Dataset;
+import org.apache.jena.query.ReadWrite;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.system.Txn;
 import org.apache.jena.vocabulary.VCARD;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -82,7 +79,6 @@ public class HomeController {
     public void deleteHome(@PathVariable String id) {
         //remove all statements mentioning the home
         Resource home = model.getResource("/homes/" + id);
-        DatasetUtils.deleteResource(model, home);
-        dataset.commit();
+        DatasetUtils.deleteResource(dataset, model, home);
     }
 }
