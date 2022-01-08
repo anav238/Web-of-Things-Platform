@@ -1,0 +1,32 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+$gray-bg-color: #f2f4f5;
+
+
+html{
+    background-color: $gray-bg-color;
+}
+
+a{
+    text-decoration: none;
+}
+
+.App{
+    display: flex;
+
+    &-body{
+        flex-grow: 1;
+        padding: 30px;
+        max-height: 100vh;
+        overflow-y: scroll;
+        
+        &-inner{
+            margin: auto;
+            max-width: 1500px;
+        }
+    }
+}
