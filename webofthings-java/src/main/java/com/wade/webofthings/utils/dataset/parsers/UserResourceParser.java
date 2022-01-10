@@ -1,6 +1,7 @@
 package com.wade.webofthings.utils.dataset.parsers;
 
 import com.wade.webofthings.models.User;
+import com.wade.webofthings.utils.Constants.VocabularyConstants;
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
@@ -11,11 +12,12 @@ import java.util.List;
 
 public class UserResourceParser {
     public static List<User> getAllUsers(Dataset dataset, Model model) {
-        String queryString = "SELECT ?id ?username ?password " +
-                "WHERE { ?user  <http://www.w3.org/2001/vcard-rdf/3.0#CLASS> \"USER\" . " +
-                "?user <http://www.w3.org/2001/vcard-rdf/3.0#UID> ?id . " +
-                "?user <http://www.w3.org/2001/vcard-rdf/3.0#NICKNAME> ?username . " +
-                "?user <http://www.w3.org/2001/vcard-rdf/3.0#KEY> ?password " +
+        String queryString = VocabularyConstants.VCARD_PREFIX + " " +
+                "SELECT ?id ?username ?password " +
+                "WHERE { ?user  vcard:CLASS \"USER\" . " +
+                "?user vcard:UID ?id . " +
+                "?user vcard:NICKNAME ?username . " +
+                "?user vcard:KEY ?password " +
                 "}";
 
         Query query = QueryFactory.create(queryString) ;
@@ -39,10 +41,11 @@ public class UserResourceParser {
     }
 
     public static User getUserById(Dataset dataset, Model model, String id) {
-        String queryString = "SELECT ?id ?username ?password " +
-                "WHERE { ?user <http://www.w3.org/2001/vcard-rdf/3.0#UID> \"" + id + "\" . " +
-                "?user <http://www.w3.org/2001/vcard-rdf/3.0#NICKNAME> ?username . " +
-                "?user <http://www.w3.org/2001/vcard-rdf/3.0#KEY> ?password " +
+        String queryString = VocabularyConstants.VCARD_PREFIX + " " +
+                "SELECT ?id ?username ?password " +
+                "WHERE { ?user vcard:UID \"" + id + "\" . " +
+                "?user vcard:NICKNAME ?username . " +
+                "?user vcard:KEY ?password " +
                 "}";
 
         Query query = QueryFactory.create(queryString);
