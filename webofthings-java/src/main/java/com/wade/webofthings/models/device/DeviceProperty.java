@@ -7,7 +7,7 @@ import java.util.List;
 @Data
 public class DeviceProperty {
     private String type;
-    private String title;
+    private String name;
     private String valueType;
     private String currentValue;
     private double minimum;
