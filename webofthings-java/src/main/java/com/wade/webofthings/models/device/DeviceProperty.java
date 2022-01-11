@@ -6,6 +6,7 @@ import java.util.List;
 
 @Data
 public class DeviceProperty {
+    private String id;
     private String type;
     private String name;
     private String valueType;
@@ -15,4 +16,11 @@ public class DeviceProperty {
     private String unit;
     private String description;
     private List<String> links;
+
+    public DeviceProperty() {
+    }
+
+    public DeviceProperty(String id) {
+        this.id = id;
+    }
 }
