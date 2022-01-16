@@ -1,6 +1,7 @@
 package com.wade.webofthings.utils.dataset.parsers;
 
 import com.wade.webofthings.models.Home;
+import com.wade.webofthings.utils.Constants.VocabularyConstants;
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
@@ -12,10 +13,11 @@ import java.util.List;
 public class HomeResourceParser {
 
     public static List<Home> getAllHomes(Dataset dataset, Model model) {
-        String queryString = "SELECT ?id ?name " +
-                "WHERE { ?home  <http://www.w3.org/2001/vcard-rdf/3.0#CLASS> \"HOME\" . " +
-                "?home <http://www.w3.org/2001/vcard-rdf/3.0#UID> ?id . " +
-                "?home <http://www.w3.org/2001/vcard-rdf/3.0#NICKNAME> ?name " +
+        String queryString = VocabularyConstants.VCARD_PREFIX + " " +
+                "SELECT ?id ?name " +
+                "WHERE { ?home  vcard:CLASS \"HOME\" . " +
+                "?home vcard:UID ?id . " +
+                "?home vcard:NICKNAME ?name " +
                 "}";
 
         Query query = QueryFactory.create(queryString) ;
@@ -46,9 +48,10 @@ public class HomeResourceParser {
     }
 
     public static Home getHomeById(Dataset dataset, Model model, String id) {
-        String queryString = "SELECT ?id ?name " +
-                "WHERE { ?home <http://www.w3.org/2001/vcard-rdf/3.0#UID> \"" + id + "\" . " +
-                "?home <http://www.w3.org/2001/vcard-rdf/3.0#NICKNAME> ?name " +
+        String queryString = VocabularyConstants.VCARD_PREFIX + " " +
+                "SELECT ?id ?name " +
+                "WHERE { ?home vcard:UID \"" + id + "\" . " +
+                "?home vcard:NICKNAME ?name " +
                 "}";
 
         Query query = QueryFactory.create(queryString);
