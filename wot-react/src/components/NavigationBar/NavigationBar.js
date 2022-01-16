@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import './NavigationBar.scss'
 import { useAuth } from "../../contexts/authcontext";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import * as MuiIcons from '@mui/icons-material';
 import Logo from '../../assets/logo';
 
@@ -40,9 +40,9 @@ const NavigationBar = () => {
             </div>
             <div className='navBar-account'>
                 <div className='navBar-account-img'>
-                    <img src={require('../../assets/avatar_default.jpg')} />
+                    <img src={require('../../assets/avatar_default.jpg')} alt="avatar_img"/>
                 </div>
-                <div className='navBar-account-name'>Stefan Danila</div>
+                <div className='navBar-account-name'>{currentUser?.username}</div>
             </div>
             <div className='navBar-navigators'>
             {

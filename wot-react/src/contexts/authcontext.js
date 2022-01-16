@@ -28,15 +28,16 @@ export function AuthProvider({children}) {
             username: username,
             password: password
         }
-
-        return axios.post('http://localhost:5005/api/Users/authenticate', data).then(
-            res => {
-                setCurrentUser(res.data)
-                return res.status;
-            }
-        ).catch(err =>{
-            return err.response.data.status
-        })
+        setCurrentUser(data)
+        
+        // return axios.post('http://localhost:5005/api/Users/authenticate', data).then(
+        //     res => {
+        //         setCurrentUser(res.data)
+        //         return res.status;
+        //     }
+        // ).catch(err =>{
+        //     return err.response.data.status
+        // })
     }
 
     function logout(){

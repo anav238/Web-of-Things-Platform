@@ -43,6 +43,8 @@ $nav-selected-bg-color: rgba(0, 171, 85, 0.08);
     &-navigators{
 
         &-item{
+            display: flex;
+            align-items: center;
             cursor: pointer;
             padding: 8px 20px 8px 40px;
             color: $nav-color;
@@ -69,6 +71,10 @@ $nav-selected-bg-color: rgba(0, 171, 85, 0.08);
                     border-bottom-left-radius: 4px;
                     background-color: $nav-selected-color;
                 }
+            }
+
+            svg{
+                margin-right: 16px;
             }
         }
     }
