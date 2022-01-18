@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wade.webofthings.ApplicationData;
 import com.wade.webofthings.models.device.Device;
 import com.wade.webofthings.models.device.DeviceProperty;
-import com.wade.webofthings.models.enums.ResourceType;
+import com.wade.webofthings.models.ResourceType;
 import com.wade.webofthings.utils.Constants.WOT;
 import com.wade.webofthings.utils.dataset.parsers.DeviceResourceParser;
 import com.wade.webofthings.utils.mappers.DevicePropertyMapper;

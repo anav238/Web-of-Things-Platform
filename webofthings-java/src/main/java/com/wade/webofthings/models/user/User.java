@@ -1,4 +1,4 @@
-package com.wade.webofthings.models;
+package com.wade.webofthings.models.user;
 
 import lombok.Data;
 

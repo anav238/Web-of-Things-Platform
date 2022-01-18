@@ -1,6 +1,6 @@
 package com.wade.webofthings.utils.dataset.parsers;
 
-import com.wade.webofthings.models.Home;
+import com.wade.webofthings.models.home.Home;
 import com.wade.webofthings.utils.Constants.VocabularyConstants;
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Literal;

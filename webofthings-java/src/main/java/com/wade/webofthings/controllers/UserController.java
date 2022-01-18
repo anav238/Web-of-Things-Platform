@@ -6,8 +6,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
 import com.wade.webofthings.ApplicationData;
-import com.wade.webofthings.models.User;
-import com.wade.webofthings.models.enums.ResourceType;
+import com.wade.webofthings.models.user.PublicUser;
+import com.wade.webofthings.models.user.User;
+import com.wade.webofthings.models.ResourceType;
 import com.wade.webofthings.utils.DatasetUtils;
 import com.wade.webofthings.utils.dataset.parsers.UserResourceParser;
 import org.apache.jena.atlas.json.JSON;
@@ -31,17 +32,17 @@ public class UserController {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @GetMapping("/users")
-    ResponseEntity<List<User>> all() {
-        return ResponseEntity.ok(UserResourceParser.getAllUsers(dataset, model));
+    ResponseEntity<List<PublicUser>> all(@RequestParam(required = false) String username) {
+        return ResponseEntity.ok(UserResourceParser.getAllPublicUsers(dataset, model, username));
     }
 
     @GetMapping("/users/{id}")
-    ResponseEntity<User> one(@PathVariable String id) {
-        return ResponseEntity.ok(UserResourceParser.getUserById(dataset, model, id));
+    ResponseEntity<PublicUser> one(@PathVariable String id) {
+        return ResponseEntity.ok(UserResourceParser.getPublicUserById(dataset, model, id));
     }
 
     @PostMapping("/users")
-    ResponseEntity<User> newUser(@RequestBody User newUser) {
+    ResponseEntity<PublicUser> newUser(@RequestBody User newUser) {
         dataset.begin(ReadWrite.WRITE) ;
 
         newUser.setId(String.valueOf(UUID.randomUUID()));
@@ -55,7 +56,7 @@ public class UserController {
 
         dataset.commit();
 
-        return ResponseEntity.ok(newUser);
+        return ResponseEntity.ok(new PublicUser(newUser.getId(), newUser.getUsername()));
     }
 
     ResponseEntity<User> newUserWithId(User newUser, String id) {
