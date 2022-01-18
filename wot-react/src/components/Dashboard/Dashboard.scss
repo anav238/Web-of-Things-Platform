@@ -1,0 +1,174 @@
+$smooth-shadow:rgb(145 158 171 / 24%) 0px 0px 2px 0px, rgb(145 158 171 / 24%) 0px 16px 32px -4px;
+
+.green{
+    color: rgb(0, 82, 73);
+    background-color: rgb(200, 250, 205);
+    &-linear{
+        background-image: linear-gradient(135deg, rgba(0, 123, 85, 0) 0%, rgba(0, 123, 85, 0.24) 100%);
+        background-color: white;
+        
+        &--selected{
+            background-color: rgb(200, 250, 205);
+            svg{
+                color: white;
+            }
+        }
+    }
+}
+
+.blue{
+    color: rgb(4, 41, 122);
+    background-color: rgb(208, 242, 255);
+    
+    &-linear{
+        background-image: linear-gradient(135deg, rgba(12, 83, 183, 0) 0%, rgba(12, 83, 183, 0.24) 100%);
+        background-color: white;
+        &--selected{
+            background-color: rgb(208, 242, 255);
+            svg{
+                color: white;
+            }
+        }
+    }
+}
+
+.yellow{
+    color: rgb(122, 79, 1);
+    background-color: rgb(255, 247, 205);
+    &-linear{
+        background-image: linear-gradient(135deg, rgba(183, 129, 3, 0) 0%, rgba(183, 129, 3, 0.24) 100%);
+        background-color: white;
+        &--selected{
+            background-color: rgb(255, 247, 205);
+            svg{
+                color: white;
+            }
+        }
+    }
+}
+
+.red{
+    color: rgb(122, 12, 46);
+    background-color: rgb(255, 231, 217);
+    &-linear{
+        background-image: linear-gradient(135deg, rgba(183, 33, 54, 0) 0%, rgba(183, 33, 54, 0.24) 100%);
+        background-color: white;
+        &--selected{
+            background-color: rgb(255, 231, 217);
+            svg{
+                color: white;
+            }
+        }
+    }
+}
+
+.gray{
+    color: rgb(33, 43, 54,0.3);
+    &-linear{
+        background-color: white;
+        svg{
+            color: white;
+        }
+
+    }
+}
+
+.dashboard{
+
+    color: rgb(33, 43, 54);
+
+    &-title{
+        font-size: 2rem;
+        font-weight: 700;
+        padding-top: 25px;
+        padding-bottom: 50px;   
+    }
+
+    &-boardMenu{
+        display: flex;
+        flex-wrap: wrap;
+
+        &-row{
+            display: flex;
+            flex-wrap: wrap;
+            flex-grow: 1;
+            
+            &-item{
+                cursor: pointer;
+                flex-basis:0;
+                flex-grow: 1;
+                min-width: 200px;
+                width: min-content;
+                padding: 40px 24px 30px 24px;
+                margin-left: 24px;
+                margin-bottom: 24px;
+
+                text-align: center;
+                border-radius: 16px;
+
+                &:hover{
+                    svg{
+                        color: white;
+                    }
+                }
+
+                &-icon{
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 70px;
+                    height: 70px;
+                    border-radius: 100%;
+                    margin: auto;
+                    margin-bottom: 10px;
+                    svg{
+                        transition: color 200ms ease 0ms;
+                    }
+                }
+
+                &-title{
+                    font-size: 1.5rem;
+                    font-weight: 500;
+
+                    &-count{
+                        font-size: 2rem;
+                        font-weight: 600;
+                    }
+                }
+
+                &-subtitle{
+                    padding-top: 10px;
+                }
+            }
+        }
+    }
+}
+
+.component{
+    max-width: 1050px;
+    margin: auto;
+
+    &-header{
+        margin:24px 0;
+    }
+
+    &-dataGrid{
+
+        .MuiDataGrid-row{
+            transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+            &:hover{
+                cursor: pointer;
+                background-color: rgb(200, 250, 205,0.5) !important; 
+
+            }
+        }
+
+        .MuiDataGrid-root{
+            background-color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 25px;
+            box-shadow: $smooth-shadow
+        }
+    }
+}

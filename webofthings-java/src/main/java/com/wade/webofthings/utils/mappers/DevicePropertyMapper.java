@@ -11,4 +11,9 @@ public class DevicePropertyMapper {
         Resource resource = model.createResource().addProperty(new PropertyImpl(WOT.NAME), deviceProperty.getName());
         return resource;
     }
+
+    /*public static DeviceProperty mapResourceToDeviceProperty(Model model, Resource resource) {
+        //Resource resource = model.createResource().addProperty(new PropertyImpl(WOT.NAME), deviceProperty.getName());
+        //return resource;
+    }*/
 }

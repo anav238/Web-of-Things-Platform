@@ -1,0 +1,81 @@
+$gray-bg-color: #f2f4f5;
+$nav-color: rgb(99, 115, 129);
+$nav-hover-bg-color: rgb(145 158 171 / 8%);
+$nav-selected-color: rgb(0 171 85);
+$nav-selected-bg-color: rgba(0, 171, 85, 0.08);
+
+
+.navBar{
+    background-color: white;
+    width: 275px;
+    height: 100vh;
+
+    &-logo{
+        padding: 0px;
+        svg{
+            position: relative;
+            left: -30px;
+            transform: scale(0.5);
+        }
+    }
+
+    &-account{
+        margin: 0px 20px 50px 20px;
+        display: flex;
+        align-items: center;
+        padding: 16px 20px;
+        border-radius: 12px;
+        background-color: $gray-bg-color;
+
+        &-img{
+            width: 40px;
+            height: 40px;
+            margin-right: 16px;
+
+            img{
+                width: 100%;
+                height: 100%;
+                border-radius: 50%;
+            }
+        }
+    }
+
+    &-navigators{
+
+        &-item{
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 8px 20px 8px 40px;
+            color: $nav-color;
+            transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+
+            &:hover{
+                background-color: $nav-hover-bg-color;
+            }
+            
+            &--selected{
+                position: relative;
+                color: $nav-selected-color;
+                background-color: $nav-selected-bg-color;
+
+                
+                &::before{
+                    top: 0px;
+                    right: 0px;
+                    width: 3px;
+                    bottom: 0px;
+                    content: "";
+                    position: absolute;
+                    border-top-left-radius: 4px;
+                    border-bottom-left-radius: 4px;
+                    background-color: $nav-selected-color;
+                }
+            }
+
+            svg{
+                margin-right: 16px;
+            }
+        }
+    }
+}
