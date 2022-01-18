@@ -1,6 +1,7 @@
 package com.wade.webofthings.utils.dataset.parsers;
 
 import com.wade.webofthings.models.user.PublicUser;
+import com.wade.webofthings.models.user.User;
 import com.wade.webofthings.utils.Constants.VocabularyConstants;
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Literal;
@@ -17,14 +18,11 @@ public class UserResourceParser {
                 "WHERE { ?user  vcard:CLASS \"USER\" . " +
                 "?user vcard:UID ?id . " +
                 "?user vcard:NICKNAME ?username ";
-                //"?user vcard:KEY ?password " +
 
         if (usernameToSearch == null)
             queryString += "}";
-          //  queryString += ". ?user vcard:NICKNAME ?username }";
         else
             queryString += ". FILTER regex(?username, \"" + usernameToSearch + "\", \"i\") }";
-           // queryString += ". ?user vcard:NICKNAME \"" + usernameToSearch + "\" }";
 
 
         Query query = QueryFactory.create(queryString) ;
@@ -45,16 +43,16 @@ public class UserResourceParser {
         return users;
     }
 
-    public static PublicUser getPublicUserById(Dataset dataset, Model model, String id) {
+    public static User getUserById(Dataset dataset, Model model, String id) {
         String queryString = VocabularyConstants.VCARD_PREFIX + " " +
                 "SELECT ?id ?username ?password " +
                 "WHERE { ?user vcard:UID \"" + id + "\" . " +
                 "?user vcard:NICKNAME ?username . " +
-                //"?user vcard:KEY ?password " +
+                "?user vcard:KEY ?password " +
                 "}";
 
         Query query = QueryFactory.create(queryString);
-        PublicUser user = new PublicUser();
+        User user = new User();
         Txn.executeRead(dataset, () -> {
             try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
                 ResultSet results = qexec.execSelect();
@@ -66,9 +64,15 @@ public class UserResourceParser {
                 System.out.println(soln);
                 user.setId(id);
                 user.setUsername(username.toString());
+                user.setPassword(password.toString());
             }
         });
         return user;
+    }
+
+    public static PublicUser getPublicUserById(Dataset dataset, Model model, String id) {
+        User user = getUserById(dataset, model, id);
+        return new PublicUser(user.getId(), user.getUsername());
     }
 
 }

@@ -88,7 +88,6 @@ public class UserController {
         try{
             User user = UserResourceParser.getUserById(dataset,model,id);
             User userPatched = applyPatchUser(patch, user);
-            //Deleting user from database
             deleteUser(id);
             newUserWithId(userPatched, id);
 
