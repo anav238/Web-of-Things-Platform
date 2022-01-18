@@ -1,4 +1,4 @@
-package com.wade.webofthings.models;
+package com.wade.webofthings.models.home;
 
 import lombok.Data;
 
@@ -8,7 +8,7 @@ import java.util.List;
 public class Home {
     private String id;
     private String name;
-    private List<UserHomeIdentifier> users;
+    private List<HomeUserIdentifier> users;
     private List<String> deviceIds;
 
     public Home() {

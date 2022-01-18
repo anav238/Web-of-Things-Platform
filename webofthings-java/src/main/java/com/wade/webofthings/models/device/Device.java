@@ -1,6 +1,5 @@
 package com.wade.webofthings.models.device;
 
-import com.wade.webofthings.models.enums.DeviceCategory;
 import lombok.Data;
 
 import java.util.List;

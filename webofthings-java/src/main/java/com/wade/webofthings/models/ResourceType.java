@@ -1,4 +1,4 @@
-package com.wade.webofthings.models.enums;
+package com.wade.webofthings.models;
 
 public enum ResourceType {
     USER,

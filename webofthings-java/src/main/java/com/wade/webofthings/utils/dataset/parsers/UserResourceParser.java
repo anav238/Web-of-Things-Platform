@@ -1,6 +1,6 @@
 package com.wade.webofthings.utils.dataset.parsers;
 
-import com.wade.webofthings.models.User;
+import com.wade.webofthings.models.user.PublicUser;
 import com.wade.webofthings.utils.Constants.VocabularyConstants;
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Literal;
@@ -11,45 +11,50 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserResourceParser {
-    public static List<User> getAllUsers(Dataset dataset, Model model) {
+    public static List<PublicUser> getAllPublicUsers(Dataset dataset, Model model, String usernameToSearch) {
         String queryString = VocabularyConstants.VCARD_PREFIX + " " +
                 "SELECT ?id ?username ?password " +
                 "WHERE { ?user  vcard:CLASS \"USER\" . " +
                 "?user vcard:UID ?id . " +
-                "?user vcard:NICKNAME ?username . " +
-                "?user vcard:KEY ?password " +
-                "}";
+                "?user vcard:NICKNAME ?username ";
+                //"?user vcard:KEY ?password " +
+
+        if (usernameToSearch == null)
+            queryString += "}";
+          //  queryString += ". ?user vcard:NICKNAME ?username }";
+        else
+            queryString += ". FILTER regex(?username, \"" + usernameToSearch + "\", \"i\") }";
+           // queryString += ". ?user vcard:NICKNAME \"" + usernameToSearch + "\" }";
+
 
         Query query = QueryFactory.create(queryString) ;
-        List<User> users = new ArrayList<>();
+        List<PublicUser> users = new ArrayList<>();
         Txn.executeRead(dataset, () -> {
             try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
                 ResultSet results = qexec.execSelect();
                 while (results.hasNext()) {
                     QuerySolution soln = results.nextSolution();
+                    System.out.println(soln);
 
                     Literal id = soln.getLiteral("id");
                     Literal username = soln.getLiteral("username");
-                    Literal password = soln.getLiteral("password");
-
-                    System.out.println(soln);
-                    users.add(new User(id.toString(), username.toString(), password.toString()));
+                    users.add(new PublicUser(id.toString(), username.toString()));
                 }
             }
         });
         return users;
     }
 
-    public static User getUserById(Dataset dataset, Model model, String id) {
+    public static PublicUser getPublicUserById(Dataset dataset, Model model, String id) {
         String queryString = VocabularyConstants.VCARD_PREFIX + " " +
                 "SELECT ?id ?username ?password " +
                 "WHERE { ?user vcard:UID \"" + id + "\" . " +
                 "?user vcard:NICKNAME ?username . " +
-                "?user vcard:KEY ?password " +
+                //"?user vcard:KEY ?password " +
                 "}";
 
         Query query = QueryFactory.create(queryString);
-        User user = new User();
+        PublicUser user = new PublicUser();
         Txn.executeRead(dataset, () -> {
             try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
                 ResultSet results = qexec.execSelect();
@@ -61,9 +66,9 @@ public class UserResourceParser {
                 System.out.println(soln);
                 user.setId(id);
                 user.setUsername(username.toString());
-                user.setPassword(password.toString());
             }
         });
         return user;
     }
+
 }
