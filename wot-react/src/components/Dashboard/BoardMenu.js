@@ -41,7 +41,11 @@ export default function BoardMenu(
                     }
                 </div>
                 <div className={`dashboard-boardMenu-row-item blue ${!houseSelected ? 'gray' : ""}`}
-                    onClick={() =>setComponentSelected(components[1])}>
+                    onClick={() => {
+                        if(houseSelected)
+                            setComponentSelected(components[1])
+                    }}
+                >
                     <div className={`dashboard-boardMenu-row-item-icon blue-linear ${!houseSelected ? 'gray-linear' : ""}
                         ${components[1] === componentSelected ? 'blue-linear--selected' : ""}`}>
                         <Group fontSize='large'/> 
@@ -59,8 +63,12 @@ export default function BoardMenu(
             </div>
             <div className='dashboard-boardMenu-row'>
                 <div className={`dashboard-boardMenu-row-item yellow ${!houseSelected ? 'gray' : ""}`}
-                    onClick={() =>setComponentSelected(components[2])}>
-                    <div className={`dashboard-boardMenu-row-item-icon yellow-linear ${!houseSelected ? 'gray-linear' : ""}
+                    onClick={() => {
+                        if(houseSelected)
+                            setComponentSelected(components[2])
+                    }}
+                >
+                        <div className={`dashboard-boardMenu-row-item-icon yellow-linear ${!houseSelected ? 'gray-linear' : ""}
                         ${components[2] === componentSelected ? 'yellow-linear--selected' : ""}`}>
                         <EmojiObjects fontSize='large'/> 
                     </div>
@@ -74,7 +82,11 @@ export default function BoardMenu(
                     </div>
                 </div>
                 <div className={`dashboard-boardMenu-row-item red ${!houseSelected ? 'gray' : ""}`}
-                    onClick={() =>setComponentSelected(components[3])}>
+                    onClick={() => {
+                        if(houseSelected)
+                            setComponentSelected(components[3])
+                    }}
+                >
                     <div className={`dashboard-boardMenu-row-item-icon red-linear ${!houseSelected ? 'gray-linear' : ""} 
                         ${components[3] === componentSelected ? 'red-linear--selected' : ""}`}>
                         <PlayLesson fontSize='large'/> 
