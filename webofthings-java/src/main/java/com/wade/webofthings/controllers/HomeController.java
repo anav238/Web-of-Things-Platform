@@ -63,6 +63,9 @@ public class HomeController {
         for (HomeUserIdentifier homeUserIdentifier:newHome.getUsers())
             homeResource.addProperty(VCARD4.hasMember, HomeUserIdentifierMapper.mapToResource(model, homeUserIdentifier));
 
+        for (String deviceId:newHome.getDeviceIds())
+            homeResource.addProperty(VCARD4.hasMember, deviceId);
+
         dataset.commit();
 
         return ResponseEntity.ok(newHome);
