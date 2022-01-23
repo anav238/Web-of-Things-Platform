@@ -61,7 +61,7 @@ public class DeviceController {
                 .addProperty(new PropertyImpl(WOT.DESCRIPTION), newDevice.getDescription());
 
         for (DeviceProperty property:newDevice.getProperties()) {
-            deviceResource.addProperty(new PropertyImpl(WOT.HAS_PROPERTY_AFFORDANCE), DevicePropertyMapper.mapDevicePropertyToResource(model, property));
+            deviceResource.addProperty(new PropertyImpl(WOT.HAS_PROPERTY_AFFORDANCE), DevicePropertyMapper.mapToResource(model, property));
         }
 
         System.out.println(deviceResource.getProperty(new PropertyImpl(WOT.HAS_PROPERTY_AFFORDANCE)));
