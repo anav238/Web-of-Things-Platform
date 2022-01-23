@@ -1,5 +1,6 @@
 package com.wade.webofthings.utils.dataset.parsers;
 
+import com.wade.webofthings.models.home.Home;
 import com.wade.webofthings.models.user.PublicUser;
 import com.wade.webofthings.models.user.User;
 import com.wade.webofthings.utils.Constants.VocabularyConstants;
@@ -75,4 +76,30 @@ public class UserResourceParser {
         return new PublicUser(user.getId(), user.getUsername());
     }
 
+    public static List<Home> getUserHomes(Dataset dataset, Model model, String userId) {
+        String queryString = VocabularyConstants.VCARD_PREFIX + " " +
+                "SELECT ?userRole " +
+                "WHERE { ?user vcard:UID \"" + userId + "\" . " +
+                "?user vcard:CLASS ?userRole" +
+                "}";
+
+        List<Home> homes = new ArrayList<>();
+        Query query = QueryFactory.create(queryString);
+        Txn.executeRead(dataset, () -> {
+            try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
+                ResultSet results = qexec.execSelect();
+                while (results.hasNext()) {
+                    QuerySolution soln = results.nextSolution();
+                    System.out.println(soln);
+                    Literal userRole = soln.getLiteral("userRole");
+                    String userRoleString = userRole != null? userRole.toString() : null;
+                    if (userRoleString != null && !userRoleString.equals("USER")) {
+                        System.out.println(soln);
+                        System.out.println(userRole.getString());
+                    }
+                }
+            }
+        });
+        return homes;
+    }
 }

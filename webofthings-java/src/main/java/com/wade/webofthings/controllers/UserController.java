@@ -98,9 +98,9 @@ public class UserController {
         return objectMapper.treeToValue(patched, User.class);
     }
 
-    @GetMapping("/users/{id}/homes")
+    @GetMapping("/users/{userId}/homes")
     ResponseEntity<List<Home>> getUserHomes(@PathVariable String userId) {
-        return ResponseEntity.ok(null);
+        return ResponseEntity.ok(UserResourceParser.getUserHomes(dataset, model, userId));
     }
 
     @DeleteMapping("/users/{id}")
