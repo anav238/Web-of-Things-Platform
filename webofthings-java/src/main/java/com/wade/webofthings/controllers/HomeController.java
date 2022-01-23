@@ -6,12 +6,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
 import com.wade.webofthings.ApplicationData;
-import com.wade.webofthings.models.home.Home;
 import com.wade.webofthings.models.ResourceType;
+import com.wade.webofthings.models.home.Home;
 import com.wade.webofthings.models.home.HomeUserIdentifier;
 import com.wade.webofthings.utils.DatasetUtils;
 import com.wade.webofthings.utils.dataset.parsers.HomeResourceParser;
-import com.wade.webofthings.utils.mappers.DevicePropertyMapper;
 import com.wade.webofthings.utils.mappers.HomeUserIdentifierMapper;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.ReadWrite;
@@ -50,7 +49,7 @@ public class HomeController {
     }
 
     private ResponseEntity<Home> newHomeWithId(Home newHome, String id) {
-        dataset.begin(ReadWrite.WRITE) ;
+        dataset.begin(ReadWrite.WRITE);
 
         newHome.setId(id);
         String homeURI = "/homes/" + newHome.getId();
@@ -60,10 +59,10 @@ public class HomeController {
                 .addProperty(VCARD.CLASS, String.valueOf(ResourceType.HOME))
                 .addProperty(VCARD.NICKNAME, newHome.getName());
 
-        for (HomeUserIdentifier homeUserIdentifier:newHome.getUsers())
+        for (HomeUserIdentifier homeUserIdentifier : newHome.getUsers())
             homeResource.addProperty(VCARD4.hasMember, HomeUserIdentifierMapper.mapToResource(model, homeUserIdentifier));
 
-        for (String deviceId:newHome.getDeviceIds())
+        for (String deviceId : newHome.getDeviceIds())
             homeResource.addProperty(VCARD4.hasMember, deviceId);
 
         dataset.commit();
@@ -83,8 +82,7 @@ public class HomeController {
             newHomeWithId(homePatched, id);
 
             return ResponseEntity.ok(homePatched);
-        }
-        catch (JsonPatchException | JsonProcessingException e) {
+        } catch (JsonPatchException | JsonProcessingException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }

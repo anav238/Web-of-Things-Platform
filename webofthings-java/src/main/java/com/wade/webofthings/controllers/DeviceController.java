@@ -2,9 +2,9 @@ package com.wade.webofthings.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wade.webofthings.ApplicationData;
+import com.wade.webofthings.models.ResourceType;
 import com.wade.webofthings.models.device.Device;
 import com.wade.webofthings.models.device.DeviceProperty;
-import com.wade.webofthings.models.ResourceType;
 import com.wade.webofthings.utils.Constants.WOT;
 import com.wade.webofthings.utils.dataset.parsers.DeviceResourceParser;
 import com.wade.webofthings.utils.mappers.DevicePropertyMapper;
@@ -38,7 +38,7 @@ public class DeviceController {
 
     @PostMapping("/devices")
     ResponseEntity<Device> newDevice(@RequestBody Device newDevice) {
-        dataset.begin(ReadWrite.WRITE) ;
+        dataset.begin(ReadWrite.WRITE);
 
         newDevice.setId(String.valueOf(UUID.randomUUID()));
         String deviceURI = "/devices/" + newDevice.getId();
@@ -60,7 +60,7 @@ public class DeviceController {
                 .addProperty(new PropertyImpl(WOT.TITLE), newDevice.getTitle())
                 .addProperty(new PropertyImpl(WOT.DESCRIPTION), newDevice.getDescription());
 
-        for (DeviceProperty property:newDevice.getProperties()) {
+        for (DeviceProperty property : newDevice.getProperties()) {
             deviceResource.addProperty(new PropertyImpl(WOT.HAS_PROPERTY_AFFORDANCE), DevicePropertyMapper.mapToResource(model, property));
         }
 

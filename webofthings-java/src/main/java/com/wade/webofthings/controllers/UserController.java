@@ -6,13 +6,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
 import com.wade.webofthings.ApplicationData;
+import com.wade.webofthings.models.ResourceType;
 import com.wade.webofthings.models.home.Home;
 import com.wade.webofthings.models.user.PublicUser;
 import com.wade.webofthings.models.user.User;
-import com.wade.webofthings.models.ResourceType;
 import com.wade.webofthings.utils.DatasetUtils;
 import com.wade.webofthings.utils.dataset.parsers.UserResourceParser;
-import org.apache.jena.atlas.json.JSON;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.ReadWrite;
 import org.apache.jena.rdf.model.Model;
@@ -44,7 +43,7 @@ public class UserController {
 
     @PostMapping("/users")
     ResponseEntity<PublicUser> newUser(@RequestBody User newUser) {
-        dataset.begin(ReadWrite.WRITE) ;
+        dataset.begin(ReadWrite.WRITE);
 
         newUser.setId(String.valueOf(UUID.randomUUID()));
         String personURI = "/users/" + newUser.getId();
@@ -77,10 +76,10 @@ public class UserController {
         return ResponseEntity.ok(newUser);
     }
 
-    @PatchMapping(path  = "/users/{id}", consumes = "application/json-patch+json")
-    public ResponseEntity<User> patchUser(@PathVariable String id, @RequestBody JsonPatch patch){
-        try{
-            User user = UserResourceParser.getUserById(dataset,model,id);
+    @PatchMapping(path = "/users/{id}", consumes = "application/json-patch+json")
+    public ResponseEntity<User> patchUser(@PathVariable String id, @RequestBody JsonPatch patch) {
+        try {
+            User user = UserResourceParser.getUserById(dataset, model, id);
             User userPatched = applyPatchUser(patch, user);
 
             System.out.println("user patched: " + userPatched.toString());
@@ -89,14 +88,13 @@ public class UserController {
             newUserWithId(userPatched, id);
 
             return ResponseEntity.ok(userPatched);
-        }
-        catch(JsonPatchException | JsonProcessingException e) {
+        } catch (JsonPatchException | JsonProcessingException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
     private User applyPatchUser(JsonPatch patch, User targetUser) throws JsonPatchException, JsonProcessingException {
-        JsonNode patched =  patch.apply(objectMapper.convertValue(targetUser, JsonNode.class));
+        JsonNode patched = patch.apply(objectMapper.convertValue(targetUser, JsonNode.class));
         return objectMapper.treeToValue(patched, User.class);
     }
 

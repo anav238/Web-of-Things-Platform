@@ -25,7 +25,7 @@ public class UserResourceParser {
             queryString += ". FILTER regex(?username, \"" + usernameToSearch + "\", \"i\") }";
 
 
-        Query query = QueryFactory.create(queryString) ;
+        Query query = QueryFactory.create(queryString);
         List<PublicUser> users = new ArrayList<>();
         Txn.executeRead(dataset, () -> {
             try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {

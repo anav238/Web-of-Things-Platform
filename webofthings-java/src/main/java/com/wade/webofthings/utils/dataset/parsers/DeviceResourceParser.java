@@ -10,8 +10,10 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.system.Txn;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class DeviceResourceParser {
 
@@ -25,7 +27,7 @@ public class DeviceResourceParser {
                 "?device <" + WOT.HAS_PROPERTY_AFFORDANCE + "> ?property " +
                 "}";
 
-        Query query = QueryFactory.create(queryString) ;
+        Query query = QueryFactory.create(queryString);
         Map<String, Device> devices = new HashMap<>();
         Txn.executeRead(dataset, () -> {
             try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
@@ -38,10 +40,10 @@ public class DeviceResourceParser {
                     Literal description = soln.getLiteral("description");
                     Resource property = soln.getResource("property");
 
-                    String idString = id != null? id.toString() : null;
-                    String titleString = title != null? title.toString() : null;
-                    String descriptionString = description != null? description.toString() : null;
-                    String propertyString = property != null? property.toString() : null;
+                    String idString = id != null ? id.toString() : null;
+                    String titleString = title != null ? title.toString() : null;
+                    String descriptionString = description != null ? description.toString() : null;
+                    String propertyString = property != null ? property.toString() : null;
 
                     System.out.println(property);
                     System.out.println(soln);
@@ -51,8 +53,7 @@ public class DeviceResourceParser {
                         List<DeviceProperty> deviceProperties = new ArrayList<>();
                         deviceProperties.add(deviceProperty);
                         devices.put(idString, new Device(idString, titleString, descriptionString, deviceProperties));
-                    }
-                    else {
+                    } else {
                         Device device = devices.get(idString);
                         device.addProperty(deviceProperty);
                     }
