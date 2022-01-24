@@ -9,10 +9,15 @@ import com.wade.webofthings.ApplicationData;
 import com.wade.webofthings.models.ResourceType;
 import com.wade.webofthings.models.home.Home;
 import com.wade.webofthings.models.home.HomeUserIdentifier;
+import com.wade.webofthings.models.user.ChangeHomeRoleRequest;
+import com.wade.webofthings.models.user.UserRole;
 import com.wade.webofthings.utils.DatasetUtils;
 import com.wade.webofthings.utils.dataset.parsers.HomeResourceParser;
 import com.wade.webofthings.utils.dataset.updaters.HomeResourceUpdater;
 import com.wade.webofthings.utils.mappers.HomeUserIdentifierMapper;
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
+import org.apache.jena.atlas.json.JsonBuilder;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.ReadWrite;
 import org.apache.jena.rdf.model.Model;
@@ -81,12 +86,16 @@ public class HomeController {
 
             HomeResourceUpdater.updateHome(dataset, model, home, homePatched);
             return ResponseEntity.ok(homePatched);
-            //deleteHome(id);
-            //return newHomeWithId(homePatched, id);
 
         } catch (JsonPatchException | JsonProcessingException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    @PatchMapping("/homes/{homeId}/users/{userId}")
+    public ResponseEntity<JsonObject> patchHome(@PathVariable String homeId, @PathVariable String userId, @RequestBody ChangeHomeRoleRequest request) {
+        HomeResourceUpdater.updateHomeUserRole(dataset, model, homeId, userId, request.getRole());
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     private Home applyPatchToHome(JsonPatch patch, Home targetHome) throws JsonPatchException, JsonProcessingException {

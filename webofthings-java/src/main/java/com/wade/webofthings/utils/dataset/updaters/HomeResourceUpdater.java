@@ -2,6 +2,7 @@ package com.wade.webofthings.utils.dataset.updaters;
 
 import com.wade.webofthings.models.home.Home;
 import com.wade.webofthings.models.home.HomeUserIdentifier;
+import com.wade.webofthings.models.user.UserRole;
 import com.wade.webofthings.utils.Constants.VocabularyConstants;
 import com.wade.webofthings.utils.DatasetUtils;
 import com.wade.webofthings.utils.mappers.HomeUserIdentifierMapper;
@@ -54,7 +55,24 @@ public class HomeResourceUpdater {
                 homeResource.addProperty(VCARD4.hasMember, HomeUserIdentifierMapper.mapToResource(model, homeUserIdentifier));
             dataset.commit();
         }
+    }
 
+    public static void updateHomeUserRole(Dataset dataset, Model model, String homeId, String userId, UserRole newUserRole) {
+        String deleteQueryString = VocabularyConstants.VCARD_PREFIX + " " +
+                VocabularyConstants.VCARD4_PREFIX + " " +
+                "DELETE { ?blank_node vcard:UID ?userId . " +
+                "?blank_node vcard:CLASS ?userRole . " +
+                "?home vcard4:hasMember ?blank_node " +
+                "} WHERE { ?home vcard4:hasMember ?blank_node . " +
+                "?home vcard:UID \"" + homeId + "\" . " +
+                "?blank_node vcard:UID \"" + userId + "\"} ";
+
+        DatasetUtils.deleteByQuery(dataset, model, deleteQueryString);
+
+        Resource homeResource = model.getResource("/homes/" + homeId);
+        dataset.begin(ReadWrite.WRITE);
+        homeResource.addProperty(VCARD4.hasMember, HomeUserIdentifierMapper.mapToResource(model, new HomeUserIdentifier(userId, newUserRole)));
+        dataset.commit();
     }
 
 }
