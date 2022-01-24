@@ -11,6 +11,7 @@ import com.wade.webofthings.models.home.Home;
 import com.wade.webofthings.models.home.HomeUserIdentifier;
 import com.wade.webofthings.utils.DatasetUtils;
 import com.wade.webofthings.utils.dataset.parsers.HomeResourceParser;
+import com.wade.webofthings.utils.dataset.updaters.HomeResourceUpdater;
 import com.wade.webofthings.utils.mappers.HomeUserIdentifierMapper;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.ReadWrite;
@@ -63,7 +64,7 @@ public class HomeController {
             homeResource.addProperty(VCARD4.hasMember, HomeUserIdentifierMapper.mapToResource(model, homeUserIdentifier));
 
         for (String deviceId : newHome.getDeviceIds())
-            homeResource.addProperty(VCARD4.hasMember, deviceId);
+            homeResource.addProperty(VCARD4.hasRelated, deviceId);
 
         dataset.commit();
 
@@ -78,10 +79,11 @@ public class HomeController {
             System.out.println("home before patch: " + home.toString());
             System.out.println("patched home: " + homePatched.toString());
 
-            deleteHome(id);
-            newHomeWithId(homePatched, id);
-
+            HomeResourceUpdater.updateHome(dataset, model, home, homePatched);
             return ResponseEntity.ok(homePatched);
+            //deleteHome(id);
+            //return newHomeWithId(homePatched, id);
+
         } catch (JsonPatchException | JsonProcessingException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
