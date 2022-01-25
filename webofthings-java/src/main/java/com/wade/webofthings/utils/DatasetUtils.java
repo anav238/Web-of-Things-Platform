@@ -4,9 +4,7 @@ import org.apache.jena.query.Dataset;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryFactory;
 import org.apache.jena.query.ReadWrite;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.RDFNode;
-import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.*;
 import org.apache.jena.update.UpdateAction;
 import org.apache.jena.update.UpdateFactory;
 import org.apache.jena.update.UpdateRequest;
@@ -37,6 +35,12 @@ public class DatasetUtils {
         UpdateAction.execute(updateRequest, dataset);
 
         dataset.commit();
+    }
+
+    public static String getStatementStringOrNull(Statement statement) {
+        if (statement == null)
+            return null;
+        return statement.getString();
     }
 
 }
