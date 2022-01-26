@@ -2,6 +2,7 @@ package com.wade.webofthings.models.device;
 
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -14,7 +15,7 @@ public class DeviceProperty {
     private double maximum;
     private String unit;
     private String description;
-    private List<String> links;
+    private List<String> links = new ArrayList<>();
 
     public DeviceProperty() {
     }
