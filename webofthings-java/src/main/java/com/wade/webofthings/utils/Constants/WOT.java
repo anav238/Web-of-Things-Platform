@@ -10,4 +10,5 @@ public class WOT {
     public static final String HAS_ACTION_AFFORDANCE = VocabularyConstants.WOT_URL + "hasActionAffordance";
     public static final String HAS_EVENT_AFFORDANCE = VocabularyConstants.WOT_URL + "hasEventAffordance";
     public static final String HAS_TARGET = VocabularyConstants.WOT_URL + "hasTarget";
+    public static final String HAS_INPUT_SCHEMA = VocabularyConstants.WOT_URL + "hasInputSchema";
 }

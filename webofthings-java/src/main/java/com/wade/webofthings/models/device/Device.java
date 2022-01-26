@@ -12,16 +12,19 @@ public class Device {
     private String description;
     private DeviceCategory category;
     private String baseLink;
-    private List<DeviceProperty> properties;
-    private List<DeviceAction> actions;
-    private List<String> events;
-    private List<String> links;
+    private List<DeviceProperty> properties = new ArrayList<>();
+    private List<DeviceAction> actions = new ArrayList<>();
+    private List<String> events = new ArrayList<>();
+    private List<String> links = new ArrayList<>();
 
-    public Device(String id, String title, String description, List<DeviceProperty> properties) {
+    public Device() {}
+
+    public Device(String id, String title, String description, List<DeviceProperty> properties, List<DeviceAction> actions) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.properties = properties;
+        this.actions = actions;
     }
 
     public void addProperty(DeviceProperty deviceProperty) {
@@ -30,6 +33,15 @@ public class Device {
         else {
             properties = new ArrayList<>();
             properties.add(deviceProperty);
+        }
+    }
+
+    public void addAction(DeviceAction deviceAction) {
+        if (actions != null)
+            actions.add(deviceAction);
+        else {
+            actions = new ArrayList<>();
+            actions.add(deviceAction);
         }
     }
 }
