@@ -6,9 +6,8 @@ import java.util.List;
 
 @Data
 public class DeviceProperty {
-    private String id;
     private String type;
-    private String name;
+    private String title;
     private String valueType;
     private String currentValue;
     private double minimum;
@@ -20,7 +19,4 @@ public class DeviceProperty {
     public DeviceProperty() {
     }
 
-    public DeviceProperty(String id) {
-        this.id = id;
-    }
 }

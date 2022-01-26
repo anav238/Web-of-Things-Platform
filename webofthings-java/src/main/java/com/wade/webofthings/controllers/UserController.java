@@ -12,6 +12,7 @@ import com.wade.webofthings.models.user.PublicUser;
 import com.wade.webofthings.models.user.User;
 import com.wade.webofthings.utils.DatasetUtils;
 import com.wade.webofthings.utils.dataset.parsers.UserResourceParser;
+import com.wade.webofthings.utils.dataset.updaters.UserResourceUpdater;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.ReadWrite;
 import org.apache.jena.rdf.model.Model;
@@ -84,10 +85,11 @@ public class UserController {
 
             System.out.println("user patched: " + userPatched.toString());
 
-            deleteUser(id);
-            newUserWithId(userPatched, id);
-
+            UserResourceUpdater.updateUser(dataset, model, user, userPatched);
             return ResponseEntity.ok(userPatched);
+            //deleteUser(id);
+            //return newUserWithId(userPatched, id);
+
         } catch (JsonPatchException | JsonProcessingException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }

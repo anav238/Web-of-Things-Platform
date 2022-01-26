@@ -2,8 +2,10 @@ package com.wade.webofthings.utils.dataset.parsers;
 
 import com.wade.webofthings.models.device.Device;
 import com.wade.webofthings.models.device.DeviceProperty;
+import com.wade.webofthings.utils.Constants.Schema;
 import com.wade.webofthings.utils.Constants.VocabularyConstants;
 import com.wade.webofthings.utils.Constants.WOT;
+import com.wade.webofthings.utils.mappers.DevicePropertyMapper;
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
@@ -20,11 +22,20 @@ public class DeviceResourceParser {
     public static List<Device> getAllDevices(Dataset dataset, Model model) {
         String queryString = VocabularyConstants.VCARD_PREFIX + " " +
                 "SELECT ?id ?title ?description ?property " +
+                //"?propertyName ?propertyDescription ?propertyMaximum ?property " +
                 "WHERE { ?device  vcard:CLASS \"DEVICE\" . " +
                 "?device vcard:UID ?id . " +
                 "?device <" + WOT.DESCRIPTION + "> ?description . " +
                 "?device <" + WOT.TITLE + "> ?title . " +
                 "?device <" + WOT.HAS_PROPERTY_AFFORDANCE + "> ?property " +
+                /*"?property <" + WOT.NAME + "> ?propertyName . " +
+                "?property <" + WOT.DESCRIPTION + "> ?propertyDescription . " +
+                "?property <" + Schema.MAXIMUM + "> ?propertyMaximum . " +
+                "?property <" + Schema.MINIMUM + "> ?propertyMinimum . " +
+                "?property <" + Schema.UNIT_TEXT + "> ?propertyUnit . " +
+                "?property <" + Schema.TYPE + "> ?propertyType . " +
+                "?property <" + Schema.VALUE_TYPE + "> ?propertyValueType . " +
+                "?property <" + Schema.VALUE + "> ?propertyValue " +*/
                 "}";
 
         Query query = QueryFactory.create(queryString);
@@ -43,19 +54,19 @@ public class DeviceResourceParser {
                     String idString = id != null ? id.toString() : null;
                     String titleString = title != null ? title.toString() : null;
                     String descriptionString = description != null ? description.toString() : null;
-                    String propertyString = property != null ? property.toString() : null;
 
                     System.out.println(property);
                     System.out.println(soln);
 
-                    DeviceProperty deviceProperty = new DeviceProperty(propertyString);
                     if (!devices.containsKey(idString)) {
                         List<DeviceProperty> deviceProperties = new ArrayList<>();
-                        deviceProperties.add(deviceProperty);
+                        if (property != null)
+                            deviceProperties.add(DevicePropertyMapper.mapResourceToDeviceProperty(property));
                         devices.put(idString, new Device(idString, titleString, descriptionString, deviceProperties));
                     } else {
                         Device device = devices.get(idString);
-                        device.addProperty(deviceProperty);
+                        if (property != null)
+                            device.addProperty(DevicePropertyMapper.mapResourceToDeviceProperty(property));
                     }
                 }
             }

@@ -3,16 +3,17 @@ package com.wade.webofthings.utils.dataset.parsers;
 import com.wade.webofthings.models.home.Home;
 import com.wade.webofthings.models.user.PublicUser;
 import com.wade.webofthings.models.user.User;
+import com.wade.webofthings.models.user.UserRole;
 import com.wade.webofthings.utils.Constants.VocabularyConstants;
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.system.Txn;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class UserResourceParser {
+
     public static List<PublicUser> getAllPublicUsers(Dataset dataset, Model model, String usernameToSearch) {
         String queryString = VocabularyConstants.VCARD_PREFIX + " " +
                 "SELECT ?id ?username ?password " +
@@ -78,28 +79,36 @@ public class UserResourceParser {
 
     public static List<Home> getUserHomes(Dataset dataset, Model model, String userId) {
         String queryString = VocabularyConstants.VCARD_PREFIX + " " +
-                "SELECT ?userRole " +
+                VocabularyConstants.VCARD4_PREFIX + " " +
+                "SELECT ?homeId ?userRole " +
                 "WHERE { ?user vcard:UID \"" + userId + "\" . " +
-                "?user vcard:CLASS ?userRole" +
+                "?user vcard:CLASS ?userRole . " +
+                "?home vcard:UID ?homeId . " +
+                "?home vcard4:hasMember ?user " +
                 "}";
 
-        List<Home> homes = new ArrayList<>();
         Query query = QueryFactory.create(queryString);
+        Map<String, UserRole> homeIdsAndRoles = new HashMap<>();
         Txn.executeRead(dataset, () -> {
             try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
                 ResultSet results = qexec.execSelect();
                 while (results.hasNext()) {
                     QuerySolution soln = results.nextSolution();
                     System.out.println(soln);
+
+                    Literal homeId = soln.getLiteral("homeId");
+                    String homeIdString = homeId != null? homeId.toString() : null;
+
                     Literal userRole = soln.getLiteral("userRole");
                     String userRoleString = userRole != null? userRole.toString() : null;
-                    if (userRoleString != null && !userRoleString.equals("USER")) {
-                        System.out.println(soln);
-                        System.out.println(userRole.getString());
+
+                    if (userRoleString != null && !userRoleString.equals("USER") && homeIdString != null) {
+                        homeIdsAndRoles.put(homeIdString, UserRole.valueOf(userRoleString));
                     }
                 }
             }
         });
-        return homes;
+
+        return HomeResourceParser.getHomesByIds(dataset, model, new ArrayList<>(homeIdsAndRoles.keySet()));
     }
 }

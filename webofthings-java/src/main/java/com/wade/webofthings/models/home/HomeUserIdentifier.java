@@ -15,4 +15,5 @@ public class HomeUserIdentifier {
         this.userId = userId;
         this.userRole = userRole;
     }
+
 }

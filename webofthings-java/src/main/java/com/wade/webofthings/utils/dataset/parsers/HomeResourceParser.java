@@ -57,10 +57,13 @@ public class HomeResourceParser {
     public static Home getHomeById(Dataset dataset, Model model, String id) {
         String queryString = VocabularyConstants.VCARD_PREFIX + " " +
                 VocabularyConstants.VCARD4_PREFIX + " " +
-                "SELECT ?id ?name ?member " +
+                "SELECT ?name ?userId ?userRole ?deviceId " +
                 "WHERE { ?home vcard:UID \"" + id + "\" . " +
                 "?home vcard:NICKNAME ?name . " +
-                "?home vcard4:hasMember ?member " +
+                "?home vcard4:hasMember ?member . " +
+                "?member vcard:UID ?userId . " +
+                "?member vcard:CLASS ?userRole . " +
+                "OPTIONAL { ?home vcard4:hasRelated ?deviceId } " +
                 "}";
 
         Query query = QueryFactory.create(queryString);
@@ -73,27 +76,27 @@ public class HomeResourceParser {
                     QuerySolution soln = results.nextSolution();
 
                     Literal name = soln.getLiteral("name");
+                    Literal deviceId = soln.getLiteral("deviceId");
+                    Literal currentUserIdLiteral = soln.getLiteral("userId");
+                    Literal currentUserRoleLiteral = soln.getLiteral("userRole");
+
                     String nameString = name != null ? name.toString() : null;
                     home.setName(nameString);
 
-                    if (soln.get("member").isResource()) {
-                        Resource member = soln.getResource("member");
+                    String currentUserId = currentUserIdLiteral != null? currentUserIdLiteral.toString() : null;
+                    String currentUserRole = currentUserRoleLiteral != null? currentUserRoleLiteral.toString() : null;
 
-                        String currentUserId = member != null ? member.getProperty(VCARD.UID).getString() : null;
-                        String currentUserRole = member != null ? member.getProperty(VCARD.CLASS).getString() : null;
+                    System.out.println(soln);
 
-                        System.out.println(soln);
-
-                        if (currentUserId != null) {
-                            HomeUserIdentifier homeUserIdentifier = new HomeUserIdentifier(currentUserId, UserRole.valueOf(currentUserRole));
-                            home.addUserWithRole(homeUserIdentifier);
-                        }
-                    } else if (soln.get("member").isLiteral()) {
-                        Literal member = soln.getLiteral("member");
-                        String currentDeviceId = member != null ? member.toString() : null;
-                        if (currentDeviceId != null)
-                            home.addDeviceId(currentDeviceId);
+                    if (currentUserId != null) {
+                        HomeUserIdentifier homeUserIdentifier = new HomeUserIdentifier(currentUserId, UserRole.valueOf(currentUserRole));
+                        home.addUserWithRole(homeUserIdentifier);
                     }
+
+                    String currentDeviceId = deviceId != null ? deviceId.toString() : null;
+                    if (currentDeviceId != null)
+                        home.addDeviceId(currentDeviceId);
+
                 }
             }
         });

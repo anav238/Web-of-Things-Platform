@@ -12,4 +12,9 @@ public class VocabularyConstants {
     public static final String WOT_URL = "https://www.w3.org/2019/wot/td#";
     public static final String WOT_PREFIX = "PREFIX wot: <" + WOT_URL + ">";
 
+    public static final String JSON_SCHEMA_URL = "https://www.w3.org/2019/wot/json-schema#";
+    public static final String JSON_SCHEMA_PREFIX = "PREFIX jsonschema: <" + JSON_SCHEMA_URL + ">";
+
+    public static final String SCHEMA_URL = "http://schema.org/";
+    public static final String SCHEMA_PREFIX = "PREFIX schema: <" + SCHEMA_URL + ">";
 }
