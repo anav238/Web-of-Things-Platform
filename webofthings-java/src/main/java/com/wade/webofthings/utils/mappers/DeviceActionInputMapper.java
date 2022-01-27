@@ -28,9 +28,11 @@ public class DeviceActionInputMapper {
                 deviceActionInputResource.addProperty(propertyAndValue.getKey(), propertyAndValue.getValue());
         }
 
+        if (deviceActionInput.getRequired() != null)
         for (String required:deviceActionInput.getRequired())
             deviceActionInputResource.addProperty(new PropertyImpl(JsonSchema.REQUIRES), required);
 
+        if (deviceActionInput.getProperties() != null)
         for (DeviceProperty deviceProperty:deviceActionInput.getProperties())
             deviceActionInputResource.addProperty(new PropertyImpl(WOT.HAS_PROPERTY_AFFORDANCE),DevicePropertyMapper.mapToResource(model, deviceProperty));
 

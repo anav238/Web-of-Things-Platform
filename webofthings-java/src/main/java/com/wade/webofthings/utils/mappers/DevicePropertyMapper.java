@@ -37,8 +37,8 @@ public class DevicePropertyMapper {
                 devicePropertyResource.addProperty(propertyAndValue.getKey(), propertyAndValue.getValue());
         }
 
-        for (String link:deviceProperty.getLinks())
-            devicePropertyResource.addProperty(new PropertyImpl(WOT.HAS_LINK), link);
+        //for (String link:deviceProperty.getLinks())
+            //devicePropertyResource.addProperty(new PropertyImpl(WOT.HAS_LINK), link);
 
         return devicePropertyResource;
     }

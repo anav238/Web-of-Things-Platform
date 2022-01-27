@@ -1,11 +1,10 @@
 package com.wade.webofthings.models.device;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class DeviceProperty {
     private String type;
     private String title;
@@ -15,7 +14,7 @@ public class DeviceProperty {
     private double maximum;
     private String unit;
     private String description;
-    private List<String> links = new ArrayList<>();
+    //private List<String> links = new ArrayList<>();
 
     public DeviceProperty() {
     }

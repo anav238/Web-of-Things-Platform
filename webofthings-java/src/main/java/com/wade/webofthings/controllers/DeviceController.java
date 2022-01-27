@@ -1,15 +1,18 @@
 package com.wade.webofthings.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wade.webofthings.ApplicationData;
 import com.wade.webofthings.models.ResourceType;
-import com.wade.webofthings.models.device.Device;
-import com.wade.webofthings.models.device.DeviceAction;
-import com.wade.webofthings.models.device.DeviceProperty;
+import com.wade.webofthings.models.device.*;
 import com.wade.webofthings.utils.Constants.WOT;
 import com.wade.webofthings.utils.dataset.parsers.DeviceResourceParser;
+import com.wade.webofthings.utils.http.HTTPClient;
 import com.wade.webofthings.utils.mappers.DeviceActionMapper;
+import com.wade.webofthings.utils.mappers.DeviceMapper;
 import com.wade.webofthings.utils.mappers.DevicePropertyMapper;
+import jakarta.json.JsonObject;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.ReadWrite;
 import org.apache.jena.rdf.model.Model;
@@ -20,6 +23,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -37,6 +41,21 @@ public class DeviceController {
     @GetMapping("/devices/{id}")
     ResponseEntity<Device> one(@PathVariable String id) {
         return ResponseEntity.ok(DeviceResourceParser.getDeviceById(dataset, model, id));
+    }
+
+    @PostMapping("/devices/url")
+    ResponseEntity<Device> newDeviceByUrl(@RequestBody CreateDeviceByUrl requestBody) {
+        String specification = HTTPClient.sendRequest(requestBody.getDeviceUrl());
+        try {
+            Map<String, Object> specificationJson = objectMapper.readValue(specification,  new TypeReference<Map<String,Object>>(){});
+            Device device = DeviceMapper.mapDeviceSpecificationToDevice(specificationJson);
+            device.setCategory(DeviceCategory.valueOf(requestBody.getDeviceCategory()));
+            device.setBaseLink(requestBody.getDeviceUrl());
+            return newDevice(device);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return ResponseEntity.ok(new Device());
     }
 
     @PostMapping("/devices")

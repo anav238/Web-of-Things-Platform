@@ -30,8 +30,8 @@ public class DeviceActionMapper {
 
         deviceActionResource.addProperty(new PropertyImpl(WOT.HAS_INPUT_SCHEMA), DeviceActionInputMapper.mapToResource(model, deviceAction.getInput()));
 
-        for (String link:deviceAction.getLinks())
-            deviceActionResource.addProperty(new PropertyImpl(WOT.HAS_LINK), link);
+        //for (String link:deviceAction.getLinks())
+            //deviceActionResource.addProperty(new PropertyImpl(WOT.HAS_LINK), link);
 
         return deviceActionResource;
     }
