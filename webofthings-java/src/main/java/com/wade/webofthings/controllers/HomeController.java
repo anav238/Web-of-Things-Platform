@@ -10,9 +10,11 @@ import com.wade.webofthings.models.ResourceType;
 import com.wade.webofthings.models.home.Home;
 import com.wade.webofthings.models.home.HomeUserIdentifier;
 import com.wade.webofthings.models.user.ChangeHomeRoleRequest;
+import com.wade.webofthings.models.user.UserIdentity;
 import com.wade.webofthings.models.user.UserRole;
 import com.wade.webofthings.utils.DatasetUtils;
 import com.wade.webofthings.utils.dataset.parsers.HomeResourceParser;
+import com.wade.webofthings.utils.dataset.parsers.UserResourceParser;
 import com.wade.webofthings.utils.dataset.updaters.HomeResourceUpdater;
 import com.wade.webofthings.utils.mappers.HomeUserIdentifierMapper;
 import jakarta.json.Json;
@@ -24,10 +26,12 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.VCARD;
 import org.apache.jena.vocabulary.VCARD4;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.security.RolesAllowed;
 import java.util.List;
 import java.util.UUID;
 
@@ -40,12 +44,21 @@ public class HomeController {
 
     @GetMapping("/homes")
     ResponseEntity<List<Home>> all() {
+
         return ResponseEntity.ok(HomeResourceParser.getAllHomes(dataset, model));
     }
 
     @GetMapping("/homes/{id}")
-    ResponseEntity<Home> one(@PathVariable String id) {
-        return ResponseEntity.ok(HomeResourceParser.getHomeById(dataset, model, id));
+    ResponseEntity<Home> one(@PathVariable String id, @RequestHeader (value = "authorization")String jwt) {
+        UserIdentity identity= UserResourceParser.Authorize(jwt);
+        if(!identity.isAuthorized()){
+            return new ResponseEntity(HttpStatus.UNAUTHORIZED);
+        }
+        String role=UserResourceParser.getUserRoleForHomeId(dataset,model,id,identity.getUserId());
+        if(role.equals("OWNER"))
+                return ResponseEntity.ok(HomeResourceParser.getHomeById(dataset, model, id));
+        else
+            return new ResponseEntity(HttpStatus.UNAUTHORIZED);
     }
 
     @PostMapping("/homes")

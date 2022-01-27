@@ -22,6 +22,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.security.RolesAllowed;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.UUID;
 
@@ -112,4 +114,15 @@ public class UserController {
         DatasetUtils.deleteResource(dataset, model, user);
     }
 
+    @PostMapping("/users/authenticate")
+    public ResponseEntity Authenticate(@RequestBody User newUser){
+        try{
+            String jws=UserResourceParser.Authenticate(dataset,model,newUser.getUsername(),newUser.getPassword());
+            return ResponseEntity.ok(jws);
+        }
+        catch (Exception e)
+        {
+            return new ResponseEntity(HttpStatus.UNAUTHORIZED);
+        }
+    }
 }
