@@ -47,7 +47,6 @@ public class UserController {
     @PostMapping("/users")
     ResponseEntity<PublicUser> newUser(@RequestBody User newUser) {
         dataset.begin(ReadWrite.WRITE);
-
         newUser.setId(String.valueOf(UUID.randomUUID()));
         String personURI = "/users/" + newUser.getId();
 

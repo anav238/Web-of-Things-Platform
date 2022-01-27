@@ -150,6 +150,11 @@ $smooth-shadow:rgb(145 158 171 / 24%) 0px 0px 2px 0px, rgb(145 158 171 / 24%) 0p
 
     &-header{
         margin:24px 0;
+        display: flex;
+        
+        &-addBtn{
+            margin-right: 20px;
+        }
     }
 
     &-dataGrid{
@@ -187,8 +192,15 @@ $smooth-shadow:rgb(145 158 171 / 24%) 0px 0px 2px 0px, rgb(145 158 171 / 24%) 0p
                 display: flex;
                 align-items: flex-end;
 
-                button{
-                    margin:0 5%;
+
+                .MuiTextField-root:nth-of-type(1){
+                    margin-left: 5%;
+                    width: 50%;
+                }
+
+                .MuiTextField-root:nth-of-type(2){
+                    margin-left: 5%;
+                    width: 30%;
                 }
 
                 &-removeCircle{

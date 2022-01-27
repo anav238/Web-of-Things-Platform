@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import './Dashboard.scss'
 import BoardMenu from './BoardMenu';
 import Houses from './Houses';
+import Users from './Users';
 import {houses_mock, users_mock, devices_mock} from '../../assets/mockData2' 
 
 const components = ['Houses', 'Users', 'Devices', 'Action'];
@@ -22,7 +23,7 @@ export default function Dashboard() {
             </div>
             
             <BoardMenu 
-                data={{houses_mock, users_mock, devices_mock}}
+                data={{houses, users_mock, devices_mock}}
                 houseSelected={houseSelected}
                 setHouseSelected={setHouseSelected}
                 components={components}
@@ -40,7 +41,15 @@ export default function Dashboard() {
                             <Houses 
                                 houses={houses}
                                 setHouses={setHouses}
+                                houseSelected={houseSelected}
                                 setHouseSelected={setHouseSelected}
+                                />
+                            )
+
+                        case components[1]:
+                            return (
+                            <Users
+                                houseSelected={houseSelected}
                                 />
                             )
                         default:

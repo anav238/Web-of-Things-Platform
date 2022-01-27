@@ -1,14 +1,9 @@
 import React, {useState} from 'react'
+import HouseDialog from "./HouseDialog"
 import { DataGrid } from '@mui/x-data-grid';
+import { styled } from '@mui/material/styles';
 import Button from '@mui/material/Button';
-import IconButton from '@mui/material/IconButton';
-import {Add, AddBox, RemoveCircle} from '@mui/icons-material';
-import TextField from '@mui/material/TextField';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
+import {Add, Edit} from '@mui/icons-material';
 
 
 const pageSize = 5;
@@ -16,7 +11,7 @@ const columns = [
     { field: 'id', headerName: 'ID', width: 300 },
     { field: 'name', headerName: 'House name', width: 250 },
     { field: 'role', headerName: 'Role', width: 160,
-        valueGetter: (params) => params.row.users.find( user => user.name==='Vlad Afrasinei').role
+        valueGetter: (params) => params.row.users.find( user => user.name==='Vlad Afrasinei')?.role
     },
     { field: 'usersNumber', headerName: 'Users', width: 140,
         valueGetter: (params) => params.row.users.length
@@ -26,42 +21,76 @@ const columns = [
     },
   ];
 
-export default function Houses({houses, setHouses, setHouseSelected}) {
+const ColorButton = styled(Button)(({ theme }) => ({
+color: theme.palette.getContrastText('rgba(0, 123, 85, 0.5)'),
+backgroundColor: 'rgba(0, 123, 85, 0.7)',
+'&:hover': {
+    backgroundColor: 'rgba(0, 123, 85, 0.9)',
+},
+}));
+const ColorOutlinedButton = styled(Button)(({ theme }) => ({
+padding: '6px 22px',
+fontWeight: 600,
+color: 'rgba(0, 123, 85, 0.5)',
+border: '2px solid',
+borderColor: 'rgba(0, 123, 85, 0.5)',
+backgroundColor: 'rgba(0, 0, 0 0.0)',
+'&:hover': {
+    backgroundColor: 'rgba(0, 123, 85, 0.1)',
+    borderColor: 'rgba(0, 123, 85, 0.5)',
+},
+}));
+
+const emptyFormData = {name: '', users: [{name:'', role: ''}]};
+
+export default function Houses({houses, setHouses, houseSelected, setHouseSelected}) {
     const [isDialogOpen, setIsDialogOpen] = useState(false)
-    const [formData, setFormData] = useState({name: '', users: ['']})
+    const [inEditMode, setInEditMode] = useState(false);
+    const [formData, setFormData] = useState(JSON.parse(JSON.stringify(emptyFormData)));
 
     const submitForm = () => {
         console.log(formData);
-        
+        //console.log(houseSelected);
+
         //setIsDialogOpen(false);
-        //setHouses([...houses,  apiResponse(formData)]W);
+        //setHouses([...houses,  apiResponse(formData)]);
     }
 
-    const onAddUserNameChange = (index, newName) => {
-        const usersState = formData.users;
-        usersState[index] = newName;
-        setFormData({...formData, users:usersState})
+    const onAddHome = () => {
+        setInEditMode(false);
+        setIsDialogOpen(true);
+        setFormData(JSON.parse(JSON.stringify(emptyFormData)));
     }
 
-    const onAddUserRemove = (index) => {
-        const usersState = formData.users;
-        usersState.splice(index,1);
-        setFormData({...formData, users:usersState})
+    const onEditHome = () => {
+        setInEditMode(true);
+        setIsDialogOpen(true);
+        setFormData(JSON.parse(JSON.stringify(houseSelected)));
     }
+
 
     return (
         <div className='component'>
             <div className='component-header'>
                 <div className='component-header-addBtn'>
-                    <Button 
+                    <ColorButton 
                         variant="contained" 
-                        color="success"
                         size="large"
-                        onClick={() => setIsDialogOpen(true)}
+                        onClick={onAddHome}
                         startIcon={<Add />}>
                         New Home
-                    </Button>
+                    </ColorButton>
                 </div>
+                <div className='component-header-editBtn'>
+                    <ColorOutlinedButton 
+                        size="large"
+                        onClick={onEditHome}
+                        startIcon={<Edit />}
+                        disabled={houseSelected ? false : true}
+                    >
+                            Edit Home
+                    </ColorOutlinedButton>
+                </div>  
             </div>
 
             <div className='component-dataGrid'>
@@ -74,70 +103,15 @@ export default function Houses({houses, setHouses, setHouseSelected}) {
                     onRowClick={(params)=> setHouseSelected(params.row)}
                     />
             </div>
-            <Dialog
-                fullWidth={true}
-                maxWidth={'sm'}
-                open={isDialogOpen} 
-                onClose={() => setIsDialogOpen(false)}
-                className="component-dialog"
-            >
-                <DialogTitle>Add new home</DialogTitle>
-                <DialogContent>
-                    <div className='component-dialog-homeName'>
-                        <DialogContentText>
-                            Please fill the form below:
-                        </DialogContentText>
-                        <TextField
-                            autoFocus
-                            id="name"
-                            label="Name"    
-                            type="text"
-                            variant="outlined"
-                            value={formData.name}
-                            onChange={(event) => { setFormData({...formData,name:event.target.value})}}
-                        />
-                    </div>
-                    <div className='component-dialog-usersName'>
-                        <DialogContentText>
-                            Add users:
-                        </DialogContentText>
-                        {
-                            formData.users.map((user, index) => (
-                            <div 
-                                className='component-dialog-usersName-row'
-                                key={index}
-                            >
-                                <IconButton onClick={()=> onAddUserRemove(index)}>
-                                    <RemoveCircle className='component-dialog-usersName-row-removeCircle'/>
-                                </IconButton>
-                                <TextField
-                                    id={`user${index}`}
-                                    key={index}
-                                    label="User name"    
-                                    type="text"
-                                    variant="standard"
-                                    value={user}
-                                    onChange={(event) => onAddUserNameChange(index, event.target.value)}
-                                    />
-                                
-                            </div>
-                            ))
-                        }
-                        <div className='component-dialog-usersName-row'>
-                            <IconButton 
-                                onClick={()=>{
-                                    setFormData({...formData,users:[...formData.users,'']})
-                                }}>
-                                <AddBox color="success"/>
-                            </IconButton>
-                        </div>
-                    </div>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => setIsDialogOpen(false)}>Cancel</Button>
-                    <Button onClick={submitForm}>Add</Button>
-                </DialogActions>
-            </Dialog>
+
+            <HouseDialog 
+                isDialogOpen={isDialogOpen}
+                setIsDialogOpen={setIsDialogOpen}
+                formData={formData}
+                setFormData={setFormData}
+                submitForm={submitForm}
+                isEdit={inEditMode}
+            />
         </div>
     )
 }

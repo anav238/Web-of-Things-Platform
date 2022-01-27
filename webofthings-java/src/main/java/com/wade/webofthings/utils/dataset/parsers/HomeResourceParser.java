@@ -7,9 +7,7 @@ import com.wade.webofthings.utils.Constants.VocabularyConstants;
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.system.Txn;
-import org.apache.jena.vocabulary.VCARD;
 
 import java.util.ArrayList;
 import java.util.List;
