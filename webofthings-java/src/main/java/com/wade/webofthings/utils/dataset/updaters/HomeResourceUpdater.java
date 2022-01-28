@@ -3,7 +3,7 @@ package com.wade.webofthings.utils.dataset.updaters;
 import com.wade.webofthings.models.home.Home;
 import com.wade.webofthings.models.home.HomeUserIdentifier;
 import com.wade.webofthings.models.user.UserRole;
-import com.wade.webofthings.utils.Constants.VocabularyConstants;
+import com.wade.webofthings.utils.constants.VocabularyConstants;
 import com.wade.webofthings.utils.DatasetUtils;
 import com.wade.webofthings.utils.mappers.HomeUserIdentifierMapper;
 import org.apache.jena.query.Dataset;

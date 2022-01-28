@@ -5,20 +5,16 @@ import com.wade.webofthings.models.user.PublicUser;
 import com.wade.webofthings.models.user.User;
 import com.wade.webofthings.models.user.UserIdentity;
 import com.wade.webofthings.models.user.UserRole;
-import com.wade.webofthings.utils.Constants.VocabularyConstants;
+import com.wade.webofthings.utils.constants.VocabularyConstants;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.impl.TextCodec;
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.system.Txn;
 
-import javax.xml.bind.DatatypeConverter;
-import java.nio.charset.StandardCharsets;
-import java.time.Instant;
 import java.util.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,7 +35,6 @@ public class UserResourceParser {
             queryString += "}";
         else
             queryString += ". FILTER regex(?username, \"" + usernameToSearch + "\", \"i\") }";
-
 
         Query query = QueryFactory.create(queryString);
         List<PublicUser> users = new ArrayList<>();

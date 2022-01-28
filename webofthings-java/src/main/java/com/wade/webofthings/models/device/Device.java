@@ -1,5 +1,6 @@
 package com.wade.webofthings.models.device;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -7,6 +8,7 @@ import java.util.List;
 
 @Data
 public class Device {
+    private String uri;
     private String id;
     private String title;
     private String description;
@@ -15,7 +17,6 @@ public class Device {
     private List<DeviceProperty> properties = new ArrayList<>();
     private List<DeviceAction> actions = new ArrayList<>();
     private List<String> events = new ArrayList<>();
-    private List<String> links = new ArrayList<>();
 
     public Device() {}
 
@@ -27,21 +28,28 @@ public class Device {
         this.actions = actions;
     }
 
+    public String getUri() {
+        this.uri = "/devices/" + id;
+        return uri;
+    }
+
     public void addProperty(DeviceProperty deviceProperty) {
-        if (properties != null)
-            properties.add(deviceProperty);
-        else {
+        if (properties == null)
             properties = new ArrayList<>();
-            properties.add(deviceProperty);
-        }
+        properties.add(deviceProperty);
     }
 
     public void addAction(DeviceAction deviceAction) {
-        if (actions != null)
-            actions.add(deviceAction);
-        else {
+        if (actions == null)
             actions = new ArrayList<>();
-            actions.add(deviceAction);
-        }
+        actions.add(deviceAction);
+    }
+
+    public void updatePropertiesWithCurrentValues() {
+        if (baseLink == null)
+            return;
+        ObjectMapper objectMapper = new ObjectMapper();
+        for (DeviceProperty deviceProperty:getProperties())
+            deviceProperty.updateCurrentValue(baseLink, objectMapper);
     }
 }

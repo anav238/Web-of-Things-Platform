@@ -6,13 +6,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wade.webofthings.ApplicationData;
 import com.wade.webofthings.models.ResourceType;
 import com.wade.webofthings.models.device.*;
-import com.wade.webofthings.utils.Constants.WOT;
+import com.wade.webofthings.utils.constants.WOT;
+import com.wade.webofthings.utils.DatasetUtils;
 import com.wade.webofthings.utils.dataset.parsers.DeviceResourceParser;
 import com.wade.webofthings.utils.http.HTTPClient;
 import com.wade.webofthings.utils.mappers.DeviceActionMapper;
 import com.wade.webofthings.utils.mappers.DeviceMapper;
 import com.wade.webofthings.utils.mappers.DevicePropertyMapper;
-import jakarta.json.JsonObject;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.ReadWrite;
 import org.apache.jena.rdf.model.Model;
@@ -69,7 +69,9 @@ public class DeviceController {
                 .addProperty(VCARD.UID, newDevice.getId())
                 .addProperty(VCARD.CLASS, String.valueOf(ResourceType.DEVICE))
                 .addProperty(new PropertyImpl(WOT.TITLE), newDevice.getTitle())
-                .addProperty(new PropertyImpl(WOT.DESCRIPTION), newDevice.getDescription());
+                .addProperty(new PropertyImpl(WOT.DESCRIPTION), newDevice.getDescription())
+                .addProperty(new PropertyImpl(WOT.HAS_LINK), newDevice.getBaseLink())
+                .addProperty(VCARD.CATEGORIES, String.valueOf(newDevice.getCategory()));
 
         for (DeviceProperty property : newDevice.getProperties())
             deviceResource.addProperty(new PropertyImpl(WOT.HAS_PROPERTY_AFFORDANCE), DevicePropertyMapper.mapToResource(model, property));
@@ -80,6 +82,13 @@ public class DeviceController {
         dataset.commit();
 
         return ResponseEntity.ok(newDevice);
+    }
+
+    @DeleteMapping("/devices/{id}")
+    public void deleteDevice(@PathVariable String id) {
+        //remove all statements mentioning the device
+        Resource home = model.getResource("/devices/" + id);
+        DatasetUtils.deleteResource(dataset, model, home);
     }
 
 }

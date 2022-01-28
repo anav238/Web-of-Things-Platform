@@ -1,4 +1,4 @@
-package com.wade.webofthings.utils.Constants;
+package com.wade.webofthings.utils.constants;
 
 public class VocabularyConstants {
     public static final String RDF_URL = "";

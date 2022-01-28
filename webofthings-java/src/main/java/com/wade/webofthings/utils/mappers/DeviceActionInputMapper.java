@@ -2,9 +2,9 @@ package com.wade.webofthings.utils.mappers;
 
 import com.wade.webofthings.models.device.DeviceActionInput;
 import com.wade.webofthings.models.device.DeviceProperty;
-import com.wade.webofthings.utils.Constants.JsonSchema;
-import com.wade.webofthings.utils.Constants.Schema;
-import com.wade.webofthings.utils.Constants.WOT;
+import com.wade.webofthings.utils.constants.JsonSchema;
+import com.wade.webofthings.utils.constants.Schema;
+import com.wade.webofthings.utils.constants.WOT;
 import com.wade.webofthings.utils.DatasetUtils;
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.rdf.model.impl.PropertyImpl;

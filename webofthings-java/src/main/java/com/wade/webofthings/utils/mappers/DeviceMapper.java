@@ -20,12 +20,14 @@ public class DeviceMapper {
 
         Device device = new Device();
         device.setTitle(deviceSpecification.getOrDefault("title", "").toString());
+        device.setBaseLink(deviceSpecification.getOrDefault("baseLink", "").toString());
         device.setDescription(deviceSpecification.getOrDefault("description", "").toString());
 
         Map<String, Object> properties = (Map<String, Object>) deviceSpecification.getOrDefault("properties", null);
         if (properties != null) {
             for (var propertyEntry:properties.entrySet()) {
                 DeviceProperty deviceProperty = mapper.convertValue(propertyEntry.getValue(), DeviceProperty.class);
+                deviceProperty.setName(propertyEntry.getKey());
                 device.addProperty(deviceProperty);
             }
         }
@@ -35,6 +37,7 @@ public class DeviceMapper {
             for (Map.Entry<String, Object> actionEntry:actions.entrySet()) {
                 Map<String,Object> deviceActionMap = (Map<String, Object>) actionEntry.getValue();
                 DeviceAction deviceAction = new DeviceAction();
+                deviceAction.setName(actionEntry.getKey());
                 deviceAction.setTitle(deviceActionMap.getOrDefault("title", "").toString());
                 deviceAction.setDescription(deviceActionMap.getOrDefault("description", "").toString());
 

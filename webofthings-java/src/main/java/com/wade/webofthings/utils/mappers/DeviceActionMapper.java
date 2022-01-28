@@ -1,8 +1,8 @@
 package com.wade.webofthings.utils.mappers;
 
 import com.wade.webofthings.models.device.DeviceAction;
-import com.wade.webofthings.utils.Constants.JsonSchema;
-import com.wade.webofthings.utils.Constants.WOT;
+import com.wade.webofthings.utils.constants.JsonSchema;
+import com.wade.webofthings.utils.constants.WOT;
 import com.wade.webofthings.utils.DatasetUtils;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Property;
@@ -30,9 +30,6 @@ public class DeviceActionMapper {
 
         deviceActionResource.addProperty(new PropertyImpl(WOT.HAS_INPUT_SCHEMA), DeviceActionInputMapper.mapToResource(model, deviceAction.getInput()));
 
-        //for (String link:deviceAction.getLinks())
-            //deviceActionResource.addProperty(new PropertyImpl(WOT.HAS_LINK), link);
-
         return deviceActionResource;
     }
 
@@ -40,8 +37,6 @@ public class DeviceActionMapper {
         DeviceAction deviceAction = new DeviceAction();
         deviceAction.setTitle(DatasetUtils.getStatementStringOrNull(resource.getProperty(new PropertyImpl(WOT.NAME))));
         deviceAction.setDescription(DatasetUtils.getStatementStringOrNull(resource.getProperty(new PropertyImpl(WOT.DESCRIPTION))));
-
-        StmtIterator it = resource.listProperties(new PropertyImpl(JsonSchema.REQUIRES));
 
         Resource deviceActionInputResource = resource.getProperty(new PropertyImpl(WOT.HAS_INPUT_SCHEMA)).getResource();
         deviceAction.setInput(DeviceActionInputMapper.mapResourceToDeviceActionInput(deviceActionInputResource));

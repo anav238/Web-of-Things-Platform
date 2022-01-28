@@ -116,7 +116,7 @@ public class HomeController {
 
     @DeleteMapping("/homes/{id}")
     public void deleteHome(@PathVariable String id) {
-        //remove all statements mentioning the user
+        //remove all statements mentioning the home
         Resource home = model.getResource("/homes/" + id);
         DatasetUtils.deleteResource(dataset, model, home);
     }

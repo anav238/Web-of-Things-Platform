@@ -6,6 +6,7 @@ import lombok.Data;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DeviceAction {
+    private String name;
     private String title;
     private String description;
     private DeviceActionInput input;

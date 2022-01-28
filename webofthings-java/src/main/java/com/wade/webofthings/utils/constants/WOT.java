@@ -1,4 +1,4 @@
-package com.wade.webofthings.utils.Constants;
+package com.wade.webofthings.utils.constants;
 
 public class WOT {
     public static final String DESCRIPTION = VocabularyConstants.WOT_URL + "description";

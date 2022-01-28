@@ -1,4 +1,4 @@
-package com.wade.webofthings.utils.Constants;
+package com.wade.webofthings.utils.constants;
 
 public class Schema {
     public static final String UNIT_TEXT = VocabularyConstants.SCHEMA_URL + "unitText";

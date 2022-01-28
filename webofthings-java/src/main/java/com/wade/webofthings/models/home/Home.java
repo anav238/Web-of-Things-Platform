@@ -8,6 +8,7 @@ import java.util.Set;
 
 @Data
 public class Home {
+    private String uri;
     private String id;
     private String name;
     private Set<HomeUserIdentifier> users = new HashSet<>();
@@ -31,6 +32,11 @@ public class Home {
         this.id = id;
         this.name = name;
         this.deviceIds = deviceIds;
+    }
+
+    public String getUri() {
+        this.uri = "/homes/" + id;
+        return uri;
     }
 
     public void addUserWithRole(HomeUserIdentifier homeUserIdentifier) {

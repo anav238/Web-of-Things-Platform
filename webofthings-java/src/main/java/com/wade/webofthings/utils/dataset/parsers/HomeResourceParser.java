@@ -3,7 +3,7 @@ package com.wade.webofthings.utils.dataset.parsers;
 import com.wade.webofthings.models.home.Home;
 import com.wade.webofthings.models.home.HomeUserIdentifier;
 import com.wade.webofthings.models.user.UserRole;
-import com.wade.webofthings.utils.Constants.VocabularyConstants;
+import com.wade.webofthings.utils.constants.VocabularyConstants;
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;

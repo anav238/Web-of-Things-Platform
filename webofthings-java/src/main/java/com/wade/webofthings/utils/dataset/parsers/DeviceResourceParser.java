@@ -1,8 +1,8 @@
 package com.wade.webofthings.utils.dataset.parsers;
 
 import com.wade.webofthings.models.device.Device;
-import com.wade.webofthings.utils.Constants.VocabularyConstants;
-import com.wade.webofthings.utils.Constants.WOT;
+import com.wade.webofthings.utils.constants.VocabularyConstants;
+import com.wade.webofthings.utils.constants.WOT;
 import com.wade.webofthings.utils.mappers.DeviceActionMapper;
 import com.wade.webofthings.utils.mappers.DevicePropertyMapper;
 import org.apache.jena.query.*;
@@ -10,6 +10,7 @@ import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.system.Txn;
+import org.apache.jena.vocabulary.VCARD;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,14 +57,16 @@ public class DeviceResourceParser {
 
     public static Device getDeviceById(Dataset dataset, Model model, String id) {
         String queryString = VocabularyConstants.VCARD_PREFIX + " " +
-                "SELECT ?title ?description ?property ?action " +
+                "SELECT ?title ?description ?property ?action ?baseLink ?category " +
                 //"?propertyName ?propertyDescription ?propertyMaximum ?property " +
                 "WHERE { ?device  vcard:CLASS \"DEVICE\" . " +
                 "?device vcard:UID \"" + id +  "\" . " +
                 "?device <" + WOT.DESCRIPTION + "> ?description . " +
                 "?device <" + WOT.TITLE + "> ?title . " +
-                "OPTIONAL { ?device <" + WOT.HAS_PROPERTY_AFFORDANCE + "> ?property . " +
-                "?device <" + WOT.HAS_ACTION_AFFORDANCE + "> ?action } " +
+                "OPTIONAL { ?device vcard:CATEGORIES ?category } " +
+                "OPTIONAL { ?device <" + WOT.HAS_LINK + "> ?baseLink } " +
+                "OPTIONAL { ?device <" + WOT.HAS_PROPERTY_AFFORDANCE + "> ?property } " +
+                "OPTIONAL { ?device <" + WOT.HAS_ACTION_AFFORDANCE + "> ?action } " +
                 "}";
 
         Query query = QueryFactory.create(queryString);
@@ -77,17 +80,21 @@ public class DeviceResourceParser {
 
                     Literal title = soln.getLiteral("title");
                     Literal description = soln.getLiteral("description");
+                    Literal baseLink = soln.getLiteral("baseLink");
                     Resource property = soln.getResource("property");
                     Resource action = soln.getResource("action");
 
                     String titleString = title != null ? title.toString() : null;
                     String descriptionString = description != null ? description.toString() : null;
+                    String baseLinkString = baseLink != null ? baseLink.toString() : null;
 
                     System.out.println(property);
                     System.out.println(soln);
 
                     device.setTitle(titleString);
                     device.setDescription(descriptionString);
+                    device.setBaseLink(baseLinkString);
+
                     if (property != null)
                         device.addProperty(DevicePropertyMapper.mapResourceToDeviceProperty(property));
                     if (action != null)
@@ -96,7 +103,7 @@ public class DeviceResourceParser {
                 }
             }
         });
-
+        device.updatePropertiesWithCurrentValues();
         return device;
     }
 }

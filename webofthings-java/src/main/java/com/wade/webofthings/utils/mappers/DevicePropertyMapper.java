@@ -1,8 +1,8 @@
 package com.wade.webofthings.utils.mappers;
 
 import com.wade.webofthings.models.device.DeviceProperty;
-import com.wade.webofthings.utils.Constants.Schema;
-import com.wade.webofthings.utils.Constants.WOT;
+import com.wade.webofthings.utils.constants.Schema;
+import com.wade.webofthings.utils.constants.WOT;
 import com.wade.webofthings.utils.DatasetUtils;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Property;
@@ -17,8 +17,9 @@ public class DevicePropertyMapper {
     public static Resource mapToResource(Model model, DeviceProperty deviceProperty) {
         Resource devicePropertyResource = model.createResource().addProperty(VCARD.CLASS, "deviceProperty");
 
-        Map<Property, String> propertyStringMap = new HashMap<Property, String>() {{
-            put(new PropertyImpl(WOT.NAME), deviceProperty.getTitle());
+        Map<Property, String> propertyStringMap = new HashMap<>() {{
+            put(new PropertyImpl(WOT.NAME), deviceProperty.getName());
+            put(new PropertyImpl(WOT.TITLE), deviceProperty.getTitle());
             put(new PropertyImpl(WOT.DESCRIPTION), deviceProperty.getDescription());
             put(new PropertyImpl(Schema.UNIT_TEXT), deviceProperty.getUnit());
             put(new PropertyImpl(Schema.TYPE), deviceProperty.getType());
@@ -45,7 +46,8 @@ public class DevicePropertyMapper {
 
     public static DeviceProperty mapResourceToDeviceProperty(Resource resource) {
         DeviceProperty deviceProperty = new DeviceProperty();
-        deviceProperty.setTitle(DatasetUtils.getStatementStringOrNull(resource.getProperty(new PropertyImpl(WOT.NAME))));
+        deviceProperty.setName(DatasetUtils.getStatementStringOrNull(resource.getProperty(new PropertyImpl(WOT.NAME))));
+        deviceProperty.setTitle(DatasetUtils.getStatementStringOrNull(resource.getProperty(new PropertyImpl(WOT.TITLE))));
         deviceProperty.setDescription(DatasetUtils.getStatementStringOrNull(resource.getProperty(new PropertyImpl(WOT.DESCRIPTION))));
         deviceProperty.setUnit(DatasetUtils.getStatementStringOrNull(resource.getProperty(new PropertyImpl(Schema.UNIT_TEXT))));
         deviceProperty.setType(DatasetUtils.getStatementStringOrNull(resource.getProperty(new PropertyImpl(Schema.TYPE))));
