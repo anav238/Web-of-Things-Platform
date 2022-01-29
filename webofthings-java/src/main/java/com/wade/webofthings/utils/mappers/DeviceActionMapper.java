@@ -19,7 +19,8 @@ public class DeviceActionMapper {
         Resource deviceActionResource = model.createResource().addProperty(VCARD.CLASS, "deviceAction");
 
         Map<Property, String> propertyStringMap = new HashMap<>() {{
-            put(new PropertyImpl(WOT.NAME), deviceAction.getTitle());
+            put(new PropertyImpl(WOT.NAME), deviceAction.getName());
+            put(new PropertyImpl(WOT.TITLE), deviceAction.getTitle());
             put(new PropertyImpl(WOT.DESCRIPTION), deviceAction.getDescription());
         }};
 
@@ -35,7 +36,8 @@ public class DeviceActionMapper {
 
     public static DeviceAction mapResourceToDeviceAction(Resource resource) {
         DeviceAction deviceAction = new DeviceAction();
-        deviceAction.setTitle(DatasetUtils.getStatementStringOrNull(resource.getProperty(new PropertyImpl(WOT.NAME))));
+        deviceAction.setTitle(DatasetUtils.getStatementStringOrNull(resource.getProperty(new PropertyImpl(WOT.TITLE))));
+        deviceAction.setName(DatasetUtils.getStatementStringOrNull(resource.getProperty(new PropertyImpl(WOT.NAME))));
         deviceAction.setDescription(DatasetUtils.getStatementStringOrNull(resource.getProperty(new PropertyImpl(WOT.DESCRIPTION))));
 
         Resource deviceActionInputResource = resource.getProperty(new PropertyImpl(WOT.HAS_INPUT_SCHEMA)).getResource();

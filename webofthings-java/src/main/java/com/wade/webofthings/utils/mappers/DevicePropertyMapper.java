@@ -23,10 +23,10 @@ public class DevicePropertyMapper {
             put(new PropertyImpl(WOT.DESCRIPTION), deviceProperty.getDescription());
             put(new PropertyImpl(Schema.UNIT_TEXT), deviceProperty.getUnit());
             put(new PropertyImpl(Schema.TYPE), deviceProperty.getType());
-            put(new PropertyImpl(Schema.VALUE_TYPE), deviceProperty.getValueType());
+            //put(new PropertyImpl(Schema.VALUE_TYPE), deviceProperty.getValueType());
             put(new PropertyImpl(Schema.VALUE), deviceProperty.getCurrentValue());
 
-            if (deviceProperty.getValueType() != null && deviceProperty.getValueType().equals("number")) {
+            if (deviceProperty.getType() != null && (deviceProperty.getType().equals("integer") || deviceProperty.getType().equals("number"))) {
                 put(new PropertyImpl(Schema.MINIMUM), String.valueOf(deviceProperty.getMinimum()));
                 put(new PropertyImpl(Schema.MAXIMUM), String.valueOf(deviceProperty.getMaximum()));
             }
@@ -38,9 +38,6 @@ public class DevicePropertyMapper {
                 devicePropertyResource.addProperty(propertyAndValue.getKey(), propertyAndValue.getValue());
         }
 
-        //for (String link:deviceProperty.getLinks())
-            //devicePropertyResource.addProperty(new PropertyImpl(WOT.HAS_LINK), link);
-
         return devicePropertyResource;
     }
 
@@ -51,16 +48,10 @@ public class DevicePropertyMapper {
         deviceProperty.setDescription(DatasetUtils.getStatementStringOrNull(resource.getProperty(new PropertyImpl(WOT.DESCRIPTION))));
         deviceProperty.setUnit(DatasetUtils.getStatementStringOrNull(resource.getProperty(new PropertyImpl(Schema.UNIT_TEXT))));
         deviceProperty.setType(DatasetUtils.getStatementStringOrNull(resource.getProperty(new PropertyImpl(Schema.TYPE))));
-        deviceProperty.setValueType(DatasetUtils.getStatementStringOrNull(resource.getProperty(new PropertyImpl(Schema.VALUE_TYPE))));
+
         deviceProperty.setCurrentValue(DatasetUtils.getStatementStringOrNull(resource.getProperty(new PropertyImpl(Schema.VALUE))));
-
-        String minimumString = DatasetUtils.getStatementStringOrNull(resource.getProperty(new PropertyImpl(Schema.MINIMUM)));
-        if (minimumString != null)
-            deviceProperty.setMinimum(Double.parseDouble(minimumString));
-
-        String maximumString = DatasetUtils.getStatementStringOrNull(resource.getProperty(new PropertyImpl(Schema.MAXIMUM)));
-        if (maximumString != null)
-            deviceProperty.setMaximum(Double.parseDouble(maximumString));
+        deviceProperty.setMinimum(DatasetUtils.getStatementStringOrNull(resource.getProperty(new PropertyImpl(Schema.MINIMUM))));
+        deviceProperty.setMaximum(DatasetUtils.getStatementStringOrNull(resource.getProperty(new PropertyImpl(Schema.MAXIMUM))));
 
         return deviceProperty;
     }

@@ -50,6 +50,7 @@ public class DeviceMapper {
                 Map<String, Object> inputPropertiesMap = (Map<String, Object>) inputMap.getOrDefault("properties", null);
                 for (Map.Entry<String, Object> inputPropertiesEntry:inputPropertiesMap.entrySet()) {
                     DeviceProperty deviceActionProperty = mapper.convertValue(inputPropertiesEntry.getValue(), DeviceProperty.class);
+                    deviceActionProperty.setName(inputPropertiesEntry.getKey());
                     inputProperties.add(deviceActionProperty);
                 }
                 input.setProperties(inputProperties);

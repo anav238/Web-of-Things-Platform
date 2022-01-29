@@ -43,7 +43,7 @@ public class DeviceController {
         return ResponseEntity.ok(DeviceResourceParser.getDeviceById(dataset, model, id));
     }
 
-    @PostMapping("/devices/url")
+    @PostMapping("/devices")
     ResponseEntity<Device> newDeviceByUrl(@RequestBody CreateDeviceByUrl requestBody) {
         String specification = HTTPClient.sendRequest(requestBody.getDeviceUrl());
         try {
@@ -58,7 +58,6 @@ public class DeviceController {
         return ResponseEntity.ok(new Device());
     }
 
-    @PostMapping("/devices")
     ResponseEntity<Device> newDevice(@RequestBody Device newDevice) {
         dataset.begin(ReadWrite.WRITE);
 

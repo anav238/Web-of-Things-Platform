@@ -1,6 +1,7 @@
 package com.wade.webofthings.utils.dataset.parsers;
 
 import com.wade.webofthings.models.device.Device;
+import com.wade.webofthings.models.device.DeviceCategory;
 import com.wade.webofthings.utils.constants.VocabularyConstants;
 import com.wade.webofthings.utils.constants.WOT;
 import com.wade.webofthings.utils.mappers.DeviceActionMapper;
@@ -81,12 +82,14 @@ public class DeviceResourceParser {
                     Literal title = soln.getLiteral("title");
                     Literal description = soln.getLiteral("description");
                     Literal baseLink = soln.getLiteral("baseLink");
+                    Literal category = soln.getLiteral("category");
                     Resource property = soln.getResource("property");
                     Resource action = soln.getResource("action");
 
                     String titleString = title != null ? title.toString() : null;
                     String descriptionString = description != null ? description.toString() : null;
                     String baseLinkString = baseLink != null ? baseLink.toString() : null;
+                    String categoryString = category != null ? category.toString() : null;
 
                     System.out.println(property);
                     System.out.println(soln);
@@ -94,6 +97,8 @@ public class DeviceResourceParser {
                     device.setTitle(titleString);
                     device.setDescription(descriptionString);
                     device.setBaseLink(baseLinkString);
+                    if (categoryString != null)
+                        device.setCategory(DeviceCategory.valueOf(categoryString));
 
                     if (property != null)
                         device.addProperty(DevicePropertyMapper.mapResourceToDeviceProperty(property));

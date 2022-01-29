@@ -15,10 +15,9 @@ public class DeviceProperty {
     private String type;
     private String name;
     private String title;
-    private String valueType;
     private String currentValue;
-    private double minimum;
-    private double maximum;
+    private String minimum;
+    private String maximum;
     private String unit;
     private String description;
 
