@@ -28,7 +28,7 @@ public class DeviceProperty {
         if (baseLink == null)
             return;
         try {
-            String response = HTTPClient.sendRequest(baseLink + "/properties/" + name);
+            String response = HTTPClient.sendGetRequest(baseLink + "/properties/" + name);
             Map<String, String> propertyJson = objectMapper.readValue(response, new TypeReference<>() {
             });
             currentValue = propertyJson.get(name);

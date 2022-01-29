@@ -23,8 +23,10 @@ import org.apache.jena.vocabulary.VCARD;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.net.http.HttpClient;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -72,6 +74,17 @@ public class DeviceController {
         return ResponseEntity.ok(device.getActions());
     }
 
+    @PostMapping("/devices/{id}/actions")
+    public ResponseEntity<String> executeDeviceAction(@PathVariable String id, @RequestBody Map<String, Object> payload) {
+        Device device = DeviceResourceParser.getDeviceById(dataset, model, id);
+        String requestUrl = device.getBaseLink() + "/actions";
+        try {
+            return HTTPClient.sendPostRequest(requestUrl, payload);
+        } catch (HttpClientErrorException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid action");
+        }
+    }
+
     @GetMapping("/devices/{id}/actions/{actionName}")
     ResponseEntity<DeviceAction> getDeviceAction(@PathVariable String id, @PathVariable String actionName) {
         Device device = DeviceResourceParser.getDeviceById(dataset, model, id);
@@ -83,7 +96,7 @@ public class DeviceController {
 
     @PostMapping("/devices")
     ResponseEntity<Device> newDeviceByUrl(@RequestBody CreateDeviceByUrl requestBody) {
-        String specification = HTTPClient.sendRequest(requestBody.getDeviceUrl());
+        String specification = HTTPClient.sendGetRequest(requestBody.getDeviceUrl());
         try {
             Map<String, Object> specificationJson = objectMapper.readValue(specification, new TypeReference<Map<String, Object>>() {
             });
