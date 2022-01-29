@@ -17,13 +17,13 @@ import org.apache.jena.query.Dataset;
 import org.apache.jena.query.ReadWrite;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.shared.NotFoundException;
 import org.apache.jena.vocabulary.VCARD;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
-import javax.annotation.security.RolesAllowed;
-import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.UUID;
 
@@ -41,7 +41,11 @@ public class UserController {
 
     @GetMapping("/users/{id}")
     ResponseEntity<PublicUser> one(@PathVariable String id) {
-        return ResponseEntity.ok(UserResourceParser.getPublicUserById(dataset, model, id));
+        try {
+            return ResponseEntity.ok(UserResourceParser.getPublicUserById(dataset, model, id));
+        } catch (NotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not Found");
+        }
     }
 
     @PostMapping("/users")
@@ -61,23 +65,6 @@ public class UserController {
         return ResponseEntity.ok(new PublicUser(newUser.getId(), newUser.getUsername()));
     }
 
-    ResponseEntity<User> newUserWithId(User newUser, String id) {
-        dataset.begin(ReadWrite.WRITE);
-
-        newUser.setId(id);
-        String personURI = "/users/" + newUser.getId();
-
-        model.createResource(personURI)
-                .addProperty(VCARD.UID, newUser.getId())
-                .addProperty(VCARD.CLASS, String.valueOf(ResourceType.USER))
-                .addProperty(VCARD.NICKNAME, newUser.getUsername())
-                .addProperty(VCARD.KEY, newUser.getPassword());
-
-        dataset.commit();
-
-        return ResponseEntity.ok(newUser);
-    }
-
     @PatchMapping(path = "/users/{id}", consumes = "application/json-patch+json")
     public ResponseEntity<User> patchUser(@PathVariable String id, @RequestBody JsonPatch patch) {
         try {
@@ -88,8 +75,6 @@ public class UserController {
 
             UserResourceUpdater.updateUser(dataset, model, user, userPatched);
             return ResponseEntity.ok(userPatched);
-            //deleteUser(id);
-            //return newUserWithId(userPatched, id);
 
         } catch (JsonPatchException | JsonProcessingException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -114,13 +99,11 @@ public class UserController {
     }
 
     @PostMapping("/users/authenticate")
-    public ResponseEntity Authenticate(@RequestBody User newUser){
-        try{
-            String jws=UserResourceParser.Authenticate(dataset,model,newUser.getUsername(),newUser.getPassword());
+    public ResponseEntity Authenticate(@RequestBody User newUser) {
+        try {
+            String jws = UserResourceParser.Authenticate(dataset, model, newUser.getUsername(), newUser.getPassword());
             return ResponseEntity.ok(jws);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             return new ResponseEntity(HttpStatus.UNAUTHORIZED);
         }
     }

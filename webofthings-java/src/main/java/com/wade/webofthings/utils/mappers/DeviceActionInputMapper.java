@@ -2,10 +2,10 @@ package com.wade.webofthings.utils.mappers;
 
 import com.wade.webofthings.models.device.DeviceActionInput;
 import com.wade.webofthings.models.device.DeviceProperty;
+import com.wade.webofthings.utils.DatasetUtils;
 import com.wade.webofthings.utils.constants.JsonSchema;
 import com.wade.webofthings.utils.constants.Schema;
 import com.wade.webofthings.utils.constants.WOT;
-import com.wade.webofthings.utils.DatasetUtils;
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.rdf.model.impl.PropertyImpl;
 import org.apache.jena.vocabulary.VCARD;
@@ -23,18 +23,18 @@ public class DeviceActionInputMapper {
             put(new PropertyImpl(Schema.TYPE), deviceActionInput.getType());
         }};
 
-        for (var propertyAndValue:propertyStringMap.entrySet()) {
+        for (var propertyAndValue : propertyStringMap.entrySet()) {
             if (propertyAndValue.getValue() != null)
                 deviceActionInputResource.addProperty(propertyAndValue.getKey(), propertyAndValue.getValue());
         }
 
         if (deviceActionInput.getRequired() != null)
-        for (String required:deviceActionInput.getRequired())
-            deviceActionInputResource.addProperty(new PropertyImpl(JsonSchema.REQUIRES), required);
+            for (String required : deviceActionInput.getRequired())
+                deviceActionInputResource.addProperty(new PropertyImpl(JsonSchema.REQUIRES), required);
 
         if (deviceActionInput.getProperties() != null)
-        for (DeviceProperty deviceProperty:deviceActionInput.getProperties())
-            deviceActionInputResource.addProperty(new PropertyImpl(WOT.HAS_PROPERTY_AFFORDANCE),DevicePropertyMapper.mapToResource(model, deviceProperty));
+            for (DeviceProperty deviceProperty : deviceActionInput.getProperties())
+                deviceActionInputResource.addProperty(new PropertyImpl(WOT.HAS_PROPERTY_AFFORDANCE), DevicePropertyMapper.mapToResource(model, deviceProperty));
 
         return deviceActionInputResource;
     }

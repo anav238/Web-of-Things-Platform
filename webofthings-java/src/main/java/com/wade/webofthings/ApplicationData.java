@@ -10,10 +10,9 @@ import javax.annotation.PreDestroy;
 @Component
 public class ApplicationData {
     private static ApplicationData singleInstance = null;
-
-    private String dataDirectory = "Dataset2";
     public Dataset dataset;
     public Model model;
+    private String dataDirectory = "Dataset2";
 
     private ApplicationData() {
         dataset = TDBFactory.createDataset(dataDirectory);

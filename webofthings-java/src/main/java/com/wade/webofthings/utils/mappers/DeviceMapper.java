@@ -25,7 +25,7 @@ public class DeviceMapper {
 
         Map<String, Object> properties = (Map<String, Object>) deviceSpecification.getOrDefault("properties", null);
         if (properties != null) {
-            for (var propertyEntry:properties.entrySet()) {
+            for (var propertyEntry : properties.entrySet()) {
                 DeviceProperty deviceProperty = mapper.convertValue(propertyEntry.getValue(), DeviceProperty.class);
                 deviceProperty.setName(propertyEntry.getKey());
                 device.addProperty(deviceProperty);
@@ -34,8 +34,8 @@ public class DeviceMapper {
 
         Map<String, Object> actions = (Map<String, Object>) deviceSpecification.getOrDefault("actions", null);
         if (actions != null) {
-            for (Map.Entry<String, Object> actionEntry:actions.entrySet()) {
-                Map<String,Object> deviceActionMap = (Map<String, Object>) actionEntry.getValue();
+            for (Map.Entry<String, Object> actionEntry : actions.entrySet()) {
+                Map<String, Object> deviceActionMap = (Map<String, Object>) actionEntry.getValue();
                 DeviceAction deviceAction = new DeviceAction();
                 deviceAction.setName(actionEntry.getKey());
                 deviceAction.setTitle(deviceActionMap.getOrDefault("title", "").toString());
@@ -48,7 +48,7 @@ public class DeviceMapper {
 
                 List<DeviceProperty> inputProperties = new ArrayList<>();
                 Map<String, Object> inputPropertiesMap = (Map<String, Object>) inputMap.getOrDefault("properties", null);
-                for (Map.Entry<String, Object> inputPropertiesEntry:inputPropertiesMap.entrySet()) {
+                for (Map.Entry<String, Object> inputPropertiesEntry : inputPropertiesMap.entrySet()) {
                     DeviceProperty deviceActionProperty = mapper.convertValue(inputPropertiesEntry.getValue(), DeviceProperty.class);
                     deviceActionProperty.setName(inputPropertiesEntry.getKey());
                     inputProperties.add(deviceActionProperty);

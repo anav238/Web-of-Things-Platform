@@ -3,18 +3,6 @@ package com.wade.webofthings.models.user;
 import io.jsonwebtoken.Claims;
 
 public class UserIdentity {
-    public boolean isAuthorized() {
-        return Authorized;
-    }
-
-    public io.jsonwebtoken.Claims getClaims() {
-        return Claims;
-    }
-
-    public String getUserId() {
-        return UserId;
-    }
-
     private boolean Authorized;
     private Claims Claims;
     private String UserId;
@@ -25,8 +13,20 @@ public class UserIdentity {
         UserId = userId;
     }
 
-    public static UserIdentity Unathorized(){
-        return new UserIdentity(false,null,null);
+    public static UserIdentity Unathorized() {
+        return new UserIdentity(false, null, null);
+    }
+
+    public boolean isAuthorized() {
+        return Authorized;
+    }
+
+    public io.jsonwebtoken.Claims getClaims() {
+        return Claims;
+    }
+
+    public String getUserId() {
+        return UserId;
     }
 
 }

@@ -1,13 +1,13 @@
 package com.wade.webofthings.models.device;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wade.webofthings.utils.http.HTTPClient;
 import lombok.Data;
 
 import java.util.Map;
+import java.util.Objects;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -29,11 +29,24 @@ public class DeviceProperty {
             return;
         try {
             String response = HTTPClient.sendRequest(baseLink + "/properties/" + name);
-            Map<String, String> propertyJson = objectMapper.readValue(response,  new TypeReference<>(){});
+            Map<String, String> propertyJson = objectMapper.readValue(response, new TypeReference<>() {
+            });
             currentValue = propertyJson.get(name);
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DeviceProperty that = (DeviceProperty) o;
+        return Objects.equals(name, that.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
     }
 }

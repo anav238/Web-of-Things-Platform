@@ -6,8 +6,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wade.webofthings.ApplicationData;
 import com.wade.webofthings.models.ResourceType;
 import com.wade.webofthings.models.device.*;
-import com.wade.webofthings.utils.constants.WOT;
 import com.wade.webofthings.utils.DatasetUtils;
+import com.wade.webofthings.utils.constants.WOT;
 import com.wade.webofthings.utils.dataset.parsers.DeviceResourceParser;
 import com.wade.webofthings.utils.http.HTTPClient;
 import com.wade.webofthings.utils.mappers.DeviceActionMapper;
@@ -18,12 +18,16 @@ import org.apache.jena.query.ReadWrite;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.impl.PropertyImpl;
+import org.apache.jena.shared.NotFoundException;
 import org.apache.jena.vocabulary.VCARD;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 @RestController
@@ -40,14 +44,49 @@ public class DeviceController {
 
     @GetMapping("/devices/{id}")
     ResponseEntity<Device> one(@PathVariable String id) {
-        return ResponseEntity.ok(DeviceResourceParser.getDeviceById(dataset, model, id));
+        try {
+            return ResponseEntity.ok(DeviceResourceParser.getDeviceById(dataset, model, id));
+        } catch (NotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Device not Found");
+        }
+    }
+
+    @GetMapping("/devices/{id}/properties")
+    ResponseEntity<Set<DeviceProperty>> getDeviceProperties(@PathVariable String id) {
+        Device device = DeviceResourceParser.getDeviceById(dataset, model, id);
+        return ResponseEntity.ok(device.getProperties());
+    }
+
+    @GetMapping("/devices/{id}/properties/{propertyName}")
+    ResponseEntity<DeviceProperty> getDeviceProperty(@PathVariable String id, @PathVariable String propertyName) {
+        Device device = DeviceResourceParser.getDeviceById(dataset, model, id);
+        for (DeviceProperty deviceProperty : device.getProperties())
+            if (deviceProperty.getName().equals(propertyName))
+                return ResponseEntity.ok(deviceProperty);
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Property Not Found");
+    }
+
+    @GetMapping("/devices/{id}/actions")
+    ResponseEntity<Set<DeviceAction>> getDeviceActions(@PathVariable String id) {
+        Device device = DeviceResourceParser.getDeviceById(dataset, model, id);
+        return ResponseEntity.ok(device.getActions());
+    }
+
+    @GetMapping("/devices/{id}/actions/{actionName}")
+    ResponseEntity<DeviceAction> getDeviceAction(@PathVariable String id, @PathVariable String actionName) {
+        Device device = DeviceResourceParser.getDeviceById(dataset, model, id);
+        for (DeviceAction deviceAction : device.getActions())
+            if (deviceAction.getName().equals(actionName))
+                return ResponseEntity.ok(deviceAction);
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Action not Found");
     }
 
     @PostMapping("/devices")
     ResponseEntity<Device> newDeviceByUrl(@RequestBody CreateDeviceByUrl requestBody) {
         String specification = HTTPClient.sendRequest(requestBody.getDeviceUrl());
         try {
-            Map<String, Object> specificationJson = objectMapper.readValue(specification,  new TypeReference<Map<String,Object>>(){});
+            Map<String, Object> specificationJson = objectMapper.readValue(specification, new TypeReference<Map<String, Object>>() {
+            });
             Device device = DeviceMapper.mapDeviceSpecificationToDevice(specificationJson);
             device.setCategory(DeviceCategory.valueOf(requestBody.getDeviceCategory()));
             device.setBaseLink(requestBody.getDeviceUrl());

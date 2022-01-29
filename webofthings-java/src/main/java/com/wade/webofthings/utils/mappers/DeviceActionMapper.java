@@ -1,13 +1,11 @@
 package com.wade.webofthings.utils.mappers;
 
 import com.wade.webofthings.models.device.DeviceAction;
-import com.wade.webofthings.utils.constants.JsonSchema;
-import com.wade.webofthings.utils.constants.WOT;
 import com.wade.webofthings.utils.DatasetUtils;
+import com.wade.webofthings.utils.constants.WOT;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.rdf.model.impl.PropertyImpl;
 import org.apache.jena.vocabulary.VCARD;
 
@@ -24,7 +22,7 @@ public class DeviceActionMapper {
             put(new PropertyImpl(WOT.DESCRIPTION), deviceAction.getDescription());
         }};
 
-        for (var propertyAndValue:propertyStringMap.entrySet()) {
+        for (var propertyAndValue : propertyStringMap.entrySet()) {
             if (propertyAndValue.getValue() != null)
                 deviceActionResource.addProperty(propertyAndValue.getKey(), propertyAndValue.getValue());
         }

@@ -11,7 +11,6 @@ import com.wade.webofthings.models.home.Home;
 import com.wade.webofthings.models.home.HomeUserIdentifier;
 import com.wade.webofthings.models.user.ChangeHomeRoleRequest;
 import com.wade.webofthings.models.user.UserIdentity;
-import com.wade.webofthings.models.user.UserRole;
 import com.wade.webofthings.utils.DatasetUtils;
 import com.wade.webofthings.utils.dataset.parsers.HomeResourceParser;
 import com.wade.webofthings.utils.dataset.parsers.UserResourceParser;
@@ -22,14 +21,14 @@ import org.apache.jena.query.Dataset;
 import org.apache.jena.query.ReadWrite;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.shared.NotFoundException;
 import org.apache.jena.vocabulary.VCARD;
 import org.apache.jena.vocabulary.VCARD4;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
-import javax.annotation.security.RolesAllowed;
 import java.util.List;
 import java.util.UUID;
 
@@ -47,16 +46,20 @@ public class HomeController {
     }
 
     @GetMapping("/homes/{id}")
-    ResponseEntity<Home> one(@PathVariable String id, @RequestHeader (value = "authorization")String jwt) {
-        UserIdentity identity= UserResourceParser.Authorize(jwt);
-        if(!identity.isAuthorized()){
-            return new ResponseEntity(HttpStatus.UNAUTHORIZED);
-        }
-        String role=UserResourceParser.getUserRoleForHomeId(dataset,model,id,identity.getUserId());
-        if(role.equals("OWNER"))
+    ResponseEntity<Home> one(@PathVariable String id, @RequestHeader(value = "authorization") String jwt) {
+        UserIdentity identity = UserResourceParser.Authorize(jwt);
+        if (!identity.isAuthorized())
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
+
+        String role = UserResourceParser.getUserRoleForHomeId(dataset, model, id, identity.getUserId());
+        if (role.equals("OWNER")) {
+            try {
                 return ResponseEntity.ok(HomeResourceParser.getHomeById(dataset, model, id));
-        else
-            return new ResponseEntity(HttpStatus.UNAUTHORIZED);
+            } catch (NotFoundException e) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Home not Found");
+            }
+        } else
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
     }
 
     @PostMapping("/homes")

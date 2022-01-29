@@ -1,9 +1,9 @@
 package com.wade.webofthings.utils.mappers;
 
 import com.wade.webofthings.models.device.DeviceProperty;
+import com.wade.webofthings.utils.DatasetUtils;
 import com.wade.webofthings.utils.constants.Schema;
 import com.wade.webofthings.utils.constants.WOT;
-import com.wade.webofthings.utils.DatasetUtils;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
@@ -33,7 +33,7 @@ public class DevicePropertyMapper {
 
         }};
 
-        for (var propertyAndValue:propertyStringMap.entrySet()) {
+        for (var propertyAndValue : propertyStringMap.entrySet()) {
             if (propertyAndValue.getValue() != null)
                 devicePropertyResource.addProperty(propertyAndValue.getKey(), propertyAndValue.getValue());
         }

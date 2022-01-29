@@ -7,6 +7,7 @@ import com.wade.webofthings.utils.constants.VocabularyConstants;
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.shared.NotFoundException;
 import org.apache.jena.system.Txn;
 
 import java.util.ArrayList;
@@ -32,6 +33,8 @@ public class HomeResourceParser {
         Txn.executeRead(dataset, () -> {
             try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
                 ResultSet results = qexec.execSelect();
+                if (!results.hasNext())
+                    throw new NotFoundException("Home not found");
                 while (results.hasNext()) {
                     QuerySolution soln = results.nextSolution();
                     Literal id = soln.getLiteral("id");
@@ -81,8 +84,8 @@ public class HomeResourceParser {
                     String nameString = name != null ? name.toString() : null;
                     home.setName(nameString);
 
-                    String currentUserId = currentUserIdLiteral != null? currentUserIdLiteral.toString() : null;
-                    String currentUserRole = currentUserRoleLiteral != null? currentUserRoleLiteral.toString() : null;
+                    String currentUserId = currentUserIdLiteral != null ? currentUserIdLiteral.toString() : null;
+                    String currentUserRole = currentUserRoleLiteral != null ? currentUserRoleLiteral.toString() : null;
 
                     System.out.println(soln);
 

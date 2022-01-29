@@ -13,16 +13,13 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.shared.NotFoundException;
 import org.apache.jena.system.Txn;
 
 import java.util.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class UserResourceParser {
-    private static String SECRET_KEY ="Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5Ea";
+    private static String SECRET_KEY = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5Ea";
 
     public static List<PublicUser> getAllPublicUsers(Dataset dataset, Model model, String usernameToSearch) {
         String queryString = VocabularyConstants.VCARD_PREFIX + " " +
@@ -67,8 +64,11 @@ public class UserResourceParser {
         Txn.executeRead(dataset, () -> {
             try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
                 ResultSet results = qexec.execSelect();
+                if (!results.hasNext())
+                    throw new NotFoundException("User not found");
+
                 QuerySolution soln = results.nextSolution();
-                System.out.println("getuserbyid "+soln);
+                System.out.println("getuserbyid " + soln);
 
                 Literal username = soln.getLiteral("username");
                 Literal password = soln.getLiteral("password");
@@ -87,7 +87,7 @@ public class UserResourceParser {
         return new PublicUser(user.getId(), user.getUsername());
     }
 
-    public static String Authenticate(Dataset dataset, Model model, String username, String password){
+    public static String Authenticate(Dataset dataset, Model model, String username, String password) {
         String queryString = VocabularyConstants.VCARD_PREFIX + " " +
                 "SELECT ?id " +
                 "WHERE { ?user vcard:NICKNAME \"" + username + "\" . " +
@@ -115,33 +115,32 @@ public class UserResourceParser {
         //int EXPIRATION_IN_SECONDS = 120000;
         //Date expiration=new Date(nowMillis+EXPIRATION_IN_SECONDS);
 
-        String subject=user.getUsername();
+        String subject = user.getUsername();
         JwtBuilder builder = Jwts.builder().setId(user.getId())
                 .setIssuedAt(now)
                 //.setExpiration(expiration)
                 .setSubject(subject)
                 .setIssuer("Auth")
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY);
-        String jws=builder.compact();
+        String jws = builder.compact();
         return jws;
     }
 
-    public static UserIdentity Authorize(String jwt){
-        if(jwt.length()<10)
+    public static UserIdentity Authorize(String jwt) {
+        if (jwt.length() < 10)
             return UserIdentity.Unathorized();
-        try{
+        try {
             Claims claims = Jwts.parser()
-                .setSigningKey(SECRET_KEY)
-                .parseClaimsJws(jwt.substring(7)).getBody();
-            return new UserIdentity(true,claims, claims.getId());
-        }
-        catch(Exception e){
+                    .setSigningKey(SECRET_KEY)
+                    .parseClaimsJws(jwt.substring(7)).getBody();
+            return new UserIdentity(true, claims, claims.getId());
+        } catch (Exception e) {
             return UserIdentity.Unathorized();
         }
 
     }
 
-    public static String getUserRoleForHomeId(Dataset dataset, Model model, String homeId,String userId){
+    public static String getUserRoleForHomeId(Dataset dataset, Model model, String homeId, String userId) {
         String queryString = VocabularyConstants.VCARD_PREFIX + " " +
                 VocabularyConstants.VCARD4_PREFIX + " " +
                 "SELECT ?homeId ?userRole ?userId" +
@@ -152,7 +151,7 @@ public class UserResourceParser {
                 "}";
 
         Query query = QueryFactory.create(queryString);
-        User user=new User();
+        User user = new User();
         Txn.executeRead(dataset, () -> {
             try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
                 ResultSet results = qexec.execSelect();
@@ -161,17 +160,17 @@ public class UserResourceParser {
                     System.out.println(soln);
 
                     Literal homeIdFromQuery = soln.getLiteral("homeId");
-                    String homeIdString = homeIdFromQuery != null? homeIdFromQuery.toString() : null;
+                    String homeIdString = homeIdFromQuery != null ? homeIdFromQuery.toString() : null;
 
 
                     Literal userRole = soln.getLiteral("userRole");
-                    String userRoleString = userRole != null? userRole.toString() : null;
+                    String userRoleString = userRole != null ? userRole.toString() : null;
 
 
-                    boolean txt=    homeId.equals(homeId);
+                    boolean txt = homeId.equals(homeId);
                     System.out.println(txt);
 
-                    if(homeIdString.equals(homeId)) {
+                    if (homeIdString.equals(homeId)) {
                         user.setUsername(userRoleString);
                     }
 
@@ -179,7 +178,7 @@ public class UserResourceParser {
             }
         });
         //In this case in username we have actually the role
-        if(user.getUsername()!=null)
+        if (user.getUsername() != null)
             return user.getUsername();
         return "";
     }
@@ -204,10 +203,10 @@ public class UserResourceParser {
                     System.out.println(soln);
 
                     Literal homeId = soln.getLiteral("homeId");
-                    String homeIdString = homeId != null? homeId.toString() : null;
+                    String homeIdString = homeId != null ? homeId.toString() : null;
 
                     Literal userRole = soln.getLiteral("userRole");
-                    String userRoleString = userRole != null? userRole.toString() : null;
+                    String userRoleString = userRole != null ? userRole.toString() : null;
 
                     if (userRoleString != null && !userRoleString.equals("USER") && homeIdString != null) {
                         homeIdsAndRoles.put(homeIdString, UserRole.valueOf(userRoleString));

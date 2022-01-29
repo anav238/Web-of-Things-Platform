@@ -10,8 +10,8 @@ import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.shared.NotFoundException;
 import org.apache.jena.system.Txn;
-import org.apache.jena.vocabulary.VCARD;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,7 +61,7 @@ public class DeviceResourceParser {
                 "SELECT ?title ?description ?property ?action ?baseLink ?category " +
                 //"?propertyName ?propertyDescription ?propertyMaximum ?property " +
                 "WHERE { ?device  vcard:CLASS \"DEVICE\" . " +
-                "?device vcard:UID \"" + id +  "\" . " +
+                "?device vcard:UID \"" + id + "\" . " +
                 "?device <" + WOT.DESCRIPTION + "> ?description . " +
                 "?device <" + WOT.TITLE + "> ?title . " +
                 "OPTIONAL { ?device vcard:CATEGORIES ?category } " +
@@ -76,6 +76,8 @@ public class DeviceResourceParser {
         Txn.executeRead(dataset, () -> {
             try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
                 ResultSet results = qexec.execSelect();
+                if (!results.hasNext())
+                    throw new NotFoundException("Device not found!");
                 while (results.hasNext()) {
                     QuerySolution soln = results.nextSolution();
 
