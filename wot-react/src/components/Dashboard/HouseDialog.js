@@ -10,7 +10,7 @@ import IconButton from '@mui/material/IconButton';
 import Button from '@mui/material/Button';
 import {AddBox, RemoveCircle} from '@mui/icons-material';
 
-const userRoles = ['Owner', 'Member', 'Child']
+const userRoles = ['Owner', 'Member', 'Guest','Child']
 
 export default function HouseDialog({isDialogOpen ,setIsDialogOpen, submitForm, formData, setFormData, isEdit}) {
 

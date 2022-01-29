@@ -10,10 +10,11 @@ const icons = ['Dashboard', 'Person', 'Help', 'Settings', 'Logout'];
 
 
 const NavigationBar = () => {
-    const [ navSelected, setNavSelected ] = useState(null);
+    const [ navSelected, setNavSelected ] = useState(window.location.pathname.split('/')[1]);
     const { currentUser, logout } = useAuth();
     const location = useLocation()
     const navigate = useNavigate()
+
 
     const clickNavigator = (navigator) => {
         if( navigator === navSelected)
@@ -21,7 +22,7 @@ const NavigationBar = () => {
         if (navigator === 'Logout') {
             logout()
             setNavSelected(null)
-            navigate('/')
+            navigate('/login')
         }
         else {
             setNavSelected(navigator)

@@ -18,9 +18,10 @@ export function AuthProvider({children}) {
             email: email
         }
 
-        return axios.post('http://localhost:5005/api/Users', data).catch(err =>{
-            return err.response.status
-        })
+        return 200;
+        // return axios.post('http://localhost:5005/api/Users', data).catch(err =>{
+        //     return err.response.status
+        // })
     }
 
     function login(username, password){
@@ -28,8 +29,9 @@ export function AuthProvider({children}) {
             username: username,
             password: password
         }
+
         setCurrentUser(data)
-        
+        return 200;
         // return axios.post('http://localhost:5005/api/Users/authenticate', data).then(
         //     res => {
         //         setCurrentUser(res.data)

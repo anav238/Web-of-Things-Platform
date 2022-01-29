@@ -21,8 +21,9 @@ a{
     &-body{
         flex-grow: 1;
         padding: 50px;
-        max-height: 100vh;
+        height: 100vh;
         overflow-y: scroll;
+        background-color: $gray-bg-color;
         
         &-inner{
             margin: auto;

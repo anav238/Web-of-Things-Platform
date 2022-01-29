@@ -16,7 +16,7 @@ export default function BoardMenu(
         <div className='dashboard-boardMenu'>
             <div className='dashboard-boardMenu-row'>
                 <div className='dashboard-boardMenu-row-item green'
-                    onClick={() => {setComponentSelected(components[0]); setHouseSelected(null)}}>
+                    onClick={() => {setComponentSelected(components[0]);}}>
                     <div className={`dashboard-boardMenu-row-item-icon green-linear 
                         ${components[0] === componentSelected ? 'green-linear--selected' : ""}`}>
                         <MapsHomeWork fontSize='large'/> 
