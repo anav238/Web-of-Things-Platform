@@ -40,7 +40,6 @@ public class UserController {
             produces = "application/json; charset=utf-8")
     @ResponseBody
     ResponseEntity<String> all(@RequestParam(required = false) String username) throws JsonProcessingException {
-        //objectMapper.registerModule(new JsonldModule());
         List<PublicUser> publicUsers = UserResourceParser.getAllPublicUsers(dataset, model, username);
         return ResponseEntity.ok(objectMapper.writeValueAsString(publicUsers));
     }
@@ -50,7 +49,6 @@ public class UserController {
     @ResponseBody
     ResponseEntity<String> one(@PathVariable String id) throws JsonProcessingException {
         try {
-            //objectMapper.registerModule(new JsonldModule());
             PublicUser user = UserResourceParser.getPublicUserById(dataset, model, id);
             String userJsonLd = objectMapper.writeValueAsString(user);
             return ResponseEntity.ok(userJsonLd);
@@ -74,9 +72,7 @@ public class UserController {
                 .addProperty(VCARD.KEY, newUser.getPassword());
 
         dataset.commit();
-        //objectMapper.registerModule(new JsonldModule());
         return ResponseEntity.ok(objectMapper.writeValueAsString(new PublicUser(newUser.getId(), newUser.getUsername())));
-        //return ResponseEntity.ok(new PublicUser(newUser.getId(), newUser.getUsername()));
     }
 
     @RequestMapping(value = "/users/{id}", method = RequestMethod.PATCH,
@@ -90,8 +86,9 @@ public class UserController {
             System.out.println("user patched: " + userPatched.toString());
 
             UserResourceUpdater.updateUser(dataset, model, user, userPatched);
-            //objectMapper.registerModule(new JsonldModule());
             return ResponseEntity.ok(objectMapper.writeValueAsString(userPatched));
+        } catch (NotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not Found");
         } catch (JsonPatchException | JsonProcessingException e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -108,8 +105,11 @@ public class UserController {
             produces = "application/json; charset=utf-8")
     @ResponseBody
     ResponseEntity<String> getUserHomes(@PathVariable String userId) throws JsonProcessingException {
-        //objectMapper.registerModule(new JsonldModule());
-        return ResponseEntity.ok(objectMapper.writeValueAsString(UserResourceParser.getUserHomes(dataset, model, userId)));
+        try {
+            return ResponseEntity.ok(objectMapper.writeValueAsString(UserResourceParser.getUserHomes(dataset, model, userId)));
+        } catch (NotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not Found");
+        }
     }
 
     @DeleteMapping("/users/{id}")

@@ -109,6 +109,8 @@ public class HomeController {
             HomeResourceUpdater.updateHome(dataset, model, home, homePatched);
             return ResponseEntity.ok(objectMapper.writeValueAsString(homePatched));
 
+        } catch (NotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not Found");
         } catch (JsonPatchException | JsonProcessingException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
@@ -118,8 +120,12 @@ public class HomeController {
             produces = "application/json; charset=utf-8")
     @ResponseBody
     public ResponseEntity<JsonObject> patchHome(@PathVariable String homeId, @PathVariable String userId, @RequestBody ChangeHomeRoleRequest request) {
-        HomeResourceUpdater.updateHomeUserRole(dataset, model, homeId, userId, request.getRole());
-        return ResponseEntity.status(HttpStatus.OK).build();
+        try {
+            HomeResourceUpdater.updateHomeUserRole(dataset, model, homeId, userId, request.getRole());
+            return ResponseEntity.status(HttpStatus.OK).build();
+        } catch (NotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not Found");
+        }
     }
 
     private Home applyPatchToHome(JsonPatch patch, Home targetHome) throws JsonPatchException, JsonProcessingException {

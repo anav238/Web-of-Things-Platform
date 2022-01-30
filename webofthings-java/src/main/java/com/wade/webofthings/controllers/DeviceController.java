@@ -62,18 +62,26 @@ public class DeviceController {
             produces = "application/json; charset=utf-8")
     @ResponseBody
     ResponseEntity<String> getDeviceProperties(@PathVariable String id) throws JsonProcessingException {
-        Device device = DeviceResourceParser.getDeviceById(dataset, model, id);
-        return ResponseEntity.ok(objectMapper.writeValueAsString(device.getProperties()));
+        try {
+            Device device = DeviceResourceParser.getDeviceById(dataset, model, id);
+            return ResponseEntity.ok(objectMapper.writeValueAsString(device.getProperties()));
+        } catch (NotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Device not Found");
+        }
     }
 
     @RequestMapping(value = "/devices/{id}/properties/{propertyName}", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     @ResponseBody
     ResponseEntity<String> getDeviceProperty(@PathVariable String id, @PathVariable String propertyName) throws JsonProcessingException {
-        Device device = DeviceResourceParser.getDeviceById(dataset, model, id);
-        for (DeviceProperty deviceProperty : device.getProperties())
-            if (deviceProperty.getName().equals(propertyName))
-                return ResponseEntity.ok(objectMapper.writeValueAsString(deviceProperty));
+        try {
+            Device device = DeviceResourceParser.getDeviceById(dataset, model, id);
+            for (DeviceProperty deviceProperty : device.getProperties())
+                if (deviceProperty.getName().equals(propertyName))
+                    return ResponseEntity.ok(objectMapper.writeValueAsString(deviceProperty));
+        } catch (NotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Device not Found");
+        }
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Property Not Found");
     }
 
@@ -81,20 +89,28 @@ public class DeviceController {
             produces = "application/json; charset=utf-8")
     @ResponseBody
     ResponseEntity<String> getDeviceActions(@PathVariable String id) throws JsonProcessingException {
-        Device device = DeviceResourceParser.getDeviceById(dataset, model, id);
-        return ResponseEntity.ok(objectMapper.writeValueAsString(device.getActions()));
+        try {
+            Device device = DeviceResourceParser.getDeviceById(dataset, model, id);
+            return ResponseEntity.ok(objectMapper.writeValueAsString(device.getActions()));
+        } catch (NotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Device not Found");
+        }
     }
 
     @RequestMapping(value = "/devices/{id}/actions", method = RequestMethod.POST,
             produces = "application/json; charset=utf-8")
     @ResponseBody
     public ResponseEntity<String> executeDeviceAction(@PathVariable String id, @RequestBody Map<String, Object> payload) {
-        Device device = DeviceResourceParser.getDeviceById(dataset, model, id);
-        String requestUrl = device.getBaseLink() + "/actions";
         try {
-            return HTTPClient.sendPostRequest(requestUrl, payload);
-        } catch (HttpClientErrorException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid action");
+            Device device = DeviceResourceParser.getDeviceById(dataset, model, id);
+            String requestUrl = device.getBaseLink() + "/actions";
+            try {
+                return HTTPClient.sendPostRequest(requestUrl, payload);
+            } catch (HttpClientErrorException e) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid action");
+            }
+        } catch (NotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Device not Found");
         }
     }
 
@@ -102,10 +118,14 @@ public class DeviceController {
             produces = "application/json; charset=utf-8")
     @ResponseBody
     ResponseEntity<String> getDeviceAction(@PathVariable String id, @PathVariable String actionName) throws JsonProcessingException {
-        Device device = DeviceResourceParser.getDeviceById(dataset, model, id);
-        for (DeviceAction deviceAction : device.getActions())
-            if (deviceAction.getName().equals(actionName))
-                return ResponseEntity.ok(objectMapper.writeValueAsString(deviceAction));
+        try {
+            Device device = DeviceResourceParser.getDeviceById(dataset, model, id);
+            for (DeviceAction deviceAction : device.getActions())
+                if (deviceAction.getName().equals(actionName))
+                    return ResponseEntity.ok(objectMapper.writeValueAsString(deviceAction));
+        } catch (NotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Device not Found");
+        }
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Action not Found");
     }
 
