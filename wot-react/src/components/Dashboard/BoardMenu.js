@@ -4,7 +4,7 @@ import {MapsHomeWork, Group, EmojiObjects, PlayLesson, } from '@mui/icons-materi
 
 export default function BoardMenu(
     {
-        data,
+        houses,
         houseSelected, setHouseSelected,
         components,
         componentSelected,setComponentSelected
@@ -28,13 +28,13 @@ export default function BoardMenu(
                                 {houseSelected.name} 
                             </div>
                             <div className='dashboard-boardMenu-row-item-subtitle'>
-                                {data?.houses?.length} houses 
+                                {houses?.length} houses 
                             </div>
                         </>)
                         :
                         (<>
                             <div className='dashboard-boardMenu-row-item-title'>
-                                {data?.houses?.length} houses 
+                                {houses?.length} houses 
                             </div>
                         </>)
 

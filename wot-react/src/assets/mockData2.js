@@ -15,8 +15,7 @@ export const houses_mock = [
           }
       ],
       "deviceIds": [
-        "ba93d2a5-76f3-486d-b53c-62639a723dce",
-        "bd5777e4-2f9b-459a-8671-51a840e183c7"
+        "851de9de-e6a6-4817-ac12-68a19f875e51"
       ]
     },
     {
@@ -67,181 +66,238 @@ export const houses_mock = [
   ]
 
 export  const devices_mock = [
-    // first device
     {
-        "id": "4ee812a6-c701-4324-b4b6-d46c0dee464f",
-        "name": "string",
-        "description": "string",
-        "category": "Entertainment",
-        "baseLink": "string",
-        "properties": [
+      "uri": "/devices/851de9de-e6a6-4817-ac12-68a19f875e51",
+      "id": "851de9de-e6a6-4817-ac12-68a19f875e51",
+      "title": "My Lamp",
+      "description": "A web connected lamp",
+      "category": null,
+      "baseLink": null,
+      "properties": [
           {
-            "type": "string",
-            "title": "string",
-            "valueType": "string",
-            "currentValue": "string",
-            "minimum": 0,
-            "maximum": 0,
-            "unit": "string",
-            "description": "string",
-            "links": [
-              "string"
-            ]
-          }
-        ],
-        "actions": [
+            "type": "boolean",
+            "name": "Power",
+            "title": null,
+            "currentValue": 'On',
+            "minimum": null,
+            "maximum": null,
+            "unit": null,
+            "description": "Whether the lamp is turned on"
+        },
+        {
+            "type": "integer",
+            "name": "Brightness",
+            "title": null,
+            "currentValue": 40,
+            "minimum": null,
+            "maximum": null,
+            "unit": "percent",
+            "description": "The level of light from 0-100"
+        }
+      ],
+      "actions": [
           {
-            "title": "string",
-            "description": "string",
+              "name": "Fade",
+              "title": null,
+              "description": "Fade the lamp to a given level",
+              "input": {
+                  "type": "object",
+                  "required": [
+                      "brightness",
+                      "duration"
+                  ],
+                  "properties": [
+                      {
+                          "type": "integer",
+                          "name": null,
+                          "title": null,
+                          "currentValue": null,
+                          "minimum": null,
+                          "maximum": null,
+                          "unit": "percent",
+                          "description": null
+                      },
+                      {
+                          "type": "integer",
+                          "name": null,
+                          "title": null,
+                          "currentValue": null,
+                          "minimum": null,
+                          "maximum": null,
+                          "unit": "milliseconds",
+                          "description": null
+                      }
+                  ]
+              }
+          },
+          {
+            "name": "Fade",
+            "title": null,
+            "description": "Fade the lamp to a given level",
             "input": {
-              "type": "string",
+                "type": "object",
+                "required": [
+                    "brightness",
+                    "duration"
+                ],
+                "properties": [
+                    {
+                        "type": "integer",
+                        "name": null,
+                        "title": null,
+                        "currentValue": null,
+                        "minimum": null,
+                        "maximum": null,
+                        "unit": "percent",
+                        "description": null
+                    },
+                    {
+                        "type": "integer",
+                        "name": null,
+                        "title": null,
+                        "currentValue": null,
+                        "minimum": null,
+                        "maximum": null,
+                        "unit": "milliseconds",
+                        "description": null
+                    }
+                ]
+            }
+        },
+        {
+          "name": "Fade",
+          "title": null,
+          "description": "Fade the lamp to a given level",
+          "input": {
+              "type": "object",
               "required": [
-                "string"
+                  "brightness",
+                  "duration"
               ],
               "properties": [
-                {
-                  "type": "string",
-                  "title": "string",
-                  "valueType": "string",
-                  "currentValue": "string",
-                  "minimum": 0,
-                  "maximum": 0,
-                  "unit": "string",
-                  "description": "string",
-                  "links": [
-                    "string"
-                  ]
-                }
+                  {
+                      "type": "integer",
+                      "name": null,
+                      "title": null,
+                      "currentValue": null,
+                      "minimum": null,
+                      "maximum": null,
+                      "unit": "percent",
+                      "description": null
+                  },
+                  {
+                      "type": "integer",
+                      "name": null,
+                      "title": null,
+                      "currentValue": null,
+                      "minimum": null,
+                      "maximum": null,
+                      "unit": "milliseconds",
+                      "description": null
+                  }
               ]
-            },
-            "links": [
-              "string"
-            ]
           }
-        ],
-        "events": [
-          "string"
-        ],
-        "links": [
-          "string"
-        ]
+      }
+      ]
     },
-    // second device
     {
-        "id": "d711ab88-1222-45e2-b03f-7ed3f83a3120",
-        "name": "string",
-        "description": "string",
-        "category": "Entertainment",
-        "baseLink": "string",
-        "properties": [
+      "uri": "/devices/851de9de-e6a6-4817-ac12-68a19f875e51",
+      "id": "851de9de-e6a6-4817-ac12-68a19f875e51",
+      "title": "My TV",
+      "description": "A web connected TV",
+      "category": null,
+      "baseLink": null,
+      "properties": [
           {
-            "type": "string",
-            "title": "string",
-            "valueType": "string",
-            "currentValue": "string",
-            "minimum": 0,
-            "maximum": 0,
-            "unit": "string",
-            "description": "string",
-            "links": [
-              "string"
-            ]
-          }
-        ],
-        "actions": [
+            "type": "boolean",
+            "name": "Power",
+            "title": null,
+            "currentValue": 'Off',
+            "minimum": null,
+            "maximum": null,
+            "unit": null,
+            "description": "Whether the lamp is turned on"
+        },
+        {
+            "type": "integer",
+            "name": "Brightness",
+            "title": null,
+            "currentValue": 0,
+            "minimum": null,
+            "maximum": null,
+            "unit": "percent",
+            "description": "The level of light from 0-100"
+        }
+      ],
+      "actions": [
           {
-            "title": "string",
-            "description": "string",
-            "input": {
-              "type": "string",
-              "required": [
-                "string"
-              ],
-              "properties": [
-                {
-                  "type": "string",
-                  "title": "string",
-                  "valueType": "string",
-                  "currentValue": "string",
-                  "minimum": 0,
-                  "maximum": 0,
-                  "unit": "string",
-                  "description": "string",
-                  "links": [
-                    "string"
+              "name": "Power On/Off",
+              "title": null,
+              "description": "Fade the lamp to a given level",
+              "input": {
+                  "type": "object",
+                  "required": [
+                      "brightness",
+                      "duration"
+                  ],
+                  "properties": [
+                      {
+                          "type": "integer",
+                          "name": null,
+                          "title": null,
+                          "currentValue": null,
+                          "minimum": null,
+                          "maximum": null,
+                          "unit": "percent",
+                          "description": null
+                      },
+                      {
+                          "type": "integer",
+                          "name": null,
+                          "title": null,
+                          "currentValue": null,
+                          "minimum": null,
+                          "maximum": null,
+                          "unit": "milliseconds",
+                          "description": null
+                      }
                   ]
-                }
-              ]
-            },
-            "links": [
-              "string"
-            ]
-          }
-        ],
-        "events": [
-          "string"
-        ],
-        "links": [
-          "string"
-        ]
-    },
-    // third device
-    {
-        "id": "fad8fecb-892a-4f7e-96d9-42f41709cec5",
-        "name": "string",
-        "description": "string",
-        "category": "Entertainment",
-        "baseLink": "string",
-        "properties": [
+              }
+          },
           {
-            "type": "string",
-            "title": "string",
-            "valueType": "string",
-            "currentValue": "string",
-            "minimum": 0,
-            "maximum": 0,
-            "unit": "string",
-            "description": "string",
-            "links": [
-              "string"
-            ]
-          }
-        ],
-        "actions": [
-          {
-            "title": "string",
-            "description": "string",
+            "name": "Change volume",
+            "title": null,
+            "description": "Fade the lamp to a given level",
             "input": {
-              "type": "string",
-              "required": [
-                "string"
-              ],
-              "properties": [
-                {
-                  "type": "string",
-                  "title": "string",
-                  "valueType": "string",
-                  "currentValue": "string",
-                  "minimum": 0,
-                  "maximum": 0,
-                  "unit": "string",
-                  "description": "string",
-                  "links": [
-                    "string"
-                  ]
-                }
-              ]
-            },
-            "links": [
-              "string"
-            ]
-          }
-        ],
-        "events": [
-          "string"
-        ],
-        "links": [
-          "string"
-        ]
-    }  
+                "type": "object",
+                "required": [
+                    "brightness",
+                    "duration"
+                ],
+                "properties": [
+                    {
+                        "type": "integer",
+                        "name": null,
+                        "title": null,
+                        "currentValue": null,
+                        "minimum": null,
+                        "maximum": null,
+                        "unit": "percent",
+                        "description": null
+                    },
+                    {
+                        "type": "integer",
+                        "name": null,
+                        "title": null,
+                        "currentValue": null,
+                        "minimum": null,
+                        "maximum": null,
+                        "unit": "milliseconds",
+                        "description": null
+                    }
+                ]
+            }
+        }
+      ]
+    }
   ]

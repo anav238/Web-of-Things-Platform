@@ -3,6 +3,7 @@ import './Dashboard.scss'
 import BoardMenu from './BoardMenu';
 import Houses from './Houses';
 import Users from './Users';
+import Devices from './Devices';
 import {houses_mock, users_mock, devices_mock} from '../../assets/mockData2' 
 
 const components = ['Houses', 'Users', 'Devices', 'Action'];
@@ -11,6 +12,7 @@ export default function Dashboard() {
     const [ componentSelected, setComponentSelected ] = useState(components[0]);
 
     const [houses, setHouses] = useState(houses_mock);
+    const [devices, setDevices] = useState(devices_mock);
 
     const [ houseSelected, setHouseSelected ] = useState(null)
     // const [ deviceSelected, setDeviceSelected ] = useState(null)
@@ -23,7 +25,7 @@ export default function Dashboard() {
             </div>
             
             <BoardMenu 
-                data={{houses, users_mock, devices_mock}}
+                houses={houses}
                 houseSelected={houseSelected}
                 setHouseSelected={setHouseSelected}
                 components={components}
@@ -50,6 +52,13 @@ export default function Dashboard() {
                             return (
                             <Users
                                 houseSelected={houseSelected}
+                                />
+                            )
+                        case components[2]:
+                            return (
+                            <Devices
+                                houseSelected={houseSelected}
+                                devices={devices_mock}
                                 />
                             )
                         default:
