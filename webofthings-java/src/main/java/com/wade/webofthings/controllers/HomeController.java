@@ -16,6 +16,7 @@ import com.wade.webofthings.utils.dataset.parsers.HomeResourceParser;
 import com.wade.webofthings.utils.dataset.parsers.UserResourceParser;
 import com.wade.webofthings.utils.dataset.updaters.HomeResourceUpdater;
 import com.wade.webofthings.utils.mappers.HomeUserIdentifierMapper;
+import ioinformarics.oss.jackson.module.jsonld.JsonldModule;
 import jakarta.json.JsonObject;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.ReadWrite;
@@ -37,16 +38,19 @@ public class HomeController {
     private final ApplicationData applicationData = ApplicationData.getInstance();
     private final Dataset dataset = applicationData.dataset;
     private final Model model = applicationData.model;
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JsonldModule());
 
-    @GetMapping("/homes")
-    ResponseEntity<List<Home>> all() {
-
-        return ResponseEntity.ok(HomeResourceParser.getAllHomes(dataset, model));
+    @RequestMapping(value = "/homes", method = RequestMethod.GET,
+            produces = "application/json; charset=utf-8")
+    @ResponseBody
+    ResponseEntity<String> all() throws JsonProcessingException {
+        return ResponseEntity.ok(objectMapper.writeValueAsString(HomeResourceParser.getAllHomes(dataset, model)));
     }
 
-    @GetMapping("/homes/{id}")
-    ResponseEntity<Home> one(@PathVariable String id, @RequestHeader(value = "authorization") String jwt) {
+    @RequestMapping(value = "/homes/{id}", method = RequestMethod.GET,
+            produces = "application/json; charset=utf-8")
+    @ResponseBody
+    ResponseEntity<String> one(@PathVariable String id, @RequestHeader(value = "authorization") String jwt) throws JsonProcessingException {
         UserIdentity identity = UserResourceParser.Authorize(jwt);
         if (!identity.isAuthorized())
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
@@ -54,7 +58,7 @@ public class HomeController {
         String role = UserResourceParser.getUserRoleForHomeId(dataset, model, id, identity.getUserId());
         if (role.equals("OWNER")) {
             try {
-                return ResponseEntity.ok(HomeResourceParser.getHomeById(dataset, model, id));
+                return ResponseEntity.ok(objectMapper.writeValueAsString(HomeResourceParser.getHomeById(dataset, model, id)));
             } catch (NotFoundException e) {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Home not Found");
             }
@@ -62,13 +66,15 @@ public class HomeController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
     }
 
-    @PostMapping("/homes")
-    ResponseEntity<Home> newHome(@RequestBody Home newHome) {
+    @RequestMapping(value = "/homes", method = RequestMethod.POST,
+            produces = "application/json; charset=utf-8")
+    @ResponseBody
+    ResponseEntity<String> newHome(@RequestBody Home newHome) throws JsonProcessingException {
         String randomId = String.valueOf(UUID.randomUUID());
-        return newHomeWithId(newHome, randomId);
+        return ResponseEntity.ok(objectMapper.writeValueAsString(newHomeWithId(newHome, randomId)));
     }
 
-    private ResponseEntity<Home> newHomeWithId(Home newHome, String id) {
+    private Home newHomeWithId(Home newHome, String id) {
         dataset.begin(ReadWrite.WRITE);
 
         newHome.setId(id);
@@ -87,11 +93,13 @@ public class HomeController {
 
         dataset.commit();
 
-        return ResponseEntity.ok(newHome);
+        return newHome;
     }
 
-    @PatchMapping(path = "/homes/{id}", consumes = "application/json-patch+json")
-    public ResponseEntity<Home> patchHome(@PathVariable String id, @RequestBody JsonPatch patch) {
+    @RequestMapping(value = "/homes/{id}", method = RequestMethod.PATCH,
+            consumes = "application/json-patch+json", produces = "application/json; charset=utf-8")
+    @ResponseBody
+    public ResponseEntity<String> patchHome(@PathVariable String id, @RequestBody JsonPatch patch) {
         try {
             Home home = HomeResourceParser.getHomeById(dataset, model, id);
             Home homePatched = applyPatchToHome(patch, home);
@@ -99,22 +107,25 @@ public class HomeController {
             System.out.println("patched home: " + homePatched.toString());
 
             HomeResourceUpdater.updateHome(dataset, model, home, homePatched);
-            return ResponseEntity.ok(homePatched);
+            return ResponseEntity.ok(objectMapper.writeValueAsString(homePatched));
 
         } catch (JsonPatchException | JsonProcessingException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
-    @PatchMapping("/homes/{homeId}/users/{userId}")
+    @RequestMapping(value = "/homes/{homeId}/users/{userId}", method = RequestMethod.PATCH,
+            produces = "application/json; charset=utf-8")
+    @ResponseBody
     public ResponseEntity<JsonObject> patchHome(@PathVariable String homeId, @PathVariable String userId, @RequestBody ChangeHomeRoleRequest request) {
         HomeResourceUpdater.updateHomeUserRole(dataset, model, homeId, userId, request.getRole());
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     private Home applyPatchToHome(JsonPatch patch, Home targetHome) throws JsonPatchException, JsonProcessingException {
-        JsonNode patched = patch.apply(objectMapper.convertValue(targetHome, JsonNode.class));
-        return objectMapper.treeToValue(patched, Home.class);
+        ObjectMapper patchMapper = new ObjectMapper();
+        JsonNode patched = patch.apply(patchMapper.convertValue(targetHome, JsonNode.class));
+        return patchMapper.treeToValue(patched, Home.class);
     }
 
     @DeleteMapping("/homes/{id}")

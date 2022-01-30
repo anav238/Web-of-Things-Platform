@@ -1,5 +1,10 @@
 package com.wade.webofthings.models.home;
 
+import com.wade.webofthings.utils.constants.VocabularyConstants;
+import ioinformarics.oss.jackson.module.jsonld.annotation.JsonldId;
+import ioinformarics.oss.jackson.module.jsonld.annotation.JsonldNamespace;
+import ioinformarics.oss.jackson.module.jsonld.annotation.JsonldProperty;
+import ioinformarics.oss.jackson.module.jsonld.annotation.JsonldResource;
 import lombok.Data;
 
 import java.util.HashSet;
@@ -7,11 +12,19 @@ import java.util.List;
 import java.util.Set;
 
 @Data
+@JsonldResource
+@JsonldNamespace(name = "vcard", uri = VocabularyConstants.VCARD_URL)
+
 public class Home {
+    @JsonldId
     private String uri;
+    @JsonldProperty("vcard:UID")
     private String id;
+    @JsonldProperty("vcard:NICKNAME")
     private String name;
+    @JsonldProperty(VocabularyConstants.VCARD4_URL + "hasMember")
     private Set<HomeUserIdentifier> users = new HashSet<>();
+    @JsonldProperty(VocabularyConstants.VCARD4_URL + "hasRelated")
     private Set<String> deviceIds = new HashSet<>();
 
     public Home() {
