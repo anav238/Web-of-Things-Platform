@@ -13,6 +13,7 @@ import com.wade.webofthings.utils.http.HTTPClient;
 import com.wade.webofthings.utils.mappers.DeviceActionMapper;
 import com.wade.webofthings.utils.mappers.DeviceMapper;
 import com.wade.webofthings.utils.mappers.DevicePropertyMapper;
+import ioinformarics.oss.jackson.module.jsonld.JsonldModule;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.ReadWrite;
 import org.apache.jena.rdf.model.Model;
@@ -37,44 +38,56 @@ public class DeviceController {
     private final ApplicationData applicationData = ApplicationData.getInstance();
     private final Dataset dataset = applicationData.dataset;
     private final Model model = applicationData.model;
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JsonldModule());
 
-    @GetMapping("/devices")
-    ResponseEntity<List<Device>> all() {
-        return ResponseEntity.ok(DeviceResourceParser.getAllDevices(dataset, model));
+    @RequestMapping(value = "/devices", method = RequestMethod.GET,
+            produces = "application/json; charset=utf-8")
+    @ResponseBody
+    ResponseEntity<String> all() throws JsonProcessingException {
+        return ResponseEntity.ok(objectMapper.writeValueAsString(DeviceResourceParser.getAllDevices(dataset, model)));
     }
 
-    @GetMapping("/devices/{id}")
-    ResponseEntity<Device> one(@PathVariable String id) {
+    @RequestMapping(value = "/devices/{id}", method = RequestMethod.GET,
+            produces = "application/json; charset=utf-8")
+    @ResponseBody
+    ResponseEntity<String> one(@PathVariable String id) throws JsonProcessingException {
         try {
-            return ResponseEntity.ok(DeviceResourceParser.getDeviceById(dataset, model, id));
+            return ResponseEntity.ok(objectMapper.writeValueAsString(DeviceResourceParser.getDeviceById(dataset, model, id)));
         } catch (NotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Device not Found");
         }
     }
 
-    @GetMapping("/devices/{id}/properties")
-    ResponseEntity<Set<DeviceProperty>> getDeviceProperties(@PathVariable String id) {
+    @RequestMapping(value = "/devices/{id}/properties", method = RequestMethod.GET,
+            produces = "application/json; charset=utf-8")
+    @ResponseBody
+    ResponseEntity<String> getDeviceProperties(@PathVariable String id) throws JsonProcessingException {
         Device device = DeviceResourceParser.getDeviceById(dataset, model, id);
-        return ResponseEntity.ok(device.getProperties());
+        return ResponseEntity.ok(objectMapper.writeValueAsString(device.getProperties()));
     }
 
-    @GetMapping("/devices/{id}/properties/{propertyName}")
-    ResponseEntity<DeviceProperty> getDeviceProperty(@PathVariable String id, @PathVariable String propertyName) {
+    @RequestMapping(value = "/devices/{id}/properties/{propertyName}", method = RequestMethod.GET,
+            produces = "application/json; charset=utf-8")
+    @ResponseBody
+    ResponseEntity<String> getDeviceProperty(@PathVariable String id, @PathVariable String propertyName) throws JsonProcessingException {
         Device device = DeviceResourceParser.getDeviceById(dataset, model, id);
         for (DeviceProperty deviceProperty : device.getProperties())
             if (deviceProperty.getName().equals(propertyName))
-                return ResponseEntity.ok(deviceProperty);
+                return ResponseEntity.ok(objectMapper.writeValueAsString(deviceProperty));
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Property Not Found");
     }
 
-    @GetMapping("/devices/{id}/actions")
-    ResponseEntity<Set<DeviceAction>> getDeviceActions(@PathVariable String id) {
+    @RequestMapping(value = "/devices/{id}/actions", method = RequestMethod.GET,
+            produces = "application/json; charset=utf-8")
+    @ResponseBody
+    ResponseEntity<String> getDeviceActions(@PathVariable String id) throws JsonProcessingException {
         Device device = DeviceResourceParser.getDeviceById(dataset, model, id);
-        return ResponseEntity.ok(device.getActions());
+        return ResponseEntity.ok(objectMapper.writeValueAsString(device.getActions()));
     }
 
-    @PostMapping("/devices/{id}/actions")
+    @RequestMapping(value = "/devices/{id}/actions", method = RequestMethod.POST,
+            produces = "application/json; charset=utf-8")
+    @ResponseBody
     public ResponseEntity<String> executeDeviceAction(@PathVariable String id, @RequestBody Map<String, Object> payload) {
         Device device = DeviceResourceParser.getDeviceById(dataset, model, id);
         String requestUrl = device.getBaseLink() + "/actions";
@@ -85,17 +98,21 @@ public class DeviceController {
         }
     }
 
-    @GetMapping("/devices/{id}/actions/{actionName}")
-    ResponseEntity<DeviceAction> getDeviceAction(@PathVariable String id, @PathVariable String actionName) {
+    @RequestMapping(value = "/devices/{id}/actions/{actionName}", method = RequestMethod.GET,
+            produces = "application/json; charset=utf-8")
+    @ResponseBody
+    ResponseEntity<String> getDeviceAction(@PathVariable String id, @PathVariable String actionName) throws JsonProcessingException {
         Device device = DeviceResourceParser.getDeviceById(dataset, model, id);
         for (DeviceAction deviceAction : device.getActions())
             if (deviceAction.getName().equals(actionName))
-                return ResponseEntity.ok(deviceAction);
+                return ResponseEntity.ok(objectMapper.writeValueAsString(deviceAction));
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Action not Found");
     }
 
-    @PostMapping("/devices")
-    ResponseEntity<Device> newDeviceByUrl(@RequestBody CreateDeviceByUrl requestBody) {
+    @RequestMapping(value = "/devices", method = RequestMethod.POST,
+            produces = "application/json; charset=utf-8")
+    @ResponseBody
+    ResponseEntity<String> newDeviceByUrl(@RequestBody CreateDeviceByUrl requestBody) {
         String specification = HTTPClient.sendGetRequest(requestBody.getDeviceUrl());
         try {
             Map<String, Object> specificationJson = objectMapper.readValue(specification, new TypeReference<Map<String, Object>>() {
@@ -103,14 +120,14 @@ public class DeviceController {
             Device device = DeviceMapper.mapDeviceSpecificationToDevice(specificationJson);
             device.setCategory(DeviceCategory.valueOf(requestBody.getDeviceCategory()));
             device.setBaseLink(requestBody.getDeviceUrl());
-            return newDevice(device);
+            return ResponseEntity.ok(objectMapper.writeValueAsString(newDevice(device)));
         } catch (JsonProcessingException e) {
             e.printStackTrace();
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error creating device");
         }
-        return ResponseEntity.ok(new Device());
     }
 
-    ResponseEntity<Device> newDevice(@RequestBody Device newDevice) {
+    Device newDevice(@RequestBody Device newDevice) {
         dataset.begin(ReadWrite.WRITE);
 
         newDevice.setId(String.valueOf(UUID.randomUUID()));
@@ -132,7 +149,7 @@ public class DeviceController {
 
         dataset.commit();
 
-        return ResponseEntity.ok(newDevice);
+        return newDevice;
     }
 
     @DeleteMapping("/devices/{id}")
