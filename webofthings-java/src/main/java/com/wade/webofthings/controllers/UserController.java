@@ -13,6 +13,7 @@ import com.wade.webofthings.models.user.User;
 import com.wade.webofthings.utils.DatasetUtils;
 import com.wade.webofthings.utils.dataset.parsers.UserResourceParser;
 import com.wade.webofthings.utils.dataset.updaters.UserResourceUpdater;
+import ioinformarics.oss.jackson.module.jsonld.JsonldModule;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.ReadWrite;
 import org.apache.jena.rdf.model.Model;
@@ -24,6 +25,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -34,22 +36,33 @@ public class UserController {
     private final Model model = applicationData.model;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @GetMapping("/users")
-    ResponseEntity<List<PublicUser>> all(@RequestParam(required = false) String username) {
-        return ResponseEntity.ok(UserResourceParser.getAllPublicUsers(dataset, model, username));
+    @RequestMapping(value = "/users", method = RequestMethod.GET,
+            produces = "application/json; charset=utf-8")
+    ResponseEntity<String> all(@RequestParam(required = false) String username) throws JsonProcessingException {
+        objectMapper.registerModule(new JsonldModule());
+        List<PublicUser> publicUsers = UserResourceParser.getAllPublicUsers(dataset, model, username);
+        return ResponseEntity.ok(objectMapper.writeValueAsString(publicUsers));
     }
 
-    @GetMapping("/users/{id}")
-    ResponseEntity<PublicUser> one(@PathVariable String id) {
+    @RequestMapping(value = "/users/{id}", method = RequestMethod.GET,
+            produces = "application/json; charset=utf-8")
+    @ResponseBody
+    ResponseEntity<String> one(@PathVariable String id) throws JsonProcessingException {
         try {
-            return ResponseEntity.ok(UserResourceParser.getPublicUserById(dataset, model, id));
+            objectMapper.registerModule(new JsonldModule());
+            PublicUser user = UserResourceParser.getPublicUserById(dataset, model, id);
+            String userJsonLd = objectMapper.writeValueAsString(user);
+            return ResponseEntity.ok(userJsonLd);
+            //return ResponseEntity.ok(UserResourceParser.getPublicUserById(dataset, model, id));
         } catch (NotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not Found");
         }
     }
 
-    @PostMapping("/users")
-    ResponseEntity<PublicUser> newUser(@RequestBody User newUser) {
+    @RequestMapping(value = "/users", method = RequestMethod.POST,
+            produces = "application/json; charset=utf-8")
+    @ResponseBody
+    ResponseEntity<String> newUser(@RequestBody User newUser) throws JsonProcessingException {
         dataset.begin(ReadWrite.WRITE);
         newUser.setId(String.valueOf(UUID.randomUUID()));
         String personURI = "/users/" + newUser.getId();
@@ -61,21 +74,25 @@ public class UserController {
                 .addProperty(VCARD.KEY, newUser.getPassword());
 
         dataset.commit();
-
-        return ResponseEntity.ok(new PublicUser(newUser.getId(), newUser.getUsername()));
+        objectMapper.registerModule(new JsonldModule());
+        return ResponseEntity.ok(objectMapper.writeValueAsString(new PublicUser(newUser.getId(), newUser.getUsername())));
+        //return ResponseEntity.ok(new PublicUser(newUser.getId(), newUser.getUsername()));
     }
 
-    @PatchMapping(path = "/users/{id}", consumes = "application/json-patch+json")
-    public ResponseEntity<User> patchUser(@PathVariable String id, @RequestBody JsonPatch patch) {
+    @RequestMapping(value = "/users/{id}", method = RequestMethod.PATCH,
+            consumes = "application/json-patch+json", produces = "application/json; charset=utf-8")
+    @ResponseBody
+    public ResponseEntity<String> patchUser(@PathVariable String id, @RequestBody JsonPatch patch) {
         try {
             User user = UserResourceParser.getUserById(dataset, model, id);
             User userPatched = applyPatchUser(patch, user);
-
+            userPatched.setUri("/users/" + userPatched.getId());
             System.out.println("user patched: " + userPatched.toString());
 
             UserResourceUpdater.updateUser(dataset, model, user, userPatched);
-            return ResponseEntity.ok(userPatched);
-
+            objectMapper.registerModule(new JsonldModule());
+            return ResponseEntity.ok(objectMapper.writeValueAsString(userPatched));
+            //return ResponseEntity.ok(userPatched);
         } catch (JsonPatchException | JsonProcessingException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
@@ -86,9 +103,12 @@ public class UserController {
         return objectMapper.treeToValue(patched, User.class);
     }
 
-    @GetMapping("/users/{userId}/homes")
-    ResponseEntity<List<Home>> getUserHomes(@PathVariable String userId) {
-        return ResponseEntity.ok(UserResourceParser.getUserHomes(dataset, model, userId));
+    @RequestMapping(value = "/users/{userId}/homes", method = RequestMethod.GET,
+            produces = "application/json; charset=utf-8")
+    @ResponseBody
+    ResponseEntity<String> getUserHomes(@PathVariable String userId) throws JsonProcessingException {
+        objectMapper.registerModule(new JsonldModule());
+        return ResponseEntity.ok(objectMapper.writeValueAsString(UserResourceParser.getUserHomes(dataset, model, userId)));
     }
 
     @DeleteMapping("/users/{id}")

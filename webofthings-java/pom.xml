@@ -69,6 +69,11 @@
             <artifactId>jaxb-api</artifactId>
             <version>2.3.1</version>
         </dependency>
+        <dependency>
+            <groupId>com.io-informatics.oss</groupId>
+            <artifactId>jackson-jsonld</artifactId>
+            <version>0.1.1</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
