@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
+@CrossOrigin
 public class HomeController {
     private final ApplicationData applicationData = ApplicationData.getInstance();
     private final Dataset dataset = applicationData.dataset;
