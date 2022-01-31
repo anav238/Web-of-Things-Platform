@@ -4,7 +4,7 @@ import BoardMenu from './BoardMenu';
 import Houses from './Houses';
 import Users from './Users';
 import Devices from './Devices';
-import {houses_mock, users_mock, devices_mock} from '../../assets/mockData2' 
+import {houses_mock, devices_mock} from '../../assets/mockData2' 
 
 const components = ['Houses', 'Users', 'Devices', 'Action'];
 

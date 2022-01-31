@@ -19,7 +19,7 @@ export default function Logo() {
 
 export function Logo2(){
     return(
-    <svg width="200" height="202.23710425960076" viewBox="0 0 200 202.23710425960076" class="css-1j8o68f">
+    <svg width="200" height="202.23710425960076" viewBox="0 0 200 202.23710425960076" className="css-1j8o68f">
        <defs id="SvgjsDefs1655"></defs>
        <g id="SvgjsG1656" featurekey="1p4tPl-0" transform="matrix(1.12866809380538,0,0,1.12866809380538,43.56659208058569,-21.106094215266022)" fill="#f9f7f7">
           <path xmlns="http://www.w3.org/2000/svg" d="M94.3,71.1H53.7v-2.3h32.9v-1.7H53.7V47.7L83,63.2l0.8-1.5L53.7,45.7v-2.7l29.1,15.4l0.8-1.5L53.7,41.1V31  H52v9.2l-5.4-2.9V18.7h-1.7v17.7l-13.4-7.1v0l0,0l0,0l0,0L5.7,43.5v6.6l5.7-3.1v25.8h20.1v0H52v8.4h1.7v-8.4h40.6V71.1z M52,67.1  h-5.4V43.9l5.4,2.9V67.1z M52,42.2v2.7L46.5,42v-2.7L52,42.2z M44.8,38.4V41L31.4,34v-2.7L44.8,38.4z M17.2,43.8L31.4,36v0L44.8,43  v24h-9.1V57H28v10.1h-4.3h-6.5V43.8z M44.8,68.8v2.3h-9.1v-2.3H44.8z M46.5,71.1v-2.3H52v2.3H46.5z"></path>

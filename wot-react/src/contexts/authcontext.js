@@ -17,11 +17,7 @@ export function AuthProvider({children}) {
             password: password,
             email: email
         }
-
-        return 200;
-        // return axios.post('http://localhost:5005/api/Users', data).catch(err =>{
-        //     return err.response.status
-        // })
+        return axios.post('users', data)
     }
 
     function login(username, password){
@@ -30,16 +26,19 @@ export function AuthProvider({children}) {
             password: password
         }
 
-        setCurrentUser(data)
-        return 200;
-        // return axios.post('http://localhost:5005/api/Users/authenticate', data).then(
-        //     res => {
-        //         setCurrentUser(res.data)
-        //         return res.status;
-        //     }
-        // ).catch(err =>{
-        //     return err.response.data.status
-        // })
+        return axios.post('users/authenticate', data).then(
+            res => {
+                const userId = JSON.parse(atob(res.data.split('.')[1]))?.jti;
+                setCurrentUser({
+                    id: userId,
+                    username: username,
+                    token: res.data
+                })
+                return res.status;
+            }
+        ).catch(err =>{
+            return err.response.status
+        })
     }
 
     function logout(){
@@ -53,6 +52,7 @@ export function AuthProvider({children}) {
 
     const value = {
         currentUser,
+        setCurrentUser,
         signup,
         login,
         logout

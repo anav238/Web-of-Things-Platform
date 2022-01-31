@@ -28,11 +28,16 @@ export default function Register() {
         try {
             setError("")
             setLoading(true)
-            const response = await signup(data.get('firstName'), data.get('lastName'),
-                data.get('username'), data.get('email'), data.get('password'))
-            switch (response) {
+            const response = await signup(
+                //data.get('firstName'),
+                //data.get('lastName'),
+                data.get('username'),
+                data.get('email'),
+                data.get('password')
+                )
+            switch (response.status) {
                 case 200:
-                    navigate("/dashboard")
+                    navigate("/login")
                     signup.cancel()
                     break;
                 case 401:
@@ -50,7 +55,7 @@ export default function Register() {
     useEffect(() => {
         setTimeout(() => {
             setError(null);
-        }, 5000);
+        }, 9000);
     }, [error])
 
     return (

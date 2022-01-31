@@ -1,30 +1,21 @@
-import React, {useState, useEffect} from 'react'
+import React from 'react'
 import TextField from '@mui/material/TextField';
-import MenuItem from '@mui/material/MenuItem';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import IconButton from '@mui/material/IconButton';
 import Button from '@mui/material/Button';
-import {AddBox, RemoveCircle} from '@mui/icons-material';
 
 
 export default function ActionDialog({isOpen ,setIsOpen, action, setAction}) {
 
-    const [formData, setFormData] = useState(null)
-
-    useEffect(() => {
-        
-    }, [action])
-
     const submitForm = () => {
         const data = {}
         data[action.name] = { input: {}};
-        action.input.properties.map( prop => {
-            data[action.name].input[prop.name] = prop.currentValue;
-        })
+        action.input.properties.map( prop => (
+            data[action.name].input[prop.name] = prop.currentValue
+        ))
         console.log(data);
     }
 
