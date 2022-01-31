@@ -109,9 +109,9 @@ export  const devices_mock = [
                   "properties": [
                       {
                           "type": "integer",
-                          "name": null,
+                          "name": "brightness",
                           "title": null,
-                          "currentValue": null,
+                          "currentValue": 40,
                           "minimum": null,
                           "maximum": null,
                           "unit": "percent",
@@ -119,9 +119,9 @@ export  const devices_mock = [
                       },
                       {
                           "type": "integer",
-                          "name": null,
+                          "name": "duration",
                           "title": null,
-                          "currentValue": null,
+                          "currentValue": 0,
                           "minimum": null,
                           "maximum": null,
                           "unit": "milliseconds",
@@ -130,79 +130,11 @@ export  const devices_mock = [
                   ]
               }
           },
-          {
-            "name": "Fade",
-            "title": null,
-            "description": "Fade the lamp to a given level",
-            "input": {
-                "type": "object",
-                "required": [
-                    "brightness",
-                    "duration"
-                ],
-                "properties": [
-                    {
-                        "type": "integer",
-                        "name": null,
-                        "title": null,
-                        "currentValue": null,
-                        "minimum": null,
-                        "maximum": null,
-                        "unit": "percent",
-                        "description": null
-                    },
-                    {
-                        "type": "integer",
-                        "name": null,
-                        "title": null,
-                        "currentValue": null,
-                        "minimum": null,
-                        "maximum": null,
-                        "unit": "milliseconds",
-                        "description": null
-                    }
-                ]
-            }
-        },
-        {
-          "name": "Fade",
-          "title": null,
-          "description": "Fade the lamp to a given level",
-          "input": {
-              "type": "object",
-              "required": [
-                  "brightness",
-                  "duration"
-              ],
-              "properties": [
-                  {
-                      "type": "integer",
-                      "name": null,
-                      "title": null,
-                      "currentValue": null,
-                      "minimum": null,
-                      "maximum": null,
-                      "unit": "percent",
-                      "description": null
-                  },
-                  {
-                      "type": "integer",
-                      "name": null,
-                      "title": null,
-                      "currentValue": null,
-                      "minimum": null,
-                      "maximum": null,
-                      "unit": "milliseconds",
-                      "description": null
-                  }
-              ]
-          }
-      }
       ]
     },
     {
-      "uri": "/devices/851de9de-e6a6-4817-ac12-68a19f875e51",
-      "id": "851de9de-e6a6-4817-ac12-68a19f875e51",
+      "uri": "/devices/851de9de-e6a6-4817-ac12-68a19f875e50",
+      "id": "851de9de-e6a6-4817-ac12-68a19f875e50",
       "title": "My TV",
       "description": "A web connected TV",
       "category": null,
@@ -237,30 +169,19 @@ export  const devices_mock = [
               "input": {
                   "type": "object",
                   "required": [
-                      "brightness",
-                      "duration"
+                      "Power On/Off",
                   ],
                   "properties": [
                       {
-                          "type": "integer",
-                          "name": null,
+                          "type": "boolean",
+                          "name": "Power On/Off",
                           "title": null,
-                          "currentValue": null,
+                          "currentValue": false,
                           "minimum": null,
                           "maximum": null,
-                          "unit": "percent",
+                          "unit": null,
                           "description": null
                       },
-                      {
-                          "type": "integer",
-                          "name": null,
-                          "title": null,
-                          "currentValue": null,
-                          "minimum": null,
-                          "maximum": null,
-                          "unit": "milliseconds",
-                          "description": null
-                      }
                   ]
               }
           },
@@ -271,30 +192,20 @@ export  const devices_mock = [
             "input": {
                 "type": "object",
                 "required": [
-                    "brightness",
+                    "volume",
                     "duration"
                 ],
                 "properties": [
                     {
                         "type": "integer",
-                        "name": null,
+                        "name": "volume",
                         "title": null,
-                        "currentValue": null,
+                        "currentValue": 20,
                         "minimum": null,
                         "maximum": null,
                         "unit": "percent",
                         "description": null
-                    },
-                    {
-                        "type": "integer",
-                        "name": null,
-                        "title": null,
-                        "currentValue": null,
-                        "minimum": null,
-                        "maximum": null,
-                        "unit": "milliseconds",
-                        "description": null
-                    }
+                    }    
                 ]
             }
         }

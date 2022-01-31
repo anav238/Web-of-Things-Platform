@@ -4,10 +4,11 @@ import {MapsHomeWork, Group, EmojiObjects, PlayLesson, } from '@mui/icons-materi
 
 export default function BoardMenu(
     {
-        houses,
-        houseSelected, setHouseSelected,
+        houses, devices,
+        houseSelected,
         components,
-        componentSelected,setComponentSelected
+        componentSelected,
+        setComponentSelected
     }
     ) 
 {
@@ -73,12 +74,13 @@ export default function BoardMenu(
                         <EmojiObjects fontSize='large'/> 
                     </div>
                     <div className='dashboard-boardMenu-row-item-title'>
+                        Devices
                         {
                             houseSelected &&
-                            <span className='dashboard-boardMenu-row-item-title-count'>
+                            <div className='dashboard-boardMenu-row-item-title-count'>
                                 {houseSelected.deviceIds?.length}
-                            </span>
-                        } Devices 
+                            </div>
+                        }  
                     </div>
                 </div>
                 <div className={`dashboard-boardMenu-row-item red ${!houseSelected ? 'gray' : ""}`}
@@ -92,10 +94,13 @@ export default function BoardMenu(
                         <PlayLesson fontSize='large'/> 
                     </div>
                     <div className='dashboard-boardMenu-row-item-title'>
+                        Action
                         {   
                             houseSelected &&
-                            <div className='dashboard-boardMenu-row-item-title-count'>4</div> 
-                        } Action 
+                            <div className='dashboard-boardMenu-row-item-title-count'>
+                                {devices.reduce((sum, device) => sum + device.actions?.length, 0)}
+                            </div> 
+                        }  
                     </div>
                 </div>
             </div>
