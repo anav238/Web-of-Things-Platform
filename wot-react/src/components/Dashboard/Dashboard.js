@@ -4,7 +4,7 @@ import BoardMenu from './BoardMenu';
 import Houses from './Houses';
 import Users from './Users';
 import Devices from './Devices';
-import {houses_mock, users_mock, devices_mock} from '../../assets/mockData2' 
+import {houses_mock, devices_mock} from '../../assets/mockData2' 
 
 const components = ['Houses', 'Users', 'Devices', 'Action'];
 
@@ -26,8 +26,8 @@ export default function Dashboard() {
             
             <BoardMenu 
                 houses={houses}
+                devices={devices}
                 houseSelected={houseSelected}
-                setHouseSelected={setHouseSelected}
                 components={components}
                 componentSelected={componentSelected}
                 setComponentSelected={setComponentSelected}
@@ -55,6 +55,13 @@ export default function Dashboard() {
                                 />
                             )
                         case components[2]:
+                            return (
+                            <Devices
+                                houseSelected={houseSelected}
+                                devices={devices_mock}
+                                />
+                            )
+                        case components[3]:
                             return (
                             <Devices
                                 houseSelected={houseSelected}

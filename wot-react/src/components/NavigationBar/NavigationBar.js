@@ -5,6 +5,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import * as MuiIcons from '@mui/icons-material';
 import Logo from '../../assets/logo';
 
+import Profile from './../Profile/Profile.js'
+
 const navigators = ['Dashboard', 'Profile', 'Help', 'Settings', 'Logout'];
 const icons = ['Dashboard', 'Person', 'Help', 'Settings', 'Logout'];
 
@@ -24,7 +26,13 @@ const NavigationBar = () => {
             setNavSelected(null)
             navigate('/login')
         }
-        else {
+        else if(navigator === 'Profile'){
+            setNavSelected(navigator)
+
+        }
+        else if(navigator === 'Settings'){
+        }
+        else { // Help, Dashboard
             setNavSelected(navigator)
             navigate(navigator)
         }
@@ -35,36 +43,40 @@ const NavigationBar = () => {
         return null;
 
     return (
-        <div className='navBar'>
-            <div className='navBar-logo'>
-                <Logo/>
-            </div>
-            <div className='navBar-account'>
-                <div className='navBar-account-img'>
-                    <img src={require('../../assets/avatar_default.jpg')} alt="avatar_img"/>
+        <>
+            <div className='navBar'>
+                <div className='navBar-logo'>
+                    <Logo/>
                 </div>
-                <div className='navBar-account-name'>{currentUser?.username}</div>
+                <div className='navBar-account'>
+                    <div className='navBar-account-img'>
+                        <img src={require('../../assets/avatar_default.jpg')} alt="avatar_img"/>
+                    </div>
+                    <div className='navBar-account-name'>{currentUser?.username}</div>
+                </div>
+                <div className='navBar-navigators'>
+                {
+                    navigators.map((navigator,index) =>{
+                        return(
+                            <div
+                                key={index}
+                                onClick={() => clickNavigator(navigator)}
+                                className={`navBar-navigators-item ${
+                                    navigator===navSelected ? 'navBar-navigators-item--selected' :""}`}
+                            >
+                                {React.createElement(MuiIcons[icons[index]])} {navigator}
+                            </div>
+                        )
+                    })
+                }
+                    
+                </div>
             </div>
-            <div className='navBar-navigators'>
-            {
-                navigators.map((navigator,index) =>{
-                    return(
-                        <div
-                            key={index}
-                            onClick={() => clickNavigator(navigator)}
-                            className={`navBar-navigators-item ${
-                                navigator===navSelected ? 'navBar-navigators-item--selected' :""}`}
-                        >
-                            {React.createElement(MuiIcons[icons[index]])} {navigator}
-                        </div>
-                    )
-                 } 
-
-                )
-            }
-                
-            </div>
-        </div>
+            <Profile
+                isDialogOpen={navSelected==='Profile'}
+                closeDialog={() => {setNavSelected('Dashboard'); navigate('Dashboard');}}
+            />
+        </>
     );
 };
 export default NavigationBar;

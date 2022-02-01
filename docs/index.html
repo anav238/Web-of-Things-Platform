@@ -48,44 +48,55 @@
     <section typeof="sa:Abstract" id="abstract" role="doc-abstract">
       <h2>Abstract</h2>
       <p>
-        This technical report presents the preliminary considerations about the implementation of the <a
+        This technical report presents the technical aspects regarding the implementation of the <a
           href="https://www.w3.org/WoT/">Web of Things</a> platform
         project done for the <span typeof="schema:Course" resource="https://profs.info.uaic.ro/~busaco/teach/courses/wade/"><a href="https://profs.info.uaic.ro/~busaco/teach/courses/wade/"> 
           <span property="schema:name">Web Application Development</span>
-          course</a></span>. The project will consist of a Web application that will allow
-        its users to manage their own smart homes by adding smart devices to the homes, interacting with the smart devices,
-        adding other users
-        to the home or allowing guests to temporarily access a category of their smart devices.
+          course</a></span>. The project consists of a Web application that allows
+        its users to manage their own smart homes by adding smart devices to the homes, interacting with the smart devices and
+        adding other users to the home.
       </p>
     </section>
     <section id="introduction" role="doc-introduction">
       <h2>Introduction</h2>
       <p>
-        We will develop the application using the REST paradigm, and the communication between the client (the front-end of the
-        application) and the server (the back-end application) will be done through a REST API. We made this design choice
+        We developed the application using the REST paradigm, and the communication between the client (the front-end of the
+        application) and the server (the back-end application) is done through a REST API. We made this design choice
         because the REST paradigm "enforces the separation of concerns and helps the client and the server components evolve
         independently" (<span typeof="schema:WebSite" resource="https://restfulapi.net/"><a role="doc-biblioref" href="https://restfulapi.net/"><span property="schema:name">Restful API website</span></a></span>), which is a general
-        development good practice that will also help us better organize inside the team.
+        development good practice that helped us better organize inside the team.
+      </p>
+    </section>
+    <section id="use-cases">
+      <h2>Use cases</h2>
+      <p>
+        The use cases that are covered in our application are the ones presented in the following use case diagram:
+      </p>
+      <figure typeof="sa:image">
+        <img src="../diagrams/UseCase.drawio.png" style="max-width: 100%">
+      </figure>
+      <p>
+        In the following sections, we will present more details regarding the implementation of this solution.
       </p>
     </section>
     <section id="internal-data-structures">
       <h2>Internal data structures/models</h2>
       <p>
-        The resources that will be used inside our Web application are: 
+        The resources that are used inside our Web application are: 
       </p>
       <ol>
         <li>
-          Users - at the root of the application, we have the application users. Besides credentials and other user information,
-          an application user will have associated a number of homes, inside which he will have a specific role: either Owner,
-          Member, Child or Guest.
+          Users - at the root of the application, we have the application users, having their associated credentials that they 
+          need to use for accessing the application. Besides credentials and other user information,
+          an application user will have associated a number of homes, inside which he will have a specific role: 
         </li>
        <li>
-        Homes - a home will contain a list of smart objects with associated categories and a list of members (application users) with associated roles. 
+        Homes - a home will contain a list of smart objects with associated categories and a list of members 
+        (application users) with associated roles (either Owner, Member, Child or Guest). 
        </li>
        <li>
-        Smart devices - each smart object will be stored with all data obtained from its WoT specification. This is useful since
-        we have easy access to the object’s properties and actions, and URIs that we can use to get values from the properties
-        or interact with the object.
+        Smart devices - each smart object will be stored with the relevant data obtained from its WoT specification. This is useful since
+        we have easy access to the object’s properties and action.
        </li>
       </ol>
       <p>The Owner of a home will be able to group the smart devices inside the home in the following categories:</p>
@@ -123,26 +134,27 @@
       </ol>
     </section>
     <p>
-      The resources presented previously will be accessible through the REST API, by making a GET request to the website’s
+      The resources presented previously are accessible through the REST API, by making a GET request to the website’s
       endpoint /{resourceName}/{resourceIdentifier}. Before fetching the resource, the server first checks if the user has the
-      necessary permissions to access that request. The responses of the REST API will always be JSON-LD objects, so that we
-      can query the data using SPARQL queries. Each API Call made by the front-end application will be authenticated using an
-      authorization token that will also be used to determine if the requester has the necessary rights to perform that
+      necessary permissions to access that request. The responses of the REST API will always be JSON-LD objects, offering 
+      context to each mapped field of the returned resource. Each API Call made by the front-end application (except the ones for 
+      registering a new user and retrieving an existing user's access token) is 
+      authenticated using an authorization token that will also be used to determine if the requester has the necessary rights to perform that
       operation.
     </p>
     <p>
-      For the architecture of the application, we will use a layered approach. The presentation layer, which will be the
-      front-end of the application, will communicate with the business layer, which will be the API of the application. The
-      business layer will handle checking the permissions of the user for which the API Calls are made, communicating with the
-      persistence layer to fetch application data from the database, and making API Calls to the smart devices, in order to
-      interact with them. The persistence layer will contain the SPARQL query logic, and the database layer will consist of
-      the NoSQL database.
+      For the architecture of the application, we use a layered approach. The presentation layer, which is the
+      front-end of the application, communicates with the business layer, which is the API of the application. The
+      business layer handles checking the permissions of the user for which the API Calls are made, using utilitary functions for 
+      communicating with the database, and making API Calls to the smart devices, in order to
+      interact with them. The utilitary functions contain the SPARQL query logic, which communicate with the TDB database 
+      using Apache Jena.
     </p>
   <section id="mozilla-web-things-framework">
       <h2>Mozilla WebThings Framework</h2>
       <p>
         For this project, in order to simulate the IoTs adopting the <a href="https://www.w3.org/TR/wot-thing-description">WoT
-          Thing Description specification</a>, we will be using
+          Thing Description specification</a>, we are using
           <span typeof="schema:SoftwareApplication" resource="https://webthings.io/framework/"><a href="https://webthings.io/framework/">
             <span property="schema:name">Mozilla WebThings Framework</span></a></span>. According to the project’s official webpage:
       </p>
@@ -154,23 +166,21 @@
         capabilities and monitor and control it over the web.
       </blockquote>
       <p>
-        These IoTs will be built in a server separate from the main Web Application. This server will expose different endpoints
-        for each object, respecting the Web Thing API specification for that specific object. As a starting point for the
-        WebThings server, we will use the <span typeof="schema:SoftwareSourceCode" resource="https://github.com/WebThingsIO/webthing-python">
+        These IoTs are built in a server separate from the main Web Application. This server exposes different endpoints
+        for each object, respecting the Web Thing API specification for that specific object. For the WebThings server, 
+        we use the <span typeof="schema:SoftwareSourceCode" resource="https://github.com/WebThingsIO/webthing-python">
         <a href="https://github.com/WebThingsIO/webthing-python"><span property="schema:name">official code example for the framework</span></a></span>
-        containing a lamp and a humidity sensor, and we will create more
-        objects that the user can interact with there.
+        containing a lamp and a humidity sensor.
       </p>
       <p>
-        By configuring a GET operation on the root of this server, we will obtain the Web Thing descriptions of all the
-        objects deployed to this server. This will be part of the user flow with the user “discovering” new smart objects.
-        During this part, he will have the option to store the discovered smart objects in his home, which will offer him the
+        By using the URL of a smart device's WoT specification, a user will be able to save the new device in the 
+        application and then add it to his home. Adding a device to his home offers offer him the
         possibility to see the object’s properties and perform the supported actions on them.
       </p>
       <p>
-        The WoT descriptions of the objects will be stored in the application database, so that the user can easily control
-        his linked smart devices. The back-end server will then make API calls to interact with the smart objects by using the
-        base URL and the endpoints provided inside the descriptions.
+        The WoT descriptions of the objects are stored in the application's database, so that the user can easily control
+        his linked smart devices. The back-end server then makes API calls to interact with the smart objects by using the
+        base URL and constructing the endpoints for properties and actions using the base link and their names.
       </p>
   </section>
   <section id="linked-data-principles">
@@ -178,34 +188,137 @@
     <p>
       This application adheres to the linked data principles as each resource has a unique HTTP URI (represented by the REST
       API endpoint /{resourceType}/{resourceIdentifier}, which returns relevant information about that resource in the JSON-LD
-      format, containing data for discovering other linked resources. The WoT specifications of the objects will be stored as
-      they are, and we will use them as inspiration for representing the other resources. The front-end of the application
-      will also use the information inside the JSON-LD objects obtained from the API to associate HTML5 micro-data to the
-      content displayed in the web pages.
+      format, containing data for discovering other linked resources. The JSON-LD responses also contain information about the 
+      context of each property, so that crawlers can also understand their meanings.
     </p>
+    <p>
+      For expressing these properties, we used the following vocabularies:
+    </p>
+    <ul>
+      <li>VCARD and VCARD4 - used for Users and Homes, we chose to use these because of the built-in support for those 
+      vocabularies in Apache Jena. They are built specifically for persons and organisations, so they had useful properties 
+      for modelling these two entities.</li>
+      <li>Thing Description (TD) Ontology - built specifically by the Web Consortium for Web things, so it is very expressive for 
+      storing information about the smart devices from their WoT specifications </li>
+      <li>JSON Schema - used for expressing smart device properties and action inputs, also expressive as it is created for the 
+      specific purpose of describing JSON schemas.</li> 
+      <li>Schema.org - used for expressing properties that we did not find in the other vocabularies - this is not as expressive 
+      as the others, but it contains a huge variety of properties where we could find the missing pieces from our data.</li>
+    </ul>
   </section>
   <section id="data-storage">
     <h2>Data Storage</h2>
     <p>
-      The data will be stored using <span typeof="schema:SoftwareApplication" resource="https://brightstardb.com/">
-      <a href="https://brightstardb.com/"><span property="schema:name">BrightstarDB</span></a></span>, since it is a RDF triplestore with support for the 
-      <a href="https://en.wikipedia.org/wiki/.NET_Framework">.NET framework</a>, which we
-      will be using for developing the back-end server. It has an Entity Framework which enables us to define the data model
-      in the code and also use LINQ to create, update and delete objects, a Data Object layer for retrieving an object and all
-      its properties and also a RDF Client API for executing <a href="https://www.w3.org/TR/rdf-sparql-query/">SPARQL</a> queries.
+      At first, we wanted to use <span typeof="schema:SoftwareApplication" resource="https://brightstardb.com/">
+      <a href="https://brightstardb.com/"><span property="schema:name">BrightstarDB</span></a></span> for storing the data,
+      but we had issues configuring it in our project and we switched to Apache Jena, which is free, open-source and well-documented.
+      Apache Jena offered us TDB, which, according to their website, is a native high performance triple store, and the RDF API, 
+      which enabled us to easily work with resources inside the model and perform various SPARQL queries on the data.
     </p>
     <p>
-      Each user will be linked to the smart homes where he has access to, and each home will be linked to the smart devices it
-      contains. In order to depict these relationships, we will use the FOAF vocabulary, and each user will be a <a href="http://xmlns.com/foaf/spec/#term_member">member</a>
-      of a home, and each smart device will be a member of a home.
-    </p>
-    <p>
-      The most important interrogations that will be used inside the applications will be to find all homes linked to a user,
+      The most important interrogations that are used inside the applications are finding all homes linked to a user,
       all users that have a role inside a home, all smart devices inside a home and all properties and actions applicable to a
-      smart device. The SPARQL queries will be done in the back-end, so that the front-end will not need to handle the logic
-      of building and executing these queries. The results of the SPARQL queries will also be parsed in the back-end so the
+      smart device. The SPARQL queries are done in the back-end, so that the front-end does not need to handle the logic
+      of building and executing these queries. The results of the SPARQL queries are also be parsed in the back-end so the
       REST API will return the responses structured in a way that will require less processing on the front-end side.
     </p>
+  </section>
+  <section id="frontend-solution">
+    <h2>Frontend solution</h2>
+  </section>
+  <section id="backend-solution">
+    <h2>Backend solution</h2>
+    <figure typeof="sa:image">
+      <img src="../diagrams/ClassDiagram.drawio.png" style="max-width:100%">
+    </figure>
+    <p>
+      The backend application is a Spring server with three controllers, corresponding to the three main resources of the 
+      application. At the server startup, the application establishes the connection with the TDB triple-store, which is then
+      used throughout the application for persistence. 
+    </p>
+    <p>
+      Each controller contains the main logic for all the different endpoints it 
+      exposes, and uses some utilitary classes in order to perform the different SPARQL queries needed for reading the data from the 
+      database, and then processing the data so it's mapped to the internal models used in the application. In order to enrich those 
+      models with semantic information and respond with proper JSON-LD files, we use the Jackson-Jsonld Java library, which 
+      enables us to add annotations inside the models for expressing the context for the attributes, and then to serialize 
+      them in JSON-LD format.
+    </p>
+    <p>
+      A more complex SPARQL query that is used for fetching details about a device with a given id is built in the following code snippet: 
+    </p>
+    <figure typeof="schema:SoftwareSourceCode">
+      <pre>
+        <code>
+String queryString = VocabularyConstants.VCARD_PREFIX + " " +
+"SELECT ?title ?description ?property ?action ?baseLink ?category " +
+"WHERE { ?device  vcard:CLASS \"DEVICE\" . " +
+"?device vcard:UID \"" + id + "\" . " +
+"?device <" + WOT.DESCRIPTION + "> ?description . " +
+"?device <" + WOT.TITLE + "> ?title . " +
+"OPTIONAL { ?device vcard:CATEGORIES ?category } " +
+"OPTIONAL { ?device <" + WOT.HAS_LINK + "> ?baseLink } " +
+"OPTIONAL { ?device <" + WOT.HAS_PROPERTY_AFFORDANCE + "> ?property } " +
+"OPTIONAL { ?device <" + WOT.HAS_ACTION_AFFORDANCE + "> ?action } " +
+"}";
+        </code>
+      </pre>
+    </figure>
+    <p>
+      Here we fetch all necessary data regarding a device by selecting all its properties, either literals or resources, 
+      using the relationships that were used when posting that device. There are four optional fields that do not depend on each other, 
+      meaning category, baseLink, property and action. They belong to separate OPTIONAL bodies since the absence of one of them does not 
+      mean that we don't want to fetch the other data.
+    </p>
+    <p>
+      We are also using constants for fetching URLS of vocabularies and properties, so that they are easy to change if the vocabulary is 
+      updated or we decide to use a different approach for expressing one of the relationships.
+    </p>
+    <p>
+      Updating a resource is done through PATCH operations and is only possible for Users and Homes. In order to implement 
+      the PATCH operations, we use the Java library json-patch, which processes the standard operations for patching an object. 
+      After obtaining the patched object, we use an utilitary function (either from the class UserResourceUpdater or HomeResourceUpdater) 
+      to observe the differences between the old object and the patched object, and then to modify the corresponding triples inside 
+      the triple-store - which is done by deleting the old triples and adding new ones with the updated values.
+    </p>
+    <p>
+      An example of building a delete query that is used for updating the user's inside a home is the following:
+    </p>
+    <figure typeof="schema:SoftwareSourceCode">
+      <pre>
+        <code>
+String deleteQueryString = VocabularyConstants.VCARD_PREFIX + " " +
+VocabularyConstants.VCARD4_PREFIX + " " +
+"DELETE { ?blank_node vcard:UID ?userId . " +
+"?blank_node vcard:CLASS ?userRole . " +
+"?home vcard4:hasMember ?blank_node " +
+"} WHERE { ?home vcard4:hasMember ?blank_node . " +
+"?home vcard:UID \"" + oldHome.getId() + "\"} ";
+        </code>
+      </pre>
+    </figure>
+    <p>
+      Here we delete all three statements related to a user's relationship with a house: the hasMember relationship that is 
+      tied to a blank node and the two statements that are tied to the blank node, one related to the id of the user of the home 
+      and the other one related to the role of the user in that home.
+    </p>
+    <p>
+      Deleting a resource is done through the Apache Jena RDF API, by deleting all the statements inside the triple-store 
+      that contain the given resource.
+    </p>
+    <p>
+      Communication with a smart device is done for multiple endpoints:
+    </p>
+    <ul>
+      <li>
+        All endpoints where we fetch details about the smart device - there we also fetch the current values for 
+        each property of the smart device 
+      </li>
+      <li>
+        The endpoint for executing an action in a smart device - there we post the payload received to the 
+        corresponding endpoint of the smart device and then pass-through the response we receive from the smart device
+      </li>
+    </ul>
   </section>
   <section id="bibliography" role="doc-bibliography">
     <h2>Bibliography</h2>

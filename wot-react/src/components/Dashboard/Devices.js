@@ -1,10 +1,10 @@
-import React from 'react'
+import React, {useState} from 'react'
 import { styled } from '@mui/material/styles';
 import Button from '@mui/material/Button';
-import {Add} from '@mui/icons-material';
+import {Add, Edit} from '@mui/icons-material';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
-
+import ActionDialog from './ActionDialog';
 
 const ColorOutlinedButton = styled(Button)(({ theme }) => ({
     padding: '10px 30px',
@@ -35,7 +35,18 @@ const RedColorOutlinedButton = styled(Button)(({ theme }) => ({
     }
 }));
 
+
 export default function Devices({devices, houseSelected}) {
+
+    const [isDialogOpen, setIsDialogOpen] = useState(false)
+    const [actionDialog, setActionDialog] = useState({});
+
+    
+    const doAction = (action) => {
+        setActionDialog(JSON.parse(JSON.stringify(action)))
+        setIsDialogOpen(true);
+    }
+
     return (
         <div className='component'>
             <div className='component-header'>
@@ -49,7 +60,7 @@ export default function Devices({devices, houseSelected}) {
             </div>
             {
                 devices.map(device => (
-                <div className='component-device'>
+                <div className='component-device' key={device.id}>
                     <div className='component-device-header'>
                         <div className='component-device-header-title'>
                             {device.title}
@@ -58,23 +69,34 @@ export default function Devices({devices, houseSelected}) {
                     </div>
                     <div className='component-device-properties'>
                     {
-                        device.properties.map( prop => (
-                            <div className='component-device-properties-prop'>
-                                <span className='component-device-properties-prop-title'>
-                                    {prop.name}
-                                </span>
-                                : 
-                                <span className='component-device-properties-prop-value'>
-                                   {prop.currentValue} {prop.unit==='percent' ? '%' : prop.unit}
-                                </span>
-                            </div>
+                        device.properties.map( (prop, index) => (
+                            <Tooltip 
+                                title={
+                                    <Typography fontSize={18}>
+                                        {prop.description}
+                                    </Typography>}
+                                arrow
+                                key={index}
+                            >
+                                <div className='component-device-properties-prop'>
+                                    <span className='component-device-properties-prop-title'>
+                                        {prop.name}
+                                    </span>
+                                    : 
+                                    <span className='component-device-properties-prop-value'>
+                                    {prop.currentValue} {prop.unit==='percent' ? '%' : prop.unit}
+                                    </span>
+                                </div>
+                            </Tooltip>
                         ))
                     }
                     </div>
                     <div className='component-device-actions'>
                     {
-                        device.actions.map( action => (
-                            <div className='component-device-actions-action'>
+                        device.actions.map( (action, index) => (
+                            <div className='component-device-actions-action'
+                                key={index}
+                            >
                                     <Tooltip 
                                         title={
                                             <Typography fontSize={18}>
@@ -82,7 +104,13 @@ export default function Devices({devices, houseSelected}) {
                                             </Typography>}
                                         arrow
                                     >
-                                        <RedColorOutlinedButton size="large">
+                                        <RedColorOutlinedButton size="large"
+                                            onClick={() => doAction(action)}
+                                            endIcon={
+                                                (action.input.properties.length === 1 &&
+                                                    action.input.properties[0].type === 'boolean') ?
+                                                <></> : <Edit />
+                                            }>
                                             {action.name}
                                         </RedColorOutlinedButton>
                                     </Tooltip>
@@ -93,6 +121,13 @@ export default function Devices({devices, houseSelected}) {
                 </div>
                 ))
             }
+        
+            <ActionDialog
+                isOpen={isDialogOpen}
+                setIsOpen={setIsDialogOpen}
+                action={actionDialog}
+                setAction={setActionDialog}
+            />
         </div>
     )
 }

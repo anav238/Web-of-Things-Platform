@@ -38,6 +38,7 @@ import java.util.Set;
 import java.util.UUID;
 
 @RestController
+@CrossOrigin
 public class DeviceController {
     private final ApplicationData applicationData = ApplicationData.getInstance();
     private final Dataset dataset = applicationData.dataset;
