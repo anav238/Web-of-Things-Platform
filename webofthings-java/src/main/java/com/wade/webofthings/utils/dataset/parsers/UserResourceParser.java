@@ -186,38 +186,35 @@ public class UserResourceParser {
     public static String getUserRoleForDeviceId(Dataset dataset, Model model, String deviceId, String userId) {
         String queryString = VocabularyConstants.VCARD_PREFIX + " " +
                 VocabularyConstants.VCARD4_PREFIX + " " +
-                "SELECT ?deviceId ?userRole ?userId" +
-                "WHERE { ?user vcard:UID \"" + userId + "\" . " +
-                "?user vcard:CLASS ?userRole . " +
-                "?device vcard:UID ?deviceId . " +
-                "?device vcard4:hasMember ?user ." +
+                "SELECT ?userRole ?homeId " +
+                "WHERE { ?home vcard4:hasMember ?user . " +
+                "?home vcard:UID ?homeId ." +
+                "?home vcard4:hasRelated \"" + deviceId + "\" . " +
+                "?user vcard:UID \"" + userId + "\" . " +
+                "?user vcard:CLASS ?userRole " +
                 "}";
 
         Query query = QueryFactory.create(queryString);
         User user = new User();
+        //String userRoleString;
         Txn.executeRead(dataset, () -> {
             try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
                 ResultSet results = qexec.execSelect();
-                while (results.hasNext()) {
                     QuerySolution soln = results.nextSolution();
                     System.out.println(soln);
-
-                    Literal deviceIdFromQuery = soln.getLiteral("homeId");
-                    String deviceIdString = deviceIdFromQuery != null ? deviceIdFromQuery.toString() : null;
-
 
                     Literal userRole = soln.getLiteral("userRole");
                     String userRoleString = userRole != null ? userRole.toString() : null;
 
+                    Literal homeId = soln.getLiteral("homeId");
+                    String homeIdString = homeId != null ? homeId.toString() : null;
 
-                    if (deviceIdString.equals(deviceId)) {
-                        user.setUsername(userRoleString);
-                        System.out.println("role-ul este "+userRoleString);
-                    }
-
-                }
+                    System.out.println("user role: " + userRoleString);
+                    System.out.println("home id: " + homeIdString);
+                    user.setUsername(userRoleString);
             }
         });
+
         //In this case in username we have actually the role
         if (user.getUsername() != null)
             return user.getUsername();

@@ -31,10 +31,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.net.http.HttpClient;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 
 @RestController
@@ -62,8 +59,8 @@ public class DeviceController {
         UserIdentity identity = UserResourceParser.Authorize(jwt);
         if (!identity.isAuthorized())
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
-        //String role = UserResourceParser.getUserRoleForHomeId(dataset, model, id, identity.getUserId());
-        //System.out.println("Un rezultat este "+role);
+        String role = UserResourceParser.getUserRoleForDeviceId(dataset, model, id, identity.getUserId());
+        System.out.println("Un rezultat este "+role);
         try {
             return ResponseEntity.ok(objectMapper.writeValueAsString(DeviceResourceParser.getDeviceById(dataset, model, id)));
         } catch (NotFoundException e) {
