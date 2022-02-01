@@ -73,8 +73,12 @@
         The use cases that are covered in our application are the ones presented in the following use case diagram:
       </p>
       <figure typeof="sa:image">
-        <img src="../diagrams/UseCase.drawio.png" style="max-width: 100%">
+        <img src="assets/images/UseCase.drawio.png" alt="Use case diagram" style="max-width: 100%">
       </figure>
+      <p>
+        After creating an account and logging in to the application, a user can create homes, add smart devices to them, 
+        become part of another user's homes and interact with the smart devices inside the homes.
+      </p>
       <p>
         In the following sections, we will present more details regarding the implementation of this solution.
       </p>
@@ -150,6 +154,12 @@
       interact with them. The utilitary functions contain the SPARQL query logic, which communicate with the TDB database 
       using Apache Jena.
     </p>
+    <p>
+      A high-level presentation of the main modules of the application is shown in the C4 diagram, level 3 below:
+    </p>
+    <figure typeof="sa:image">
+      <img src="assets/images/c4-level3.drawio.png" alt="C4 level 3 diagram" style="max-width: 100%">
+    </figure>
   <section id="mozilla-web-things-framework">
       <h2>Mozilla WebThings Framework</h2>
       <p>
@@ -229,7 +239,7 @@
   <section id="backend-solution">
     <h2>Backend solution</h2>
     <figure typeof="sa:image">
-      <img src="../diagrams/ClassDiagram.drawio.png" style="max-width:100%">
+      <img src="assets/images/ClassDiagram.drawio.png" alt="Class diagram" style="max-width:100%">
     </figure>
     <p>
       The backend application is a Spring server with three controllers, corresponding to the three main resources of the 
@@ -254,12 +264,12 @@ String queryString = VocabularyConstants.VCARD_PREFIX + " " +
 "SELECT ?title ?description ?property ?action ?baseLink ?category " +
 "WHERE { ?device  vcard:CLASS \"DEVICE\" . " +
 "?device vcard:UID \"" + id + "\" . " +
-"?device <" + WOT.DESCRIPTION + "> ?description . " +
-"?device <" + WOT.TITLE + "> ?title . " +
+"?device &lt;" + WOT.DESCRIPTION + "> ?description . " +
+"?device &lt;" + WOT.TITLE + "> ?title . " +
 "OPTIONAL { ?device vcard:CATEGORIES ?category } " +
-"OPTIONAL { ?device <" + WOT.HAS_LINK + "> ?baseLink } " +
-"OPTIONAL { ?device <" + WOT.HAS_PROPERTY_AFFORDANCE + "> ?property } " +
-"OPTIONAL { ?device <" + WOT.HAS_ACTION_AFFORDANCE + "> ?action } " +
+"OPTIONAL { ?device &lt;" + WOT.HAS_LINK + "> ?baseLink } " +
+"OPTIONAL { ?device &lt;" + WOT.HAS_PROPERTY_AFFORDANCE + "> ?property } " +
+"OPTIONAL { ?device &lt;" + WOT.HAS_ACTION_AFFORDANCE + "> ?action } " +
 "}";
         </code>
       </pre>
@@ -273,6 +283,30 @@ String queryString = VocabularyConstants.VCARD_PREFIX + " " +
     <p>
       We are also using constants for fetching URLS of vocabularies and properties, so that they are easy to change if the vocabulary is 
       updated or we decide to use a different approach for expressing one of the relationships.
+    </p>
+    <p>
+      Another interesting SPARQL query is the one where we find the role of a user inside the home where a device is located, 
+      having as input the user id and the device id.
+    </p>
+    <figure typeof="schema:SoftwareSourceCode">
+      <pre>
+        <code>
+String queryString = VocabularyConstants.VCARD_PREFIX + " " +
+VocabularyConstants.VCARD4_PREFIX + " " +
+"SELECT ?userRole ?homeId " +
+"WHERE { ?home vcard4:hasMember ?user . " +
+"?home vcard:UID ?homeId ." +
+"?home vcard4:hasRelated \"" + deviceId + "\" . " +
+"?user vcard:UID \"" + userId + "\" . " +
+"?user vcard:CLASS ?userRole " +
+"}";
+        </code>
+      </pre>
+    </figure>
+    <p>
+      Here we find a home that has as one of its members a user with the given userId and also contains a device with the 
+      given deviceId, and then we extract the home id for logging purpose and the user role as part of the query, since this 
+      is something that we use for checking if a user is allowed to perform a certain action on a device.
     </p>
     <p>
       Updating a resource is done through PATCH operations and is only possible for Users and Homes. In order to implement 
