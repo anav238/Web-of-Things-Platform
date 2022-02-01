@@ -205,14 +205,14 @@
       For expressing these properties, we used the following vocabularies:
     </p>
     <ul>
-      <li>VCARD and VCARD4 - used for Users and Homes, we chose to use these because of the built-in support for those 
+      <li><a href="http://www.w3.org/2001/vcard-rdf/3.0">VCARD</a> and <a href="http://www.w3.org/2006/vcard/ns">VCARD4</a> - used for Users and Homes, we chose to use these because of the built-in support for those 
       vocabularies in Apache Jena. They are built specifically for persons and organisations, so they had useful properties 
       for modelling these two entities.</li>
-      <li>Thing Description (TD) Ontology - built specifically by the Web Consortium for Web things, so it is very expressive for 
+      <li><a href="https://www.w3.org/2019/wot/td">Thing Description (TD) Ontology</a> - built specifically by the Web Consortium for Web things, so it is very expressive for 
       storing information about the smart devices from their WoT specifications </li>
-      <li>JSON Schema - used for expressing smart device properties and action inputs, also expressive as it is created for the 
+      <li><a href="https://www.w3.org/2019/wot/json-schema">JSON Schema</a> - used for expressing smart device properties and action inputs, also expressive as it is created for the 
       specific purpose of describing JSON schemas.</li> 
-      <li>Schema.org - used for expressing properties that we did not find in the other vocabularies - this is not as expressive 
+      <li><a href="https://schema.org/">Schema.org</a> - used for expressing properties that we did not find in the other vocabularies - this is not as expressive 
       as the others, but it contains a huge variety of properties where we could find the missing pieces from our data.</li>
     </ul>
   </section>
@@ -439,6 +439,19 @@ VocabularyConstants.VCARD4_PREFIX + " " +
           (last accessed on
           <time property="schema:endTime" datatype="xsd:date"
                 datetime="2021-11-20">20 November 2021</time>)
+        </span>
+      </li>
+      <li typeof="schema:WebPage" role="doc-biblioentry"
+          resource="https://jena.apache.org/"
+          property="schema:citation" id="apache-jena">
+        <cite property="schema:name">
+          <a href="https://jena.apache.org/">Apache Jena documentation</a>
+        </cite>
+        <span property="schema:potentialAction" typeof="schema:ReadAction">
+          <meta property="schema:actionStatus" content="CompletedActionStatus">
+          (last accessed on
+          <time property="schema:endTime" datatype="xsd:date"
+                datetime="2021-11-20">01 February 2022</time>)
         </span>
       </li>
     </ol>
