@@ -43,7 +43,10 @@ public class HomeController {
     @RequestMapping(value = "/homes", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     @ResponseBody
-    ResponseEntity<String> all() throws JsonProcessingException {
+    ResponseEntity<String> all( @RequestHeader(value = "authorization") String jwt) throws JsonProcessingException {
+        UserIdentity identity = UserResourceParser.Authorize(jwt);
+        if (!identity.isAuthorized())
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
         return ResponseEntity.ok(objectMapper.writeValueAsString(HomeResourceParser.getAllHomes(dataset, model)));
     }
 
@@ -69,7 +72,10 @@ public class HomeController {
     @RequestMapping(value = "/homes", method = RequestMethod.POST,
             produces = "application/json; charset=utf-8")
     @ResponseBody
-    ResponseEntity<String> newHome(@RequestBody Home newHome) throws JsonProcessingException {
+    ResponseEntity<String> newHome(@RequestBody Home newHome, @RequestHeader(value = "authorization") String jwt) throws JsonProcessingException {
+        UserIdentity identity = UserResourceParser.Authorize(jwt);
+        if (!identity.isAuthorized())
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
         String randomId = String.valueOf(UUID.randomUUID());
         return ResponseEntity.ok(objectMapper.writeValueAsString(newHomeWithId(newHome, randomId)));
     }
@@ -99,33 +105,50 @@ public class HomeController {
     @RequestMapping(value = "/homes/{id}", method = RequestMethod.PATCH,
             consumes = "application/json-patch+json", produces = "application/json; charset=utf-8")
     @ResponseBody
-    public ResponseEntity<String> patchHome(@PathVariable String id, @RequestBody JsonPatch patch) {
-        try {
-            Home home = HomeResourceParser.getHomeById(dataset, model, id);
-            Home homePatched = applyPatchToHome(patch, home);
-            System.out.println("home before patch: " + home.toString());
-            System.out.println("patched home: " + homePatched.toString());
+    public ResponseEntity<String> patchHome(@PathVariable String id, @RequestBody JsonPatch patch,  @RequestHeader(value = "authorization") String jwt) {
+        UserIdentity identity = UserResourceParser.Authorize(jwt);
+        if (!identity.isAuthorized())
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
+        String role = UserResourceParser.getUserRoleForHomeId(dataset, model, id, identity.getUserId());
+        if (role.equals("OWNER")) {
+            try {
+                    Home home = HomeResourceParser.getHomeById(dataset, model, id);
+                    Home homePatched = applyPatchToHome(patch, home);
+                    System.out.println("home before patch: " + home.toString());
+                    System.out.println("patched home: " + homePatched.toString());
 
-            HomeResourceUpdater.updateHome(dataset, model, home, homePatched);
-            return ResponseEntity.ok(objectMapper.writeValueAsString(homePatched));
+                    HomeResourceUpdater.updateHome(dataset, model, home, homePatched);
+                    return ResponseEntity.ok(objectMapper.writeValueAsString(homePatched));
 
-        } catch (NotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not Found");
-        } catch (JsonPatchException | JsonProcessingException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+                } catch (NotFoundException e) {
+                    throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not Found");
+                } catch (JsonPatchException | JsonProcessingException e) {
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+                }
+            }
+         else
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
     }
 
     @RequestMapping(value = "/homes/{homeId}/users/{userId}", method = RequestMethod.PATCH,
             produces = "application/json; charset=utf-8")
     @ResponseBody
-    public ResponseEntity<JsonObject> patchHome(@PathVariable String homeId, @PathVariable String userId, @RequestBody ChangeHomeRoleRequest request) {
-        try {
-            HomeResourceUpdater.updateHomeUserRole(dataset, model, homeId, userId, request.getRole());
-            return ResponseEntity.status(HttpStatus.OK).build();
-        } catch (NotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not Found");
-        }
+    public ResponseEntity<JsonObject> patchHome(@PathVariable String homeId, @PathVariable String userId, @RequestBody ChangeHomeRoleRequest request, @RequestHeader(value = "authorization") String jwt) {
+        UserIdentity identity = UserResourceParser.Authorize(jwt);
+        if (!identity.isAuthorized())
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
+
+        String role = UserResourceParser.getUserRoleForHomeId(dataset, model, homeId, identity.getUserId());
+        if (role.equals("OWNER")) {
+            try {
+                HomeResourceUpdater.updateHomeUserRole(dataset, model, homeId, userId, request.getRole());
+                return ResponseEntity.status(HttpStatus.OK).build();
+            }
+            catch (NotFoundException e) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Home not Found");
+            }
+        } else
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
     }
 
     private Home applyPatchToHome(JsonPatch patch, Home targetHome) throws JsonPatchException, JsonProcessingException {
@@ -135,9 +158,22 @@ public class HomeController {
     }
 
     @DeleteMapping("/homes/{id}")
-    public void deleteHome(@PathVariable String id) {
-        //remove all statements mentioning the home
-        Resource home = model.getResource("/homes/" + id);
-        DatasetUtils.deleteResource(dataset, model, home);
+    public void deleteHome(@PathVariable String id, @RequestHeader(value = "authorization") String jwt) {
+        UserIdentity identity = UserResourceParser.Authorize(jwt);
+        if (!identity.isAuthorized())
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
+        String role = UserResourceParser.getUserRoleForHomeId(dataset, model, id, identity.getUserId());
+        if (role.equals("OWNER")) {
+            try {
+                //remove all statements mentioning the home
+                Resource home = model.getResource("/homes/" + id);
+                DatasetUtils.deleteResource(dataset, model, home);
+            }
+            catch (NotFoundException e) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Home not Found");
+            }
+        } else
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
+
     }
 }

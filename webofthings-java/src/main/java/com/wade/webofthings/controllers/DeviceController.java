@@ -6,14 +6,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wade.webofthings.ApplicationData;
 import com.wade.webofthings.models.ResourceType;
 import com.wade.webofthings.models.device.*;
+import com.wade.webofthings.models.user.UserIdentity;
 import com.wade.webofthings.utils.DatasetUtils;
 import com.wade.webofthings.utils.constants.WOT;
 import com.wade.webofthings.utils.dataset.parsers.DeviceResourceParser;
+import com.wade.webofthings.utils.dataset.parsers.HomeResourceParser;
+import com.wade.webofthings.utils.dataset.parsers.UserResourceParser;
 import com.wade.webofthings.utils.http.HTTPClient;
 import com.wade.webofthings.utils.mappers.DeviceActionMapper;
 import com.wade.webofthings.utils.mappers.DeviceMapper;
 import com.wade.webofthings.utils.mappers.DevicePropertyMapper;
 import ioinformarics.oss.jackson.module.jsonld.JsonldModule;
+import org.apache.jena.base.Sys;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.ReadWrite;
 import org.apache.jena.rdf.model.Model;
@@ -43,14 +47,22 @@ public class DeviceController {
     @RequestMapping(value = "/devices", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     @ResponseBody
-    ResponseEntity<String> all() throws JsonProcessingException {
+    ResponseEntity<String> all(@RequestHeader(value = "authorization") String jwt) throws JsonProcessingException {
+        UserIdentity identity = UserResourceParser.Authorize(jwt);
+        if (!identity.isAuthorized())
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
         return ResponseEntity.ok(objectMapper.writeValueAsString(DeviceResourceParser.getAllDevices(dataset, model)));
     }
 
     @RequestMapping(value = "/devices/{id}", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     @ResponseBody
-    ResponseEntity<String> one(@PathVariable String id) throws JsonProcessingException {
+    ResponseEntity<String> one(@PathVariable String id, @RequestHeader(value = "authorization") String jwt) throws JsonProcessingException {
+        UserIdentity identity = UserResourceParser.Authorize(jwt);
+        if (!identity.isAuthorized())
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
+        //String role = UserResourceParser.getUserRoleForHomeId(dataset, model, id, identity.getUserId());
+        //System.out.println("Un rezultat este "+role);
         try {
             return ResponseEntity.ok(objectMapper.writeValueAsString(DeviceResourceParser.getDeviceById(dataset, model, id)));
         } catch (NotFoundException e) {
@@ -61,7 +73,10 @@ public class DeviceController {
     @RequestMapping(value = "/devices/{id}/properties", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     @ResponseBody
-    ResponseEntity<String> getDeviceProperties(@PathVariable String id) throws JsonProcessingException {
+    ResponseEntity<String> getDeviceProperties(@PathVariable String id, @RequestHeader(value = "authorization") String jwt) throws JsonProcessingException {
+        UserIdentity identity = UserResourceParser.Authorize(jwt);
+        if (!identity.isAuthorized())
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
         try {
             Device device = DeviceResourceParser.getDeviceById(dataset, model, id);
             return ResponseEntity.ok(objectMapper.writeValueAsString(device.getProperties()));
@@ -73,7 +88,10 @@ public class DeviceController {
     @RequestMapping(value = "/devices/{id}/properties/{propertyName}", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     @ResponseBody
-    ResponseEntity<String> getDeviceProperty(@PathVariable String id, @PathVariable String propertyName) throws JsonProcessingException {
+    ResponseEntity<String> getDeviceProperty(@PathVariable String id, @PathVariable String propertyName, @RequestHeader(value = "authorization") String jwt) throws JsonProcessingException {
+        UserIdentity identity = UserResourceParser.Authorize(jwt);
+        if (!identity.isAuthorized())
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
         try {
             Device device = DeviceResourceParser.getDeviceById(dataset, model, id);
             for (DeviceProperty deviceProperty : device.getProperties())
@@ -88,7 +106,10 @@ public class DeviceController {
     @RequestMapping(value = "/devices/{id}/actions", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     @ResponseBody
-    ResponseEntity<String> getDeviceActions(@PathVariable String id) throws JsonProcessingException {
+    ResponseEntity<String> getDeviceActions(@PathVariable String id, @RequestHeader(value = "authorization") String jwt) throws JsonProcessingException {
+        UserIdentity identity = UserResourceParser.Authorize(jwt);
+        if (!identity.isAuthorized())
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
         try {
             Device device = DeviceResourceParser.getDeviceById(dataset, model, id);
             return ResponseEntity.ok(objectMapper.writeValueAsString(device.getActions()));
@@ -100,7 +121,10 @@ public class DeviceController {
     @RequestMapping(value = "/devices/{id}/actions", method = RequestMethod.POST,
             produces = "application/json; charset=utf-8")
     @ResponseBody
-    public ResponseEntity<String> executeDeviceAction(@PathVariable String id, @RequestBody Map<String, Object> payload) {
+    public ResponseEntity<String> executeDeviceAction(@PathVariable String id, @RequestBody Map<String, Object> payload, @RequestHeader(value = "authorization") String jwt) {
+        UserIdentity identity = UserResourceParser.Authorize(jwt);
+        if (!identity.isAuthorized())
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
         try {
             Device device = DeviceResourceParser.getDeviceById(dataset, model, id);
             String requestUrl = device.getBaseLink() + "/actions";
@@ -117,7 +141,10 @@ public class DeviceController {
     @RequestMapping(value = "/devices/{id}/actions/{actionName}", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     @ResponseBody
-    ResponseEntity<String> getDeviceAction(@PathVariable String id, @PathVariable String actionName) throws JsonProcessingException {
+    ResponseEntity<String> getDeviceAction(@PathVariable String id, @PathVariable String actionName, @RequestHeader(value = "authorization") String jwt) throws JsonProcessingException {
+        UserIdentity identity = UserResourceParser.Authorize(jwt);
+        if (!identity.isAuthorized())
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
         try {
             Device device = DeviceResourceParser.getDeviceById(dataset, model, id);
             for (DeviceAction deviceAction : device.getActions())
@@ -132,7 +159,10 @@ public class DeviceController {
     @RequestMapping(value = "/devices", method = RequestMethod.POST,
             produces = "application/json; charset=utf-8")
     @ResponseBody
-    ResponseEntity<String> newDeviceByUrl(@RequestBody CreateDeviceByUrl requestBody) {
+    ResponseEntity<String> newDeviceByUrl(@RequestBody CreateDeviceByUrl requestBody,  @RequestHeader(value = "authorization") String jwt) {
+        UserIdentity identity = UserResourceParser.Authorize(jwt);
+        if (!identity.isAuthorized())
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
         String specification = HTTPClient.sendGetRequest(requestBody.getDeviceUrl());
         try {
             Map<String, Object> specificationJson = objectMapper.readValue(specification, new TypeReference<Map<String, Object>>() {
@@ -173,7 +203,10 @@ public class DeviceController {
     }
 
     @DeleteMapping("/devices/{id}")
-    public void deleteDevice(@PathVariable String id) {
+    public void deleteDevice(@PathVariable String id, @RequestHeader(value = "authorization") String jwt) {
+        UserIdentity identity = UserResourceParser.Authorize(jwt);
+        if (!identity.isAuthorized())
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
         //remove all statements mentioning the device
         Resource home = model.getResource("/devices/" + id);
         DatasetUtils.deleteResource(dataset, model, home);

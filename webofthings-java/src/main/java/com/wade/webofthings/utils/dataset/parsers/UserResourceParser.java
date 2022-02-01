@@ -183,6 +183,47 @@ public class UserResourceParser {
         return "";
     }
 
+    public static String getUserRoleForDeviceId(Dataset dataset, Model model, String deviceId, String userId) {
+        String queryString = VocabularyConstants.VCARD_PREFIX + " " +
+                VocabularyConstants.VCARD4_PREFIX + " " +
+                "SELECT ?deviceId ?userRole ?userId" +
+                "WHERE { ?user vcard:UID \"" + userId + "\" . " +
+                "?user vcard:CLASS ?userRole . " +
+                "?device vcard:UID ?deviceId . " +
+                "?device vcard4:hasMember ?user ." +
+                "}";
+
+        Query query = QueryFactory.create(queryString);
+        User user = new User();
+        Txn.executeRead(dataset, () -> {
+            try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
+                ResultSet results = qexec.execSelect();
+                while (results.hasNext()) {
+                    QuerySolution soln = results.nextSolution();
+                    System.out.println(soln);
+
+                    Literal deviceIdFromQuery = soln.getLiteral("homeId");
+                    String deviceIdString = deviceIdFromQuery != null ? deviceIdFromQuery.toString() : null;
+
+
+                    Literal userRole = soln.getLiteral("userRole");
+                    String userRoleString = userRole != null ? userRole.toString() : null;
+
+
+                    if (deviceIdString.equals(deviceId)) {
+                        user.setUsername(userRoleString);
+                        System.out.println("role-ul este "+userRoleString);
+                    }
+
+                }
+            }
+        });
+        //In this case in username we have actually the role
+        if (user.getUsername() != null)
+            return user.getUsername();
+        return "";
+    }
+
     public static List<Home> getUserHomes(Dataset dataset, Model model, String userId) {
         String queryString = VocabularyConstants.VCARD_PREFIX + " " +
                 VocabularyConstants.VCARD4_PREFIX + " " +

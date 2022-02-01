@@ -10,6 +10,7 @@ import com.wade.webofthings.models.ResourceType;
 import com.wade.webofthings.models.home.Home;
 import com.wade.webofthings.models.user.PublicUser;
 import com.wade.webofthings.models.user.User;
+import com.wade.webofthings.models.user.UserIdentity;
 import com.wade.webofthings.utils.DatasetUtils;
 import com.wade.webofthings.utils.dataset.parsers.UserResourceParser;
 import com.wade.webofthings.utils.dataset.updaters.UserResourceUpdater;
@@ -39,7 +40,10 @@ public class UserController {
     @RequestMapping(value = "/users", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     @ResponseBody
-    ResponseEntity<String> all(@RequestParam(required = false) String username) throws JsonProcessingException {
+    ResponseEntity<String> all(@RequestParam(required = false) String username, @RequestHeader(value = "authorization") String jwt) throws JsonProcessingException {
+        UserIdentity identity = UserResourceParser.Authorize(jwt);
+        if (!identity.isAuthorized())
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
         List<PublicUser> publicUsers = UserResourceParser.getAllPublicUsers(dataset, model, username);
         return ResponseEntity.ok(objectMapper.writeValueAsString(publicUsers));
     }
@@ -47,7 +51,10 @@ public class UserController {
     @RequestMapping(value = "/users/{id}", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     @ResponseBody
-    ResponseEntity<String> one(@PathVariable String id) throws JsonProcessingException {
+    ResponseEntity<String> one(@PathVariable String id, @RequestHeader(value = "authorization") String jwt) throws JsonProcessingException {
+        UserIdentity identity = UserResourceParser.Authorize(jwt);
+        if (!identity.isAuthorized())
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
         try {
             PublicUser user = UserResourceParser.getPublicUserById(dataset, model, id);
             String userJsonLd = objectMapper.writeValueAsString(user);
@@ -78,7 +85,10 @@ public class UserController {
     @RequestMapping(value = "/users/{id}", method = RequestMethod.PATCH,
             consumes = "application/json-patch+json", produces = "application/json; charset=utf-8")
     @ResponseBody
-    public ResponseEntity<String> patchUser(@PathVariable String id, @RequestBody JsonPatch patch) {
+    public ResponseEntity<String> patchUser(@PathVariable String id, @RequestBody JsonPatch patch, @RequestHeader(value = "authorization") String jwt) {
+        UserIdentity identity = UserResourceParser.Authorize(jwt);
+        if (!identity.isAuthorized())
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
         try {
             User user = UserResourceParser.getUserById(dataset, model, id);
             User userPatched = applyPatchUser(patch, user);
@@ -104,7 +114,10 @@ public class UserController {
     @RequestMapping(value = "/users/{userId}/homes", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     @ResponseBody
-    ResponseEntity<String> getUserHomes(@PathVariable String userId) throws JsonProcessingException {
+    ResponseEntity<String> getUserHomes(@PathVariable String userId, @RequestHeader(value = "authorization") String jwt) throws JsonProcessingException {
+        UserIdentity identity = UserResourceParser.Authorize(jwt);
+        if (!identity.isAuthorized())
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
         try {
             return ResponseEntity.ok(objectMapper.writeValueAsString(UserResourceParser.getUserHomes(dataset, model, userId)));
         } catch (NotFoundException e) {
@@ -113,7 +126,10 @@ public class UserController {
     }
 
     @DeleteMapping("/users/{id}")
-    public void deleteUser(@PathVariable String id) {
+    public void deleteUser(@PathVariable String id, @RequestHeader(value = "authorization") String jwt) {
+        UserIdentity identity = UserResourceParser.Authorize(jwt);
+        if (!identity.isAuthorized())
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
         //remove all statements mentioning the user
         Resource user = model.getResource("/users/" + id);
         DatasetUtils.deleteResource(dataset, model, user);
