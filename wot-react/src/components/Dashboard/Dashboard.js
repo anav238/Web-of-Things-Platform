@@ -1,22 +1,37 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Dashboard.scss'
 import BoardMenu from './BoardMenu';
 import Houses from './Houses';
 import Users from './Users';
 import Devices from './Devices';
-import {houses_mock, devices_mock} from '../../assets/mockData2' 
+import {devices_mock} from '../../assets/mockData2'
+import { useAuth } from "../../contexts/authcontext";
+import axios from 'axios'
 
 const components = ['Houses', 'Users', 'Devices', 'Action'];
 
 export default function Dashboard() {
+    const { currentUser } = useAuth();
     const [ componentSelected, setComponentSelected ] = useState(components[0]);
 
-    const [houses, setHouses] = useState(houses_mock);
-    const [devices, setDevices] = useState(devices_mock);
+    const [houses, setHouses] = useState([]);
+    const [devices, setDevices] = useState([]);
 
     const [ houseSelected, setHouseSelected ] = useState(null)
-    // const [ deviceSelected, setDeviceSelected ] = useState(null)
 
+    const fetchHomes = async () =>{
+        await axios.get(`/users/${currentUser.id}/homes`)
+        .then(response => {
+            setHouses(response.data)
+        })
+        .catch(error => {
+            console.log(error?.response);
+        });
+    }
+
+    useEffect(() => {
+        fetchHomes();
+    }, [currentUser.id])
 
     return (
         <div className='dashboard'>

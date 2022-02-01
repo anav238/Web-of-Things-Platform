@@ -11,7 +11,7 @@ const columns = [
     { field: 'id', headerName: 'No.', width: 40 },
     { field: 'userId', headerName: 'ID', width: 300 },
     { field: 'name', headerName: 'User name', width: 250 },
-    { field: 'role', headerName: 'Role', width: 160 },
+    { field: 'userRole', headerName: 'Role', width: 160 },
   ];
 
 // const ColorButton = styled(Button)(({ theme }) => ({
