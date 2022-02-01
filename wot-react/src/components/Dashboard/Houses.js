@@ -4,22 +4,10 @@ import { DataGrid } from '@mui/x-data-grid';
 import { styled } from '@mui/material/styles';
 import Button from '@mui/material/Button';
 import {Add, Edit} from '@mui/icons-material';
-
+import { useAuth } from "../../contexts/authcontext";
+import axios from 'axios'
 
 const pageSize = 5;
-const columns = [
-    { field: 'id', headerName: 'ID', width: 300 },
-    { field: 'name', headerName: 'House name', width: 250 },
-    { field: 'role', headerName: 'Role', width: 160,
-        valueGetter: (params) => params.row.users.find( user => user.name==='Vlad Afrasinei')?.role
-    },
-    { field: 'usersNumber', headerName: 'Users', width: 140,
-        valueGetter: (params) => params.row.users.length
-    }, 
-    { field: 'devicesNumber', headerName: 'Devices', width: 140,
-        valueGetter: (params) => params.row.deviceIds.length 
-    },
-  ];
 
 const ColorButton = styled(Button)(({ theme }) => ({
 color: theme.palette.getContrastText('rgba(0, 123, 85, 0.5)'),
@@ -41,19 +29,88 @@ backgroundColor: 'rgba(0, 0, 0 0.0)',
 },
 }));
 
-const emptyFormData = {name: '', users: [{name:'', role: ''}]};
+const emptyFormData = {name: '', users: []};
 
 export default function Houses({houses, setHouses, houseSelected, setHouseSelected}) {
+    
+    const { currentUser } = useAuth();
     const [isDialogOpen, setIsDialogOpen] = useState(false)
     const [inEditMode, setInEditMode] = useState(false);
     const [formData, setFormData] = useState(JSON.parse(JSON.stringify(emptyFormData)));
 
-    const submitForm = () => {
-        console.log(formData);
-        //console.log(houseSelected);
+    const columns = [
+        { field: 'id', headerName: 'ID', width: 300 },
+        { field: 'name', headerName: 'House name', width: 250 },
+        { field: 'role', headerName: 'Role', width: 160,
+            valueGetter: (params) => params.row.users.find( user => user.userId===currentUser?.id)?.userRole
+        },
+        { field: 'usersNumber', headerName: 'Users', width: 140,
+            valueGetter: (params) => params.row.users.length
+        }, 
+        { field: 'devicesNumber', headerName: 'Devices', width: 140,
+            valueGetter: (params) => params.row.deviceIds.length 
+        },
+      ];
 
-        //setIsDialogOpen(false);
-        //setHouses([...houses,  apiResponse(formData)]);
+    
+
+    const addHome = async () => {
+        const data = JSON.parse(JSON.stringify(formData));
+        data.users = [...data.users, {userId: currentUser.id, userRole: 'OWNER'}]
+
+        console.log(data);
+
+        await axios.post(`/homes`,data)
+        .then(response => { 
+            console.log(response.data);
+            setHouses([...houses,  response.data]);
+        })
+        .catch(error => {
+            console.log(error?.response);
+        });
+    }
+
+    const editHome = async () => {
+        const house = JSON.parse(JSON.stringify(formData));
+
+        console.log(house);
+        const payload = [
+            {
+                op: "add",
+                path: "/users",
+                value: house.users
+            },
+            {
+                op: "add",
+                path: "/name",
+                value: house.name
+            }
+        ];
+        console.log(payload);
+
+        await axios.patch(`/homes/${currentUser.id}`,payload,{
+            headers: {
+                'Content-Type': 'application/json-patch+json',
+            }
+        })
+        .then(response => { 
+            console.log(response.data);
+            setHouses([...houses,  response.data]);
+        })
+        .catch(error => {
+            console.log(error?.response);
+        });
+    }
+    
+    const submitForm = () => {
+
+        if(inEditMode){
+            editHome();
+        }
+        else{
+            addHome();
+        }
+        setIsDialogOpen(false);
     }
 
     const onAddHome = () => {
