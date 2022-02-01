@@ -8,12 +8,12 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import IconButton from '@mui/material/IconButton';
 import Button from '@mui/material/Button';
-import {AddBox, RemoveCircle} from '@mui/icons-material';
+import {Delete, AddBox, RemoveCircle} from '@mui/icons-material';
 import { useAuth } from "../../contexts/authcontext";
 
 const userRoles = ['OWNER', 'MEMBER', 'CHILD', 'GUEST']
 
-export default function HouseDialog({isDialogOpen ,setIsDialogOpen, submitForm, formData, setFormData, isEdit}) {
+export default function HouseDialog({isDialogOpen ,setIsDialogOpen, submitForm, formData, setFormData, isEdit, deleteHome}) {
 
     const { currentUser } = useAuth();
 
@@ -64,50 +64,50 @@ export default function HouseDialog({isDialogOpen ,setIsDialogOpen, submitForm, 
                         <DialogContentText>
                             Add users:
                         </DialogContentText>
-                    {
-                        isEdit ?
-                        formData.users.map((user, index) => {
-                            if( user.userId === currentUser.id)
-                                return (
-                                    <div 
-                                        className='component-dialog-usersName-row'
-                                        key={index}
-                                    >
-                                        <IconButton disabled>
-                                            <RemoveCircle className='component-dialog-usersName-row-removeCircle'/>
-                                        </IconButton>
-                                        <TextField
-                                            id={`user${index}`}
+                        {
+                            isEdit ?
+                            formData.users.map((user, index) => {
+                                if( user.userId === currentUser.id)
+                                    return (
+                                        <div 
+                                            className='component-dialog-usersName-row'
                                             key={index}
-                                            label="Username"    
-                                            type="text"
-                                            variant="standard"
-                                            value={currentUser.username}
-                                            disabled
-                                            onChange={(event) => onUserIdChange(index, event.target.value)}
-                                        />
-                                        <TextField
-                                            select
-                                            id={`role-user${index}`}
-                                            label="Role"
-                                            variant="standard"
-                                            value={user.userRole}
-                                            onChange={(event) => onUserRoleChange(index, event.target.value)}
                                         >
-                                            {userRoles.map((option) => (
-                                                <MenuItem key={option} value={option}>
-                                                    {option}
-                                                </MenuItem>
-                                            ))}
-                                        </TextField>
-                                    </div>
-                                    )
-                            else
-                                return <></>
-                        })
-                        :
-                        <></>
-                    }
+                                            <IconButton disabled>
+                                                <RemoveCircle className='component-dialog-usersName-row-removeCircle'/>
+                                            </IconButton>
+                                            <TextField
+                                                id={`user${index}`}
+                                                key={index}
+                                                label="Username"    
+                                                type="text"
+                                                variant="standard"
+                                                value={currentUser.username}
+                                                disabled
+                                                onChange={(event) => onUserIdChange(index, event.target.value)}
+                                            />
+                                            <TextField
+                                                select
+                                                id={`role-user${index}`}
+                                                label="Role"
+                                                variant="standard"
+                                                value={user.userRole}
+                                                onChange={(event) => onUserRoleChange(index, event.target.value)}
+                                            >
+                                                {userRoles.map((option) => (
+                                                    <MenuItem key={option} value={option}>
+                                                        {option}
+                                                    </MenuItem>
+                                                ))}
+                                            </TextField>
+                                        </div>
+                                        )
+                                else
+                                    return null
+                            })
+                            :
+                            <></>
+                        }
                         {
                             formData.users.map((user, index) => {
                                 if( user.userId !== currentUser.id)
@@ -145,7 +145,7 @@ export default function HouseDialog({isDialogOpen ,setIsDialogOpen, submitForm, 
                                     </div>
                                 )
                                 else
-                                    return <></>
+                                    return null
                             })
                         }
                         <div className='component-dialog-usersName-row'>
@@ -156,9 +156,23 @@ export default function HouseDialog({isDialogOpen ,setIsDialogOpen, submitForm, 
                                 <AddBox color="success"/>
                             </IconButton>
                         </div>
+
                     </div>
+                    
                 </DialogContent>
                 <DialogActions>
+                    { isEdit && 
+                    <Button 
+                        id="deleteHomeBtn"
+                        variant="outlined" 
+                        startIcon={<Delete />}
+                        color="error"
+                        onClick={deleteHome}
+                        sx ={{}}
+                    >
+                        Delete
+                    </Button>
+                    }
                     <Button onClick={() => setIsDialogOpen(false)}>Cancel</Button>
                     <Button onClick={submitForm}>{isEdit ? 'Edit' : 'Add'}</Button>
                 </DialogActions>

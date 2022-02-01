@@ -58,11 +58,8 @@ export default function Houses({houses, setHouses, houseSelected, setHouseSelect
         const data = JSON.parse(JSON.stringify(formData));
         data.users = [...data.users, {userId: currentUser.id, userRole: 'OWNER'}]
 
-        console.log(data);
-
         await axios.post(`/homes`,data)
         .then(response => { 
-            console.log(response.data);
             setHouses([...houses,  response.data]);
         })
         .catch(error => {
@@ -73,7 +70,6 @@ export default function Houses({houses, setHouses, houseSelected, setHouseSelect
     const editHome = async () => {
         const house = JSON.parse(JSON.stringify(formData));
 
-        console.log(house);
         const payload = [
             {
                 op: "add",
@@ -86,16 +82,36 @@ export default function Houses({houses, setHouses, houseSelected, setHouseSelect
                 value: house.name
             }
         ];
-        console.log(payload);
 
-        await axios.patch(`/homes/${currentUser.id}`,payload,{
+        await axios.patch(`/homes/${houseSelected.id}`,payload,{
             headers: {
                 'Content-Type': 'application/json-patch+json',
             }
         })
         .then(response => { 
-            console.log(response.data);
-            setHouses([...houses,  response.data]);
+            const newHouses = JSON.parse(JSON.stringify(houses));
+            const index = newHouses.findIndex( h => h.id===response.data.id)
+            if (index !== -1) {
+                newHouses[index] = response.data;
+            }
+            setHouseSelected(response.data);
+            setHouses(newHouses);
+        })
+        .catch(error => {
+            console.log(error?.response);
+        });
+    }
+
+    const deleteHome = () => {
+        axios.delete(`/homes/${houseSelected.id}`).then(() => { 
+            const newHouses = JSON.parse(JSON.stringify(houses));
+            const index = newHouses.findIndex( h => h.id === houseSelected.id)
+            if (index !== -1) {
+                newHouses.splice(index, 1);
+            }
+            setHouseSelected(null);
+            setHouses(newHouses);
+            setIsDialogOpen(false);
         })
         .catch(error => {
             console.log(error?.response);
@@ -138,16 +154,22 @@ export default function Houses({houses, setHouses, houseSelected, setHouseSelect
                         New Home
                     </ColorButton>
                 </div>
-                <div className='component-header-editBtn'>
-                    <ColorOutlinedButton 
-                        size="large"
-                        onClick={onEditHome}
-                        startIcon={<Edit />}
-                        disabled={houseSelected ? false : true}
-                    >
-                            Edit Home
-                    </ColorOutlinedButton>
-                </div>  
+                {
+                    (!houseSelected || houseSelected.users.find( user => user.userId===currentUser?.id)?.userRole === 'OWNER') ?
+                    
+                    <div className='component-header-editBtn'>
+                        <ColorOutlinedButton 
+                            size="large"
+                            onClick={onEditHome}
+                            startIcon={<Edit />}
+                            disabled={houseSelected ? false : true}
+                        >
+                                Edit Home
+                        </ColorOutlinedButton>
+                    </div>
+                    :
+                    <></>  
+                }
             </div>
 
             <div className='component-dataGrid'>
@@ -168,6 +190,7 @@ export default function Houses({houses, setHouses, houseSelected, setHouseSelect
                 setFormData={setFormData}
                 submitForm={submitForm}
                 isEdit={inEditMode}
+                deleteHome={deleteHome}
             />
         </div>
     )

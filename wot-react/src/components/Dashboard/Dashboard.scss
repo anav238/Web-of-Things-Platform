@@ -213,6 +213,12 @@ $smooth-shadow:rgb(145 158 171 / 24%) 0px 0px 2px 0px, rgb(145 158 171 / 24%) 0p
                 }
             }
         }
+
+        #deleteHomeBtn{
+            position: absolute;
+            left: 30px;
+            bottom: 20px;
+        }
     }
 
     &-device{

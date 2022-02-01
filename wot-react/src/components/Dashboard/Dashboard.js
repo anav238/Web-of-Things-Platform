@@ -19,17 +19,18 @@ export default function Dashboard() {
 
     const [ houseSelected, setHouseSelected ] = useState(null)
 
-    const fetchHomes = async () =>{
-        await axios.get(`/users/${currentUser.id}/homes`)
-        .then(response => {
-            setHouses(response.data)
-        })
-        .catch(error => {
-            console.log(error?.response);
-        });
-    }
-
     useEffect(() => {
+       
+        const fetchHomes = async () =>{
+            await axios.get(`/users/${currentUser.id}/homes`)
+            .then(response => {
+                setHouses(response.data)
+            })
+            .catch(error => {
+                console.log(error?.response);
+            });
+        }
+
         fetchHomes();
     }, [currentUser.id])
 

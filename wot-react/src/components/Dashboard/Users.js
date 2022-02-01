@@ -1,9 +1,11 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import HouseDialog from "./HouseDialog"
 import { DataGrid } from '@mui/x-data-grid';
 import { styled } from '@mui/material/styles';
 import Button from '@mui/material/Button';
 import { Edit } from '@mui/icons-material';
+import { useAuth } from "../../contexts/authcontext";
+import axios from 'axios';
 
 
 const pageSize = 5;
@@ -38,12 +40,33 @@ const emptyFormData = {name: '', users: [{name:'', role: ''}]};
 
 
 export default function Users({houseSelected}) {
+    const { currentUser } = useAuth();
     const [isDialogOpen, setIsDialogOpen] = useState(false)
     const [formData, setFormData] = useState(emptyFormData);
+    const [rowsData, setRowsData] = useState(JSON.parse(JSON.stringify(houseSelected.users)));
 
+
+    useEffect(() => {
+
+        const axiosReq = []
+        const newRowsData = JSON.parse(JSON.stringify(houseSelected.users))
+        newRowsData.map(user =>
+            axiosReq.push( axios.get(`/users/${user.userId}`))
+        )
+
+        axios.all(axiosReq).then(axios.spread((...responses) => {
+                responses.map( (response, index) => (
+                    newRowsData[index].name = response.data.username
+                ))
+                setRowsData(newRowsData);
+            }))
+            .catch(errors => {
+                console.log(errors);
+              })
+
+    }, [houseSelected])
 
     const submitForm = () => {
-        console.log(formData);
         //console.log(houseSelected);
 
         //setIsDialogOpen(false);
@@ -58,6 +81,9 @@ export default function Users({houseSelected}) {
     return (
         <div className='component'>
             <div className='component-header'>
+            {
+                    (!houseSelected || houseSelected.users.find( user => user.userId===currentUser?.id)?.userRole === 'OWNER') ?
+                    
                 <div className='component-header-editBtn'>
                     <ColorOutlinedButton 
                         size="large"
@@ -66,12 +92,15 @@ export default function Users({houseSelected}) {
                     >
                             Add Edit users
                     </ColorOutlinedButton>
-                </div>  
+                </div>
+                :
+                <></>  
+            }  
             </div>
 
             <div className='component-dataGrid'>
                 <DataGrid
-                    rows={houseSelected.users.map((user, index)=> ({...user, id: index}))}
+                    rows={rowsData.map((user, index)=> ({...user, id: index}))}
                     columns={columns}
                     autoHeight
                     pageSize={pageSize}
