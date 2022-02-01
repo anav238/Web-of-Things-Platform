@@ -59,10 +59,19 @@ public class DeviceController {
         UserIdentity identity = UserResourceParser.Authorize(jwt);
         if (!identity.isAuthorized())
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
+
         String role = UserResourceParser.getUserRoleForDeviceId(dataset, model, id, identity.getUserId());
-        System.out.println("Un rezultat este "+role);
+        Device device = DeviceResourceParser.getDeviceById(dataset, model, id);
+        String category= String.valueOf(device.getCategory());
+
+        if(category.contentEquals("ENVIRONMENT"))
+            if(role.contentEquals("GUEST"))
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
+        if(category.contentEquals("SECURITY"))
+            if(role.contentEquals("GUEST")||role.contentEquals("CHILD"))
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
         try {
-            return ResponseEntity.ok(objectMapper.writeValueAsString(DeviceResourceParser.getDeviceById(dataset, model, id)));
+            return ResponseEntity.ok(objectMapper.writeValueAsString(device));
         } catch (NotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Device not Found");
         }
@@ -75,8 +84,18 @@ public class DeviceController {
         UserIdentity identity = UserResourceParser.Authorize(jwt);
         if (!identity.isAuthorized())
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
+
+        String role = UserResourceParser.getUserRoleForDeviceId(dataset, model, id, identity.getUserId());
+        Device device = DeviceResourceParser.getDeviceById(dataset, model, id);
+        String category= String.valueOf(device.getCategory());
+
+        if(category.contentEquals("ENVIRONMENT"))
+            if(role.contentEquals("GUEST"))
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
+        if(category.contentEquals("SECURITY"))
+            if(role.contentEquals("GUEST")||role.contentEquals("CHILD"))
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
         try {
-            Device device = DeviceResourceParser.getDeviceById(dataset, model, id);
             return ResponseEntity.ok(objectMapper.writeValueAsString(device.getProperties()));
         } catch (NotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Device not Found");
@@ -90,8 +109,18 @@ public class DeviceController {
         UserIdentity identity = UserResourceParser.Authorize(jwt);
         if (!identity.isAuthorized())
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
+
+        String role = UserResourceParser.getUserRoleForDeviceId(dataset, model, id, identity.getUserId());
+        Device device = DeviceResourceParser.getDeviceById(dataset, model, id);
+        String category= String.valueOf(device.getCategory());
+
+        if(category.contentEquals("ENVIRONMENT"))
+            if(role.contentEquals("GUEST"))
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
+        if(category.contentEquals("SECURITY"))
+            if(role.contentEquals("GUEST")||role.contentEquals("CHILD"))
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
         try {
-            Device device = DeviceResourceParser.getDeviceById(dataset, model, id);
             for (DeviceProperty deviceProperty : device.getProperties())
                 if (deviceProperty.getName().equals(propertyName))
                     return ResponseEntity.ok(objectMapper.writeValueAsString(deviceProperty));
@@ -108,8 +137,18 @@ public class DeviceController {
         UserIdentity identity = UserResourceParser.Authorize(jwt);
         if (!identity.isAuthorized())
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
+
+        String role = UserResourceParser.getUserRoleForDeviceId(dataset, model, id, identity.getUserId());
+        Device device = DeviceResourceParser.getDeviceById(dataset, model, id);
+        String category= String.valueOf(device.getCategory());
+
+        if(category.contentEquals("ENVIRONMENT"))
+            if(role.contentEquals("GUEST"))
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
+        if(category.contentEquals("SECURITY"))
+            if(role.contentEquals("GUEST")||role.contentEquals("CHILD"))
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
         try {
-            Device device = DeviceResourceParser.getDeviceById(dataset, model, id);
             return ResponseEntity.ok(objectMapper.writeValueAsString(device.getActions()));
         } catch (NotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Device not Found");
@@ -123,8 +162,18 @@ public class DeviceController {
         UserIdentity identity = UserResourceParser.Authorize(jwt);
         if (!identity.isAuthorized())
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
+
+        String role = UserResourceParser.getUserRoleForDeviceId(dataset, model, id, identity.getUserId());
+        Device device = DeviceResourceParser.getDeviceById(dataset, model, id);
+        String category= String.valueOf(device.getCategory());
+
+        if(category.contentEquals("ENVIRONMENT"))
+            if(role.contentEquals("GUEST"))
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
+        if(category.contentEquals("SECURITY"))
+            if(role.contentEquals("GUEST")||role.contentEquals("CHILD"))
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
         try {
-            Device device = DeviceResourceParser.getDeviceById(dataset, model, id);
             String requestUrl = device.getBaseLink() + "/actions";
             try {
                 return HTTPClient.sendPostRequest(requestUrl, payload);
@@ -143,8 +192,18 @@ public class DeviceController {
         UserIdentity identity = UserResourceParser.Authorize(jwt);
         if (!identity.isAuthorized())
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
+
+        String role = UserResourceParser.getUserRoleForDeviceId(dataset, model, id, identity.getUserId());
+        Device device = DeviceResourceParser.getDeviceById(dataset, model, id);
+        String category= String.valueOf(device.getCategory());
+
+        if(category.contentEquals("ENVIRONMENT"))
+            if(role.contentEquals("GUEST"))
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
+        if(category.contentEquals("SECURITY"))
+            if(role.contentEquals("GUEST")||role.contentEquals("CHILD"))
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
         try {
-            Device device = DeviceResourceParser.getDeviceById(dataset, model, id);
             for (DeviceAction deviceAction : device.getActions())
                 if (deviceAction.getName().equals(actionName))
                     return ResponseEntity.ok(objectMapper.writeValueAsString(deviceAction));
@@ -161,6 +220,7 @@ public class DeviceController {
         UserIdentity identity = UserResourceParser.Authorize(jwt);
         if (!identity.isAuthorized())
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
+
         String specification = HTTPClient.sendGetRequest(requestBody.getDeviceUrl());
         try {
             Map<String, Object> specificationJson = objectMapper.readValue(specification, new TypeReference<Map<String, Object>>() {
@@ -204,6 +264,10 @@ public class DeviceController {
     public void deleteDevice(@PathVariable String id, @RequestHeader(value = "authorization") String jwt) {
         UserIdentity identity = UserResourceParser.Authorize(jwt);
         if (!identity.isAuthorized())
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
+
+        String role = UserResourceParser.getUserRoleForDeviceId(dataset, model, id, identity.getUserId());
+        if(role.contentEquals("GUEST")||role.contentEquals("CHILD")||role.contentEquals("MEMBER"))
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
         //remove all statements mentioning the device
         Resource home = model.getResource("/devices/" + id);
