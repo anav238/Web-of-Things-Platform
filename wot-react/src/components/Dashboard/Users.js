@@ -61,7 +61,7 @@ export default function Users({houseSelected}) {
                 setRowsData(newRowsData);
             }))
             .catch(errors => {
-                console.log(errors);
+                console.log(errors?.data);
               })
 
     }, [houseSelected])
@@ -82,8 +82,8 @@ export default function Users({houseSelected}) {
         <div className='component'>
             <div className='component-header'>
             {
-                    (!houseSelected || houseSelected.users.find( user => user.userId===currentUser?.id)?.userRole === 'OWNER') ?
-                    
+                (!houseSelected || houseSelected.users.find( user => user.userId===currentUser?.id)?.userRole === 'OWNER')
+                    &&
                 <div className='component-header-editBtn'>
                     <ColorOutlinedButton 
                         size="large"
@@ -92,9 +92,7 @@ export default function Users({houseSelected}) {
                     >
                             Add Edit users
                     </ColorOutlinedButton>
-                </div>
-                :
-                <></>  
+                </div> 
             }  
             </div>
 

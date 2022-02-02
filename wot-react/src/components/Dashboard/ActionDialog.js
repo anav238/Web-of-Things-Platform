@@ -6,17 +6,24 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Button from '@mui/material/Button';
+import axios from 'axios';
 
 
-export default function ActionDialog({isOpen ,setIsOpen, action, setAction}) {
+export default function ActionDialog({isOpen ,setIsOpen,deviceId, action, setAction}) {
+
 
     const submitForm = () => {
         const data = {}
         data[action.name] = { input: {}};
         action.input.properties.map( prop => (
-            data[action.name].input[prop.name] = prop.currentValue
+            data[action.name].input[prop.name] = parseInt(prop.currentValue, 10)
         ))
-        console.log(data);
+        axios.post(`devices/${deviceId}/actions`, data).then(
+            res =>{
+                console.log(res.data);
+            }
+        ).catch(err => console.log(err));
+
     }
 
     const onPropValueChange = (index, newValue) => {
@@ -45,10 +52,11 @@ export default function ActionDialog({isOpen ,setIsOpen, action, setAction}) {
                     action.input?.properties.map((prop, index) => (
                     <div key={index}>
                         <TextField
-                            autoFocus
+                            autoFocus={index===0}
                             id={prop.name}
-                            label={prop.name}   
-                            type={prop.type === 'integer' ? 'number' : ( prop.type === 'boolean' ? 'radio' : 'text')} 
+                            label={prop.name + " " + prop.unit}   
+                            type={prop.type === 'integer' ? 'number' : ( prop.type === 'boolean' ? 'radio' : 'text')}
+                            InputProps={{ inputProps: { min: prop.minimum, max: prop.maximum } }} 
                             variant="outlined"
                             value={prop.currentValue}
                             onChange={ event => onPropValueChange(index, event.target.value)}

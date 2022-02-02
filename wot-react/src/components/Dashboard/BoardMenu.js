@@ -6,6 +6,7 @@ export default function BoardMenu(
     {
         houses, devices,
         houseSelected,
+        setHouseSelected,
         components,
         componentSelected,
         setComponentSelected
@@ -17,7 +18,7 @@ export default function BoardMenu(
         <div className='dashboard-boardMenu'>
             <div className='dashboard-boardMenu-row'>
                 <div className='dashboard-boardMenu-row-item green'
-                    onClick={() => {setComponentSelected(components[0]);}}>
+                    onClick={() => {setComponentSelected(components[0]); setHouseSelected(null)}}>
                     <div className={`dashboard-boardMenu-row-item-icon green-linear 
                         ${components[0] === componentSelected ? 'green-linear--selected' : ""}`}>
                         <MapsHomeWork fontSize='large'/> 

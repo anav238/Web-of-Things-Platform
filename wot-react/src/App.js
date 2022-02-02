@@ -7,7 +7,6 @@ import PrivateRoute from "./contexts/privateRoute";
 import Login from "./components/Authentification/Login";
 import Register from "./components/Authentification/Register";
 import Dashboard from './components/Dashboard/Dashboard';
-import Profile from './components/Profile/Profile';
 
 function App() {
   return (
@@ -22,7 +21,7 @@ function App() {
                             <Route path="/login" element={<Login />} />
                             <Route path="/register" element={<Register />} />
                             <Route path="/Dashboard" element={<PrivateRoute><Dashboard/></PrivateRoute>}/>
-                            <Route path="/Help" element={<PrivateRoute><Profile/></PrivateRoute>}/>
+                            <Route path="/Help" element={<PrivateRoute><Home/></PrivateRoute>}/>
                         </Routes>
                     </div>
                   </div>

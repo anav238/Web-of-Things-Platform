@@ -4,7 +4,6 @@ import BoardMenu from './BoardMenu';
 import Houses from './Houses';
 import Users from './Users';
 import Devices from './Devices';
-import {devices_mock} from '../../assets/mockData2'
 import { useAuth } from "../../contexts/authcontext";
 import axios from 'axios'
 
@@ -34,6 +33,24 @@ export default function Dashboard() {
         fetchHomes();
     }, [currentUser.id])
 
+    useEffect(() => {
+        const axiosReq = []
+        const newDevices = []
+        houseSelected?.deviceIds.map(deviceId =>
+            axiosReq.push( axios.get(`/devices/${deviceId}`))
+        )
+
+        axios.all(axiosReq).then(axios.spread((...responses) => {
+                responses.map( (response) => (
+                    newDevices.push(response.data)
+                ))
+                setDevices(newDevices);
+            }))
+            .catch(errors => {
+                console.log(errors);
+              })
+    }, [houseSelected])
+
     return (
         <div className='dashboard'>
             <div className='dashboard-title'>
@@ -44,6 +61,7 @@ export default function Dashboard() {
                 houses={houses}
                 devices={devices}
                 houseSelected={houseSelected}
+                setHouseSelected={setHouseSelected}
                 components={components}
                 componentSelected={componentSelected}
                 setComponentSelected={setComponentSelected}
@@ -73,15 +91,19 @@ export default function Dashboard() {
                         case components[2]:
                             return (
                             <Devices
+                                devices={devices}
+                                setDevices={setDevices}
                                 houseSelected={houseSelected}
-                                devices={devices_mock}
+                                setHouseSelected={setHouseSelected}
                                 />
                             )
                         case components[3]:
                             return (
                             <Devices
+                                devices={devices}
+                                setDevices={setDevices}
                                 houseSelected={houseSelected}
-                                devices={devices_mock}
+                                setHouseSelected={setHouseSelected}
                                 />
                             )
                         default:

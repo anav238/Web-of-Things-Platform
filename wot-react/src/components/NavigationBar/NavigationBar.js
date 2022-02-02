@@ -7,8 +7,8 @@ import Logo from '../../assets/logo';
 
 import Profile from './../Profile/Profile.js'
 
-const navigators = ['Dashboard', 'Profile', 'Help', 'Settings', 'Logout'];
-const icons = ['Dashboard', 'Person', 'Help', 'Settings', 'Logout'];
+const navigators = ['Dashboard', 'Profile', 'Help', 'Logout'];
+const icons = ['Dashboard', 'Person', 'Help', 'Logout'];
 
 
 const NavigationBar = () => {
@@ -29,8 +29,6 @@ const NavigationBar = () => {
         else if(navigator === 'Profile'){
             setNavSelected(navigator)
 
-        }
-        else if(navigator === 'Settings'){
         }
         else { // Help, Dashboard
             setNavSelected(navigator)
