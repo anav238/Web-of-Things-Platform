@@ -15,6 +15,8 @@ import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.shared.NotFoundException;
 import org.apache.jena.system.Txn;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
 
@@ -152,31 +154,35 @@ public class UserResourceParser {
 
         Query query = QueryFactory.create(queryString);
         User user = new User();
-        Txn.executeRead(dataset, () -> {
-            try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
-                ResultSet results = qexec.execSelect();
-                while (results.hasNext()) {
-                    QuerySolution soln = results.nextSolution();
-                    System.out.println(soln);
+        try {
+            Txn.executeRead(dataset, () -> {
+                try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
+                    ResultSet results = qexec.execSelect();
+                    while (results.hasNext()) {
+                        QuerySolution soln = results.nextSolution();
+                        System.out.println(soln);
 
-                    Literal homeIdFromQuery = soln.getLiteral("homeId");
-                    String homeIdString = homeIdFromQuery != null ? homeIdFromQuery.toString() : null;
-
-
-                    Literal userRole = soln.getLiteral("userRole");
-                    String userRoleString = userRole != null ? userRole.toString() : null;
+                        Literal homeIdFromQuery = soln.getLiteral("homeId");
+                        String homeIdString = homeIdFromQuery != null ? homeIdFromQuery.toString() : null;
 
 
-                    boolean txt = homeId.equals(homeId);
-                    System.out.println(txt);
+                        Literal userRole = soln.getLiteral("userRole");
+                        String userRoleString = userRole != null ? userRole.toString() : null;
 
-                    if (homeIdString.equals(homeId)) {
-                        user.setUsername(userRoleString);
+
+                        boolean txt = homeId.equals(homeId);
+                        System.out.println(txt);
+
+                        if (homeIdString.equals(homeId)) {
+                            user.setUsername(userRoleString);
+                        }
+
                     }
-
                 }
-            }
-        });
+            });
+        } catch (NoSuchElementException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
+        }
         //In this case in username we have actually the role
         if (user.getUsername() != null)
             return user.getUsername();
@@ -197,9 +203,10 @@ public class UserResourceParser {
         Query query = QueryFactory.create(queryString);
         User user = new User();
         //String userRoleString;
-        Txn.executeRead(dataset, () -> {
-            try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
-                ResultSet results = qexec.execSelect();
+        try {
+            Txn.executeRead(dataset, () -> {
+                try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
+                    ResultSet results = qexec.execSelect();
                     QuerySolution soln = results.nextSolution();
                     System.out.println(soln);
 
@@ -212,8 +219,11 @@ public class UserResourceParser {
                     System.out.println("user role: " + userRoleString);
                     System.out.println("home id: " + homeIdString);
                     user.setUsername(userRoleString);
-            }
-        });
+                }
+            });
+        } catch (NoSuchElementException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
+        }
 
         //In this case in username we have actually the role
         if (user.getUsername() != null)
