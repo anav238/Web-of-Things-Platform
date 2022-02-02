@@ -50,21 +50,25 @@ export default function Users({houseSelected}) {
 
         const axiosReq = []
         const newRowsData = JSON.parse(JSON.stringify(houseSelected.users))
-        newRowsData.map(user =>
-            axiosReq.push( axios.get(`/users/${user.userId}`))
+        houseSelected.users.map(user => currentUser.id === user.userId 
+            ?
+                newRowsData[newRowsData.findIndex( user => user.userId===currentUser.id)].name = currentUser.username
+            :
+                axiosReq.push( axios.get(`/users/${user.userId}`)
+            )
         )
 
         axios.all(axiosReq).then(axios.spread((...responses) => {
-                responses.map( (response, index) => (
-                    newRowsData[index].name = response.data.username
+                responses.map( (response) => (
+                    newRowsData[newRowsData.findIndex( user => user.userId===response.data.id)].name = response.data.username
                 ))
-                setRowsData(newRowsData);
+                setRowsData([...newRowsData,]);
             }))
             .catch(errors => {
                 console.log(errors?.data);
               })
 
-    }, [houseSelected])
+    }, [houseSelected, currentUser])
 
     const submitForm = () => {
         //console.log(houseSelected);

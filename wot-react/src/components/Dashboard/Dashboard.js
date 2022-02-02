@@ -49,6 +49,15 @@ export default function Dashboard() {
             .catch(errors => {
                 console.log(errors);
               })
+
+
+        const newHouses = JSON.parse(JSON.stringify(houses));
+        const index = newHouses.findIndex( h => h.id===houseSelected?.id)
+        if (index !== -1) {
+            newHouses[index] = JSON.parse(JSON.stringify(houseSelected));
+            setHouses(newHouses);
+        }
+        console.log("update houses on houseSelect")
     }, [houseSelected])
 
     return (

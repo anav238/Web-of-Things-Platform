@@ -89,13 +89,7 @@ export default function Houses({houses, setHouses, houseSelected, setHouseSelect
             }
         })
         .then(response => { 
-            const newHouses = JSON.parse(JSON.stringify(houses));
-            const index = newHouses.findIndex( h => h.id===response.data.id)
-            if (index !== -1) {
-                newHouses[index] = response.data;
-            }
             setHouseSelected(response.data);
-            setHouses(newHouses);
         })
         .catch(error => {
             console.log(error?.response);

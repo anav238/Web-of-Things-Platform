@@ -12,7 +12,7 @@ import Button from '@mui/material/Button';
 
 const deviceCategories = ['ENTERTAINMENT', 'ENVIRONMENT', 'SECURITY']
 
-export default function AddDeviceDialog({isOpen, setIsOpen, devices, setDevices, houseSelected, setHouseSelected}) {
+export default function AddDeviceDialog({isOpen, setIsOpen, houseSelected, setHouseSelected}) {
 
     const [deviceUrl, setDeviceUrl] = useState('')
     const [deviceCategory, setDeviceCategory] = useState('ENTERTAINMENT')
@@ -50,10 +50,7 @@ export default function AddDeviceDialog({isOpen, setIsOpen, devices, setDevices,
 
         axios.post(`/devices`, payload)
             .then(response => { 
-                const newDevice = response.data
-                console.log(newDevice);
-                patchDeviceIds(newDevice.id)
-                setDevices([...devices, newDevice])
+                patchDeviceIds(response.data.id)
                 setIsOpen(false)
             })
             .catch(error => {
