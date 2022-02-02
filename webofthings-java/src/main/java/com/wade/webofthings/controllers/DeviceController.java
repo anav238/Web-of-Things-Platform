@@ -176,7 +176,7 @@ public class DeviceController {
         try {
             String requestUrl = device.getBaseLink() + "/actions";
             try {
-                return HTTPClient.sendPostRequest(requestUrl, payload);
+                return ResponseEntity.ok(HTTPClient.sendPostRequest(requestUrl, payload).getBody());
             } catch (HttpClientErrorException e) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid action");
             }
