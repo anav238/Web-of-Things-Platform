@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Web of Things platform - technical report</title>
+    <link rel="stylesheet" href="css/scholarly.min.css">
+    <script src="js/scholarly.min.js"></script>
+  </head>
+  <body prefix="schema: http://schema.org, sa: https://ns.science.ai">
+    <header>
+      <h1>Web of Things platform - User guide</h1>
+    </header>
+    <div role="contentinfo">
+      <section typeof="sa:AuthorsList">
+        <h2>Authors</h2>
+        <ul>
+          <li typeof="sa:ContributorRole" property="schema:author">
+            <span typeof="schema:Person" resource="https://github.com/VladAfrasinei">
+              <meta property="schema:givenName" content="Vlad">
+              <meta property="schema:familyName" content="Afrasinei">
+              <a href="https://github.com/VladAfrasinei">
+                <span property="schema:name">Afrasinei Vlad</span>
+              </a>
+            </span>
+          </li>
+          <li typeof="sa:ContributorRole" property="schema:author">
+            <span typeof="schema:Person" resource="https://github.com/Stefanxdan">
+              <meta property="schema:givenName" content="Stefan">
+              <meta property="schema:familyName" content="Danila">
+              <a href="https://github.com/Stefanxdan">
+                <span property="schema:name">Danila Stefan</span>
+              </a>
+            </span>
+          </li>
+          <li typeof="sa:ContributorRole" property="schema:author">
+            <span typeof="schema:Person" resource="https://github.com/anav238">
+              <meta property="schema:givenName" content="Ana">
+              <meta property="schema:familyName" content="Vasiliu">
+              <a href="https://github.com/anav238">
+                <span property="schema:name">Vasiliu Ana</span>
+              </a>
+            </span>
+          </li>
+        </ul>
+      </section>
+    </div>
+    <section typeof="sa:Abstract" id="abstract" role="doc-abstract">
+      <h2>Abstract</h2>
+      <p>
+        This document presents the guide for using the <a
+          href="https://www.w3.org/WoT/">Web of Things</a> platform
+        project done for the <span typeof="schema:Course" resource="https://profs.info.uaic.ro/~busaco/teach/courses/wade/"><a href="https://profs.info.uaic.ro/~busaco/teach/courses/wade/"> 
+          <span property="schema:name">Web Application Development</span>
+          course</a></span>. The project consists of a Web application that allows
+        its users to manage their own smart homes by adding smart devices to the homes, interacting with the smart devices and
+        adding other users to the home.
+      </p>
+    </section>
+    <section id="user-creation-and-login">
+      <h2>Registering and logging in to the application</h2>
+      <p>
+        In order for the user to access the application, he first needs to create an account and then login to the application. 
+        For registering into the application, the user needs to access the register page and fill in the required fields there:
+      </p>
+      <figure typeof="sa:image">
+        <img src="assets/images/register-page.png" alt="Register page" style="max-width: 100%">
+      </figure>
+      <p>
+        After the user has created his account, he is redirected to the login page where he can enter his credentials. After this, he needs 
+        to press the Sign In button, which will redirect him to the login page.
+      </p>
+      <figure typeof="sa:image">
+        <img src="assets/images/login-page.png" alt="Login page" style="max-width: 100%">
+      </figure>
+    </section>
+    <section id="dashboard">
+      <h2>Dashboard</h2>
+      <p>
+        The user dashboard looks like below: 
+      </p>
+      <figure typeof="sa:image">
+        <img src="assets/images/dashboard-page.png" alt="Dashboard page" style="max-width: 100%">
+      </figure>
+      <p>
+        There is a sidebar menu containing the application logo, the username of the currently logged in user and four buttons: Dashboard, Profile, Help, Logout. The dashboard is the page presented above, the one you get redirected to
+        right after you login. The profile page enables the users to update their credentials, and the logout button ends the current session and redirects the user to the login page.
+      </p>
+      <p>
+        In the central part of the Dashboard page, the user is presented with four buttons corresponding to the main actions that he can do in the application. At first, the only enabled button is the houses button. 
+        When this is clicked, the user is presented with the list of homes that he is a member of, along with his role in that home (which can be either OWNER, MEMBER, CHILD or GUEST), the number of users and the number of 
+        devices that belong to the home. 
+      </p>
+    
+    <section id="homes">
+      <h2>Homes</h2>
+      <p>
+        When selecting a home from the list, all other buttons get enabled and he can also access the users, devices and actions inside that home.  
+      </p>
+      <figure typeof="sa:image">
+        <img src="assets/images/dashboard-home-selected.png" alt="Dashboard when selecting home" style="max-width: 100%">
+      </figure>
+      <p>
+        For adding a new home, the user needs to press the New Home button at the top of the list. A user can also edit his home in order to rename it or add new users to it by pressing edit home:
+      </p>
+      <figure typeof="sa:image">
+        <img src="assets/images/edit-home.png" alt="Edit home dialog" style="max-width: 100%">
+      </figure>
+      <p>If the user is the Owner of that home, he also has the option to delete the home inside the Edit Home dialog.</p>
+    </section>
+    <section id="devices">
+      <h2>Devices</h2>
+      <p>
+        When selecting the Devices button from the top menu, the user is presented with the list of devices in his home, along with the values of their specific properties and buttons for performing their specific actions (if any):
+      </p>
+      <figure typeof="sa:image">
+        <img src="assets/images/devices-page.png" alt="Devices page" style="max-width: 100%">
+      </figure>
+      <p>
+        Using the Add Device button, a user can add new devices to his home, by entering the URL of the object's Web of Things specification and selecting a category for the device: 
+      </p>
+      <figure typeof="sa:image">
+        <img src="assets/images/add-new-device.png" alt="Add new device" style="max-width: 100%">
+      </figure>
+      <p>
+        After adding the device, it appears automatically in the user's list of devices, along with its associated data: 
+      </p>
+      <figure typeof="sa:image">
+        <img src="assets/images/devices-with-action.png" alt="Devices with actions page" style="max-width: 100%">
+      </figure>
+      <p>
+        As you can see, the newly added device also has an associated action, which is Fade. By pressing the button corresponding to this action, a dialog opens with a description of the action and the parameters that are 
+        required for executing that action:
+      </p>
+      <figure typeof="sa:image">
+        <img src="assets/images/perform-action.png" alt="Perform device action" style="max-width: 100%">
+      </figure>
+    </section>
+  </section>
+  <section id="profile">
+    <h2>Profile</h2>
+    <p>
+      The Profile option from the sidebar menu opens the following dialog, which allows the user to change his credentials:
+    </p>
+    <figure typeof="sa:image">
+      <img src="assets/images/profile-dialog.png" alt="Profile dialog" style="max-width: 100%">
+    </figure>
+    <p>
+      After updating either his username or his password, the user needs to click the Save button next to that field so that the canges are saved. 
+      From this dialog, the user can also delete his profile from the application, but first he needs to confirm his password for security reasons.
+    </p>
+  </section>
+  </body>
+</html>
